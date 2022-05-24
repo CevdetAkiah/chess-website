@@ -22,7 +22,7 @@ func init() {
 	}
 }
 
-// Create inserts the user into the database website table users
+// Create inserts the user into the postgres database website table users
 func (user DB) Create(u service.User) (err error) {
 	statement := "insert into users (fname, lname, email) values ($1, $2, $3) returning id"
 	stmnt, err := Psql.Prepare(statement)
@@ -39,7 +39,7 @@ func (user DB) Create(u service.User) (err error) {
 	return
 }
 
-// Update alters a users email in the database
+// Update alters a users email in the postgres database
 func (user DB) Update(u service.User) (err error) {
 	_, err = Psql.Exec("update users set email = $1", u.Email)
 	if err != nil {
@@ -49,7 +49,7 @@ func (user DB) Update(u service.User) (err error) {
 	return
 }
 
-// Delete removes a user from the database
+// Delete removes a user from the postgres database
 func (user DB) Delete(u service.User) (err error) {
 	_, err = Psql.Exec("delete from users where id = $1", u.Id)
 	if err != nil {

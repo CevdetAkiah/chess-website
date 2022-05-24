@@ -13,7 +13,7 @@ type Storage interface {
 	Delete(u User) (err error)
 }
 
-// Service uses type Storage to CRUD new users
+// Service uses interface Storage to CRUD new users
 type Service struct {
 	store Storage
 }
@@ -25,11 +25,13 @@ func NewService(s Storage) Service {
 	}
 }
 
+// NewUser stores a new user inside a database
 func (s Service) NewUser(u User) (err error) {
 	err = s.store.Create(u)
 	return
 }
 
+// DeleteUser deletes a user from a database
 func (s Service) DeleteUser(u User) (err error) {
 	err = s.store.Delete(u)
 	return
