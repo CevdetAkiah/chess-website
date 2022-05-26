@@ -13,6 +13,6 @@ func main() {
 		err = fmt.Errorf("Cannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
-	fmt.Println("connected to database website")
 
+	fmt.Println("connected to database website")
 }
