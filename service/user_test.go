@@ -49,6 +49,23 @@ func TestNewUser(t *testing.T) {
 		t.Error(err)
 	}
 
+	id := u.Id
+
+	u, err = retrieve(id)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if u.Fname != "Test" {
+		t.Errorf("Expected %s, got %s", "Test", u.Fname)
+	}
+	if u.Lname != "Test" {
+		t.Errorf("Expected %s, got %s", "Test", u.Lname)
+	}
+	if u.Email != "Test" {
+		t.Errorf("Expected %s, got %s", "Test", u.Email)
+	}
+	return
 }
 
 func TestDeleteUser(t *testing.T) {
@@ -68,6 +85,15 @@ func TestDeleteUser(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	u, err = retrieve(u.Id)
+	if err == nil {
+		t.Fail()
+	}
+	if u.Fname != "" {
+		t.Errorf("Expected %s, got %s", `""`, u.Fname)
+	}
+	return
 }
 
 // Methods below are recreated from the database package for the purpose of testing.
@@ -106,5 +132,10 @@ func (user testOperator) Delete(u User) (err error) {
 		err = fmt.Errorf("Error deleting from users %s, error: %w", u.Fname, err)
 		return
 	}
+	return
+}
+
+func retrieve(id int) (u User, err error) {
+	err = Db.QueryRow("select id, fname, lname, email from users where id = $1", id).Scan(&u.Id, &u.Fname, &u.Lname, &u.Email)
 	return
 }
