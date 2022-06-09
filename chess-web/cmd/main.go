@@ -3,32 +3,11 @@ package main
 import (
 	"fmt"
 	postgres "go-projects/chess/database"
-	errs "go-projects/chess/errors"
-	"go-projects/chess/util"
+	"go-projects/chess/route"
 	"log"
 	"net/http"
 	"time"
 )
-
-type operationError string
-
-var (
-	initTemp operationError = "initialize template"
-)
-
-func index(w http.ResponseWriter, r *http.Request) {
-	err := util.InitHTML(w, "i")
-	errs.ErrHandler(err, "index", string(initTemp), time.Now(), w)
-}
-
-func errorPage(w http.ResponseWriter, r *http.Request) {
-	err := util.InitHTML(w, "errors", nil)
-	errs.ErrHandler(err, "errors", string(initTemp), time.Now(), w)
-}
-
-func signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from signup")
-}
 
 func main() {
 	err := postgres.Db.Ping()
@@ -38,9 +17,9 @@ func main() {
 	}
 	fmt.Println("connected to database website")
 
-	http.HandleFunc("/", index)
-	http.HandleFunc("/signup", signup)
-	http.HandleFunc("/errors", errorPage)
+	http.HandleFunc("/", route.Index)
+	http.HandleFunc("/signup", route.Signup)
+	http.HandleFunc("/errors", route.ErrorPage)
 
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",

@@ -1,9 +1,8 @@
-package errs
+package util
 
 import (
 	"errors"
 	"fmt"
-	"go-projects/chess/util"
 	"net/http"
 	"text/template"
 	"time"
@@ -32,7 +31,7 @@ func returnHandlerErr(name string, operation string, t time.Time, e error) Handl
 
 // Error returns the error for HandlerErr as a string
 func (e HandlerErr) Error() string {
-	HandlerError = fmt.Errorf("Handler error from handler %s\n \tduring operation %s\n \t\tat time %b\n \t\t\twith base error %w\n", e.Hname, e.Op, e.When, e.Err)
+	HandlerError = fmt.Errorf("Handler error from handler %s\n \tduring operation %s\n \t\tat time %v\n \t\t\twith base error %w\n", e.Hname, e.Op, e.When, e.Err)
 	return fmt.Sprint(HandlerError)
 }
 
@@ -45,10 +44,13 @@ func (e HandlerErr) Is(other error) bool {
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	if e != nil {
-		var tErr template.ExecError
-		if errors.As(e, &tErr) {
+		switch op {
+		case "Initialize template":
+			var tErr template.ExecError
+			errors.As(e, &tErr)
 			h := returnHandlerErr(fname, op+tErr.Name, t, e)
-			util.InitHTML(w, "errors", h)
+			w.WriteHeader(http.StatusInternalServerError)
+			InitHTML(w, "errors", h)
 		}
 	} else {
 		return
