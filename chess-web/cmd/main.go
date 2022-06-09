@@ -3,18 +3,27 @@ package main
 import (
 	"fmt"
 	postgres "go-projects/chess/database"
-	"net/http"
-	"text/template"
-
+	errs "go-projects/chess/errors"
+	"go-projects/chess/util"
 	"log"
+	"net/http"
+	"time"
+)
+
+type operationError string
+
+var (
+	initTemp operationError = "initialize template"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
-	tpl := template.Must(template.ParseFiles("../../templates/index.html"))
-	err := tpl.Execute(w, nil)
-	if err != nil {
-		log.Fatalln("Error while executing index template: ", err)
-	}
+	err := util.InitHTML(w, "i")
+	errs.ErrHandler(err, "index", string(initTemp), time.Now(), w)
+}
+
+func errorPage(w http.ResponseWriter, r *http.Request) {
+	err := util.InitHTML(w, "errors", nil)
+	errs.ErrHandler(err, "errors", string(initTemp), time.Now(), w)
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
@@ -31,10 +40,14 @@ func main() {
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/signup", signup)
+	http.HandleFunc("/errors", errorPage)
+
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
 		Handler: nil,
 	}
+
+	fmt.Println("Connected to port :8080 at", time.Now())
 	server.ListenAndServe()
 
 }
