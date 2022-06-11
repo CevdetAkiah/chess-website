@@ -1,13 +1,12 @@
 package route
 
 import (
-	"fmt"
 	"go-projects/chess/util"
 	"net/http"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	util.InitHTML(w, "index")
+	util.InitHTML(w, "index", nil)
 }
 
 func ErrorPage(w http.ResponseWriter, r *http.Request) {
@@ -15,5 +14,5 @@ func ErrorPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func Signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from signup")
+	util.InitHTML(w, "signup", nil)
 }
