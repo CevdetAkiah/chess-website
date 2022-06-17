@@ -1,10 +1,14 @@
 package service
 
+import "time"
+
 type User struct {
-	Id    int
-	Fname string
-	Lname string
-	Email string
+	Id        int
+	Uuid      string
+	Name     string
+	Email     string
+	Password  string
+	CreatedAt time.Time
 }
 
 type Storage interface {

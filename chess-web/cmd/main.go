@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	postgres "go-projects/chess/database"
+	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/route"
 	"log"
 	"net/http"
