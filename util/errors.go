@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"text/template"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 // example of a custom error
@@ -44,13 +46,28 @@ func (e HandlerErr) Is(other error) bool {
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	if e != nil {
+
 		switch op {
+
 		case "Initialize template":
 			var tErr template.ExecError
 			errors.As(e, &tErr)
 			h := returnHandlerErr(fname, op+tErr.Name, t, e)
 			w.WriteHeader(http.StatusInternalServerError)
-			InitHTML(w, "errors", h)
+			InitHTML(w, "errors", h.Error())
+
+		case "Database":
+			if errors.Is(e, &mysql.MySQLError{}) {
+				var sqlErr *mysql.MySQLError
+				errors.As(e, &sqlErr)
+				// 1062 means aleady exists in database
+				if sqlErr.Number == 1062 {
+					InitHTML(w, "errors", sqlErr.Message)
+				} else {
+					h := returnHandlerErr(fname, op, t, e)
+					InitHTML(w, "errors", h)
+				}
+			}
 		}
 	} else {
 		return

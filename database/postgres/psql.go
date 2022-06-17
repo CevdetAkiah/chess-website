@@ -25,18 +25,20 @@ func init() {
 
 // Create inserts the user into the postgres database website table users
 func (user Operator) Create(u service.User) (err error) {
-	statement := "insert into users (name, email, password) values ($1, $2, $3) returning id, uuid, created_at"
+	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
+	fmt.Println(u)
 	stmnt, err := Db.Prepare(statement)
 	if err != nil {
 		err = fmt.Errorf("Error preparing statement to insert user into users table: %w", err)
 		return
 	}
 	defer stmnt.Close()
-	err = stmnt.QueryRow(data.CreateUUID(), u.Name, u.Email, u.Password).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
+	err = stmnt.QueryRow(data.CreateUUID(), u.Name, u.Email, u.Password, u.CreatedAt).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("Error inserting user into users table: %w", err)
 		return
 	}
+
 	return
 }
 
