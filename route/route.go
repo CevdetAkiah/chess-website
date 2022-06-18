@@ -49,5 +49,4 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	// Insert user into database
 	err := s.NewUser(u)
 	util.ErrHandler(err, "NewUser", "Database", time.Now(), w)
-
 }
