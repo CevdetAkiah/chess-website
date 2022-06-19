@@ -1,4 +1,4 @@
-package service
+package data
 
 import "time"
 
@@ -9,3 +9,4 @@ type Session struct {
 	UserId    int
 	CreatedAt time.Time
 }
+

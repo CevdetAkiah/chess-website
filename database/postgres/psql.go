@@ -26,7 +26,6 @@ func init() {
 // Create inserts the user into the postgres database website table users
 func (user Operator) Create(u service.User) (err error) {
 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
-	fmt.Println(u)
 	stmnt, err := Db.Prepare(statement)
 	if err != nil {
 		err = fmt.Errorf("Error preparing statement to insert user into users table: %w", err)
@@ -57,6 +56,23 @@ func (user Operator) Delete(u service.User) (err error) {
 	_, err = Db.Exec("delete from users where id = $1", u.Id)
 	if err != nil {
 		err = fmt.Errorf("Error deleting from users %s, error: %w", u.Name, err)
+		return
+	}
+	return
+}
+
+func (user Operator) CreateSession(u service.User) (sess data.Session, err error) {
+	statement := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, email, user_id, created_at"
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		err = fmt.Errorf("Error preparing statement to create a session for user: %s ", u.Name)
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, u.CreatedAt).Scan(&sess.Id, sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
+	if err != nil {
+		err = fmt.Errorf("Error creating a session for user: %s ", u.Name)
 		return
 	}
 	return

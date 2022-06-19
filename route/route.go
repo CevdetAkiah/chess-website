@@ -22,7 +22,6 @@ func ErrorPage(w http.ResponseWriter, r *http.Request) {
 // Signup initialised the signup template and deals with user registration
 func Signup(w http.ResponseWriter, r *http.Request) {
 	util.InitHTML(w, "signup", nil)
-
 }
 
 func SignupAccount(w http.ResponseWriter, r *http.Request) {
