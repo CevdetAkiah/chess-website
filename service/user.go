@@ -1,7 +1,6 @@
 package service
 
 import (
-	"go-projects/chess/database/data"
 	"time"
 )
 
@@ -14,38 +13,44 @@ type User struct {
 	CreatedAt time.Time
 }
 
-type Storage interface {
+type Database interface {
 	Create(u User) (err error)
 	Update(u User) (err error)
 	Delete(u User) (err error)
-	CreateSession(u User) (data.Session, error)
+	CreateSession(u User) (Session, error)
+	UserByEmail(email string) (u User, err error)
 }
 
 // Service uses interface Storage to CRUD new users
 type Service struct {
-	store Storage
+	operator Database
 }
 
 // NewService provides Storage Service where needed
-func NewService(s Storage) Service {
+func NewService(d Database) Service {
 	return Service{
-		store: s,
+		operator: d,
 	}
 }
 
 // NewUser stores a new user inside a database
 func (s Service) NewUser(u User) (err error) {
-	err = s.store.Create(u)
+	err = s.operator.Create(u)
 	return
 }
 
 // DeleteUser deletes a user from a database
 func (s Service) DeleteUser(u User) (err error) {
-	err = s.store.Delete(u)
+	err = s.operator.Delete(u)
 	return
 }
 
-func (s Service) CreateSession(u User) (sess data.Session, err error) {
-	sess, err = s.store.CreateSession(u)
+func (s Service) CreateSession(u User) (sess Session, err error) {
+	sess, err = s.operator.CreateSession(u)
+	return
+}
+
+func (s Service) UserByEmail(email string) (u User, err error) {
+	u, err = s.operator.UserByEmail(email)
 	return
 }
