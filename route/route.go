@@ -55,6 +55,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	util.InitHTML(w, "login.html", nil)
 }
 
+// Authenticate checks a user exists and creates a session for the user
 func Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Parse the form and get the email
 	r.ParseForm()
@@ -71,21 +72,16 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	// If the password is ok, create a session and set a cookie with the user uuid
+	// If the password is ok, create a session and set a session cookie
 	if u.Password == data.Encrypt(r.PostFormValue("password")) {
 		session, err := s.CreateSession(u)
 		if err != nil {
 			log.Fatalln(err)
 		}
-		cookie := http.Cookie{
-			Name:     "session",
-			Value:    session.Uuid,
-			HttpOnly: true,
-		}
-		http.SetCookie(w, &cookie)
-		http.Redirect(w, r, "/", 302)
+		data.SetCookie(w, r, session)
+
 	} else {
-		// change this to "incorrect password" on errors page
+		// TODO: change this to "incorrect password" on errors page
 		http.Redirect(w, r, "/login", 302)
 	}
 
