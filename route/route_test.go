@@ -52,3 +52,17 @@ func TestSignup(t *testing.T) {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
 	}
 }
+
+func TestLogin(t *testing.T) {
+	mux.HandleFunc("/login", SignupAccount)
+	request, _ := http.NewRequest("GET", "/login", nil)
+	mux.ServeHTTP(writer, request)
+
+	if writer.Code != 200 {
+		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
+	}
+}
+
+// TODO: write a test for the SignupAccount handler
+
+// TODO: write a test for the Authenticate handler

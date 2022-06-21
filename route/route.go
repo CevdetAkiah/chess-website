@@ -26,8 +26,6 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignupAccount(w http.ResponseWriter, r *http.Request) {
-	var id int
-
 	// Set up database service
 	db := postgres.Operator{}
 	s := service.NewService(db)
@@ -41,7 +39,6 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	ePw := data.Encrypt(pw)
 	// Create user
 	u := service.User{
-		Id:       id,
 		Name:     name,
 		Email:    email,
 		Password: ePw,
