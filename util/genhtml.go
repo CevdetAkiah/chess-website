@@ -11,7 +11,7 @@ import (
 func InitHTML(w http.ResponseWriter, filename string, data ...interface{}) {
 	var buf bytes.Buffer
 
-	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../../templates/%s.html", filename)))
+	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.html", filename)))
 
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, data)
