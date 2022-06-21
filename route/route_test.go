@@ -3,6 +3,7 @@ package route
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -11,13 +12,18 @@ var (
 	writer *httptest.ResponseRecorder
 )
 
+func TestMain(m *testing.M) {
+	setUp()
+	code := m.Run()
+	os.Exit(code)
+}
+
 func setUp() {
 	mux = http.NewServeMux()
 	writer = httptest.NewRecorder()
 }
 
 func TestIndex(t *testing.T) {
-	setUp()
 	mux.HandleFunc("/", Index)
 	request, _ := http.NewRequest("GET", "/", nil)
 	mux.ServeHTTP(writer, request)
@@ -28,7 +34,6 @@ func TestIndex(t *testing.T) {
 }
 
 func TestErrorPage(t *testing.T) {
-	setUp()
 	mux.HandleFunc("/errors", ErrorPage)
 	request, _ := http.NewRequest("GET", "/errors", nil)
 	mux.ServeHTTP(writer, request)
@@ -39,7 +44,6 @@ func TestErrorPage(t *testing.T) {
 }
 
 func TestSignup(t *testing.T) {
-	setUp()
 	mux.HandleFunc("/signup", ErrorPage)
 	request, _ := http.NewRequest("GET", "/signup", nil)
 	mux.ServeHTTP(writer, request)
