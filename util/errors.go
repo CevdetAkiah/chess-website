@@ -16,6 +16,7 @@ import (
 var (
 	HandlerError error
 	dupEmail     = errors.New("Email already registered")
+	badpw        = errors.New("Incorrect email")
 )
 
 type HandlerErr struct {
@@ -52,7 +53,7 @@ func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWr
 	if e != nil {
 
 		switch op {
-
+		// TODO: make a function to refactor each case into
 		case "Initialize template":
 			var tErr template.ExecError
 			errors.As(e, &tErr)
@@ -70,6 +71,12 @@ func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWr
 			} else {
 				InitHTML(w, "errors", h.Error())
 			}
+
+		case "Password":
+			h := returnHandlerErr(fname, op, t, e)
+			w.WriteHeader(http.StatusUnauthorized)
+			InitHTML(w, "errors", badpw)
+			log.Println(h.Error())
 		}
 
 	}
