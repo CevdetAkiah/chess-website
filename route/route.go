@@ -50,7 +50,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 
 // TODO: get login to work, for some reason it's going straight to error page with "users_email_key" error (dup email error)
 func Login(w http.ResponseWriter, r *http.Request) {
-	util.InitHTML(w, "login.html", nil)
+	util.InitHTML(w, "login", nil)
 }
 
 // Authenticate checks a user exists and creates a session for the user
@@ -79,8 +79,6 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 		data.SetCookie(w, r, session)
 
 	} else {
-		// TODO: change this to "incorrect password" on errors page
-		// http.Redirect(w, r, "/login", 302)
 		util.ErrHandler(nil, "Authenticate", "Password", time.Now(), w)
 	}
 

@@ -20,7 +20,7 @@ func main() {
 	http.HandleFunc("/", route.Index)
 	http.HandleFunc("/signup", route.Signup)
 	http.HandleFunc("/signupAccount", route.SignupAccount)
-	http.HandleFunc("/login", route.SignupAccount)
+	http.HandleFunc("/login", route.Login)
 	http.HandleFunc("/errors", route.ErrorPage)
 
 	server := &http.Server{
