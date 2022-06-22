@@ -5,10 +5,11 @@ import (
 	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
-	"log"
 	"net/http"
 	"time"
 )
+
+// TODO: lookup restful use of http methods and mux
 
 // Index initialises the index template
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +49,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	util.ErrHandler(err, "NewUser", "Database", time.Now(), w)
 }
 
-// TODO: get login to work, for some reason it's going straight to error page with "users_email_key" error (dup email error)
+// Login initialises the login template
 func Login(w http.ResponseWriter, r *http.Request) {
 	util.InitHTML(w, "login", nil)
 }
@@ -65,21 +66,8 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// If the user exists, get the user from the database
 	u, err := s.UserByEmail(email)
-	// Need to add function to errHandler to handle session errors
-	if err != nil {
-		log.Fatalln(err)
-	}
+	util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
 
 	// If the password is ok, create a session and set a session cookie
-	if u.Password == data.Encrypt(r.PostFormValue("password")) {
-		session, err := s.CreateSession(u)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		data.SetCookie(w, r, session)
-
-	} else {
-		util.ErrHandler(nil, "Authenticate", "Password", time.Now(), w)
-	}
-
+	data.AuthSession(u, s, w, r)
 }

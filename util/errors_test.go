@@ -4,9 +4,26 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 )
+
+var (
+	writer *httptest.ResponseRecorder
+	err    error
+)
+
+func TestMain(m *testing.M) {
+	setUp()
+	code := m.Run()
+	os.Exit(code)
+}
+
+func setUp() {
+	writer = httptest.NewRecorder()
+	err = errors.New("test handler error")
+}
 
 // TestIs test the error type comparability of the HandlerErr struct
 func TestIs(t *testing.T) {
@@ -23,14 +40,32 @@ func TestIs(t *testing.T) {
 	return
 }
 
-// TestErrorsHandler test the ErrorsHandler function
-func TestErrHandler(t *testing.T) {
-	err := errors.New("handler error")
-	fname := "test"
+// test the tmpError function
+func TestTmpError(t *testing.T) {
+	fname := "template error"
 	op := "Initialize template"
-	w := httptest.NewRecorder()
-	ErrHandler(err, fname, op, time.Now(), w)
-	if w.Code != http.StatusInternalServerError {
+	TmpError(err, fname, op, time.Now(), writer)
+	if writer.Code != http.StatusInternalServerError {
 		t.FailNow()
+	}
+}
+
+// test the DbError function
+func TestDbError(t *testing.T) {
+	fname := "UserByEmail"
+	op := "Database"
+	DbError(err, fname, op, time.Now(), writer)
+	if writer.Code != http.StatusBadRequest {
+		t.Errorf("\nExpected code %d \t got %d", http.StatusBadRequest, writer.Code)
+	}
+}
+
+// test the PwError function
+func TestPwError(t *testing.T) {
+	fname := "CheckPw"
+	op := "Password"
+	PwError(err, fname, op, time.Now(), writer)
+	if writer.Code != http.StatusUnauthorized {
+		t.Errorf("\nExpected code %d \t got %d", http.StatusUnauthorized, writer.Code)
 	}
 }

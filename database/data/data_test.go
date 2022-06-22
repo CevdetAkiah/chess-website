@@ -51,3 +51,6 @@ func TestSetCookie(t *testing.T) {
 	}
 
 }
+
+// TODO: write a test for AuthSession
+ 

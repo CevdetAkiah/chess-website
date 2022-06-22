@@ -4,8 +4,10 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go-projects/chess/service"
+	"go-projects/chess/util"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -32,4 +34,16 @@ func SetCookie(w http.ResponseWriter, r *http.Request, sess service.Session) {
 
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/", 302)
+}
+
+// AuthSession checks if a users password matches the password for the user in the db
+// then creates a session and sets the cookie in the browser
+func AuthSession(u service.User, s service.Service, w http.ResponseWriter, r *http.Request) {
+	if u.Password == Encrypt(r.PostFormValue("password")) {
+		session, err := s.CreateSession(u)
+		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
+		SetCookie(w, r, session)
+	} else {
+		util.ErrHandler(nil, "Authenticate", "Password", time.Now(), w)
+	}
 }

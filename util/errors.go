@@ -19,9 +19,10 @@ var (
 	badpw        = errors.New("Incorrect email")
 )
 
+// HandlerErr holds
 type HandlerErr struct {
-	Hname string
-	Op    string
+	Fname string // function name where error occurred
+	Op    string // operation where
 	When  time.Time
 	Err   error
 }
@@ -29,7 +30,7 @@ type HandlerErr struct {
 // returnHandlerErr returns a HandlerErr struct
 func returnHandlerErr(name string, operation string, t time.Time, e error) HandlerErr {
 	return HandlerErr{
-		Hname: name,
+		Fname: name,
 		Op:    operation,
 		When:  t,
 		Err:   e,
@@ -38,7 +39,7 @@ func returnHandlerErr(name string, operation string, t time.Time, e error) Handl
 
 // Error returns the error for HandlerErr as a string
 func (e HandlerErr) Error() string {
-	HandlerError = fmt.Errorf("\nError from function %s\n \tduring %s operation \n \t\tat time %v\n \t\t\twith base error %w\n", e.Hname, e.Op, e.When, e.Err)
+	HandlerError = fmt.Errorf("\nError from function %s\n \tduring %s operation \n \t\tat time %v\n \t\t\twith base error %w\n", e.Fname, e.Op, e.When, e.Err)
 	return fmt.Sprint(HandlerError)
 }
 
@@ -51,34 +52,56 @@ func (e HandlerErr) Is(other error) bool {
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	if e != nil {
-
 		switch op {
-		// TODO: make a function to refactor each case into
 		case "Initialize template":
-			var tErr template.ExecError
-			errors.As(e, &tErr)
-			h := returnHandlerErr(fname, op+tErr.Name, t, e)
-			w.WriteHeader(http.StatusInternalServerError)
-			InitHTML(w, "errors", h.Error())
-
+			TmpError(e, fname, op, t, w)
 		case "Database":
-			var sqlErr *pq.Error
-			h := returnHandlerErr(fname, op, t, e)
-			if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) { // email already exists
-				w.WriteHeader(http.StatusBadRequest)
-				InitHTML(w, "errors", dupEmail.Error())
-				log.Println(h.Error())
-			} else {
-				InitHTML(w, "errors", h.Error())
-			}
-
+			DbError(e, fname, op, t, w)
 		case "Password":
-			h := returnHandlerErr(fname, op, t, e)
-			w.WriteHeader(http.StatusUnauthorized)
-			InitHTML(w, "errors", badpw)
-			log.Println(h.Error())
+			PwError(e, fname, op, t, w)
 		}
-
 	}
 	return
+}
+
+// TmpError deals with template errors
+func TmpError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+	var tErr template.ExecError
+	errors.As(e, &tErr)
+	h := returnHandlerErr(fname, op+tErr.Name, t, e)
+	w.WriteHeader(http.StatusInternalServerError)
+	InitHTML(w, "errors", h.Error())
+}
+
+// DbError deals with database errors
+func DbError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+	var sqlErr *pq.Error
+	h := returnHandlerErr(fname, op, t, e)
+
+	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) { // email already exists
+		w.WriteHeader(http.StatusBadRequest)
+		InitHTML(w, "errors", dupEmail.Error())
+		log.Println(h.Error())
+
+	} else if fname == "UserByEmail" {
+		w.WriteHeader(http.StatusBadRequest)
+		InitHTML(w, "errors", h.Error())
+		log.Println(h.Error())
+
+	} else if fname == "CreateSession" {
+		w.WriteHeader(http.StatusFailedDependency)
+		InitHTML(w, "errors", h.Error())
+		log.Println(h.Error())
+
+	} else {
+		InitHTML(w, "errors", h.Error())
+	}
+}
+
+// PwError deals with password errors
+func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+	h := returnHandlerErr(fname, op, t, e)
+	w.WriteHeader(http.StatusUnauthorized)
+	InitHTML(w, "errors", badpw)
+	log.Println(h.Error())
 }
