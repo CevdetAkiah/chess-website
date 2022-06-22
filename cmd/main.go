@@ -17,16 +17,14 @@ func main() {
 	}
 	fmt.Println("connected to database website")
 
-	http.HandleFunc("/", route.Index)
-	http.HandleFunc("/signup", route.Signup)
-	http.HandleFunc("/signupAccount", route.SignupAccount)
-	http.HandleFunc("/login", route.Login)
-	http.HandleFunc("/errors", route.ErrorPage)
-
+	mux := http.NewServeMux()
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
-		Handler: nil,
+		Handler: mux,
 	}
+
+	// Pass the request to be handled in the route package
+	mux.HandleFunc("/", route.Request)
 
 	fmt.Println("Connected to port :8080 at", time.Now())
 	server.ListenAndServe()
