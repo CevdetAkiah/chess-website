@@ -2,26 +2,8 @@ package route
 
 import (
 	"net/http"
-	"net/http/httptest"
-	"os"
 	"testing"
 )
-
-var (
-	mux    *http.ServeMux
-	writer *httptest.ResponseRecorder
-)
-
-func TestMain(m *testing.M) {
-	setUp()
-	code := m.Run()
-	os.Exit(code)
-}
-
-func setUp() {
-	mux = http.NewServeMux()
-	writer = httptest.NewRecorder()
-}
 
 func TestIndex(t *testing.T) {
 	mux.HandleFunc("/", Index)
@@ -62,7 +44,3 @@ func TestLogin(t *testing.T) {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
 	}
 }
-
-// TODO: write a test for the SignupAccount handler. Will need to learn about dependency injection.
-
-// TODO: write a test for the Authenticate handler

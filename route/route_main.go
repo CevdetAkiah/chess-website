@@ -9,6 +9,7 @@ func Request(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	switch r.Method {
 
+	// GET retrieves resources
 	case "GET":
 		if path == "/" {
 			Index(w, r)
@@ -20,6 +21,7 @@ func Request(w http.ResponseWriter, r *http.Request) {
 			Login(w, r)
 		}
 
+		// POST supplies resources
 	case "POST":
 		if path == "/signupAccount" {
 			SignupAccount(w, r)

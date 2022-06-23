@@ -5,6 +5,7 @@ import (
 )
 
 type User struct {
+	// Db *sql.DB
 	Id        int
 	Uuid      string
 	Name      string
