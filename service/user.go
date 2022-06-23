@@ -1,11 +1,11 @@
 package service
 
 import (
+	"database/sql"
 	"time"
 )
 
 type User struct {
-	// Db *sql.DB
 	Id        int
 	Uuid      string
 	Name      string
@@ -15,43 +15,49 @@ type User struct {
 }
 
 type Database interface {
-	Create(u User) (err error)
-	Update(u User) (err error)
-	Delete(u User) (err error)
-	CreateSession(u User) (Session, error)
-	UserByEmail(email string) (u User, err error)
+	Create(user User) (err error)
+	Update(user User) (err error)
+	Delete(user User) (err error)
+	CreateSession(user User) (Session, error)
+	UserByEmail(email string) (user User, err error)
 }
 
-// Service uses interface Storage to CRUD new users
-type Service struct {
-	operator Database
+// Server uses interface Storage to CRUD new users
+type Server struct {
+	Db       *sql.DB
+	Operator Database
 }
 
 // NewService provides Storage Service where needed
-func NewService(d Database) Service {
-	return Service{
-		operator: d,
+func NewService(operator Database) Server {
+	return Server{
+		Operator: operator,
 	}
 }
 
 // NewUser stores a new user inside a database
-func (s Service) NewUser(u User) (err error) {
-	err = s.operator.Create(u)
+func (serve *Server) NewUser(user User) (err error) {
+	err = serve.Operator.Create(user)
+	return
+}
+
+func (serve *Server) Update(user User) (err error) {
+	err = serve.Operator.Update(user)
 	return
 }
 
 // DeleteUser deletes a user from a database
-func (s Service) DeleteUser(u User) (err error) {
-	err = s.operator.Delete(u)
+func (serve *Server) DeleteUser(u User) (err error) {
+	err = serve.Operator.Delete(u)
 	return
 }
 
-func (s Service) CreateSession(u User) (sess Session, err error) {
-	sess, err = s.operator.CreateSession(u)
+func (serve *Server) CreateSession(u User) (sess Session, err error) {
+	sess, err = serve.Operator.CreateSession(u)
 	return
 }
 
-func (s Service) UserByEmail(email string) (u User, err error) {
-	u, err = s.operator.UserByEmail(email)
+func (serve *Server) UserByEmail(email string) (u User, err error) {
+	u, err = serve.Operator.UserByEmail(email)
 	return
 }

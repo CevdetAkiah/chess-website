@@ -40,6 +40,8 @@ func TestIs(t *testing.T) {
 	return
 }
 
+// TODO: test ErrHandler
+
 // test the tmpError function
 func TestTmpError(t *testing.T) {
 	fname := "template error"

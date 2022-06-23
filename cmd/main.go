@@ -4,6 +4,7 @@ import (
 	"fmt"
 	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/route"
+	"go-projects/chess/service"
 	"log"
 	"net/http"
 	"time"
@@ -23,8 +24,16 @@ func main() {
 		Handler: mux,
 	}
 
+	// set up the database service.
+	// Can swap out with any database
+	po := postgres.Operator{}
+	serv := service.Server{
+		Db:       postgres.Db,
+		Operator: po,
+	}
+
 	// Pass the request to be handled in the route package
-	mux.HandleFunc("/", route.Request)
+	mux.HandleFunc("/", route.Request(&serv))
 
 	fmt.Println("Connected to port :8080 at", time.Now())
 	server.ListenAndServe()

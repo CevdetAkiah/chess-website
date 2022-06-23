@@ -6,7 +6,7 @@ import (
 )
 
 func TestIndex(t *testing.T) {
-	mux.HandleFunc("/", Index)
+	// mux.HandleFunc("/", Index)
 	request, _ := http.NewRequest("GET", "/", nil)
 	mux.ServeHTTP(writer, request)
 
@@ -16,7 +16,7 @@ func TestIndex(t *testing.T) {
 }
 
 func TestErrorPage(t *testing.T) {
-	mux.HandleFunc("/errors", ErrorPage)
+	// mux.HandleFunc("/errors", ErrorPage)
 	request, _ := http.NewRequest("GET", "/errors", nil)
 	mux.ServeHTTP(writer, request)
 
@@ -26,7 +26,7 @@ func TestErrorPage(t *testing.T) {
 }
 
 func TestSignup(t *testing.T) {
-	mux.HandleFunc("/signup", ErrorPage)
+	// mux.HandleFunc("/signup", Signup)
 	request, _ := http.NewRequest("GET", "/signup", nil)
 	mux.ServeHTTP(writer, request)
 
@@ -36,7 +36,7 @@ func TestSignup(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	mux.HandleFunc("/login", SignupAccount)
+	// mux.HandleFunc("/login", SignupAccount)
 	request, _ := http.NewRequest("GET", "/login", nil)
 	mux.ServeHTTP(writer, request)
 
