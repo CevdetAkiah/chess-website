@@ -33,19 +33,21 @@ func SetCookie(w http.ResponseWriter, r *http.Request, sess service.Session) {
 	}
 
 	http.SetCookie(w, &cookie)
-	fmt.Println("HERE")
 	http.Redirect(w, r, "/", 302)
 }
 
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
-func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.Server)  {
+func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.Server) {
 	if u.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
-		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
+		if err != nil {
+			util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
+		}
 		SetCookie(w, r, session)
-		fmt.Println("HERE AUTHSESSION")
 	} else {
 		util.ErrHandler(nil, "Authenticate", "Password", time.Now(), w)
 	}
 }
+
+// TODO: FIX password recognition not working if the password doesn't match

@@ -70,7 +70,7 @@ func (user Operator) CreateSession(u service.User) (sess service.Session, err er
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, u.CreatedAt).Scan(&sess.Id, sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
+	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, u.CreatedAt).Scan(&sess.Id, &sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("\nError creating a session for user: %s, %w ", u.Email, err)
 		return

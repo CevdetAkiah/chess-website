@@ -77,7 +77,6 @@ func TmpError(e error, fname string, op string, t time.Time, w http.ResponseWrit
 // DbError deals with database errors
 func DbError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	var sqlErr *pq.Error
-	fmt.Println("HERE DATABASE ERROR")
 	h := returnHandlerErr(fname, op, t, e)
 
 	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) { // email already exists
@@ -102,7 +101,7 @@ func DbError(e error, fname string, op string, t time.Time, w http.ResponseWrite
 
 // PwError deals with password errors
 func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
-	fmt.Println("HERE PWERROR")
+	fmt.Println("pwerr")
 	h := returnHandlerErr(fname, op, t, e)
 	w.WriteHeader(http.StatusUnauthorized)
 	InitHTML(w, "errors", badpw)
