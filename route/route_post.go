@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -26,6 +27,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.Server
 	// Insert user into database
 	err := serve.NewUser(u)
 	util.ErrHandler(err, "NewUser", "Database", time.Now(), w)
+	http.Redirect(w, r, "/", 302)
 }
 
 // Authenticate checks a user exists and creates a session for the user
@@ -33,9 +35,15 @@ func Authenticate(w http.ResponseWriter, r *http.Request, serve *service.Server)
 	// Parse the form and get the email
 	r.ParseForm()
 	email := r.PostFormValue("email")
+	fmt.Println(email)
 	// If the user exists, get the user from the database
-	u, err := serve.UserByEmail(email)
+	user, err := serve.UserByEmail(email)
 	util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
+	fmt.Println("HERE authenticate")
+	fmt.Println("User:", user.CreatedAt, user.Email)
 	// If the password is ok, create a session and set a session cookie
-	data.AuthSession(u, serve, w, r)
+	data.AuthSession(w, r, user, serve)
 }
+
+// TODO: write uo deleting session from the database with a LOGOUT function.
+// TODO: use context to timeout sessions

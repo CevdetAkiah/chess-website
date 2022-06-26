@@ -62,17 +62,17 @@ func (user Operator) Delete(u service.User) (err error) {
 }
 
 func (user Operator) CreateSession(u service.User) (sess service.Session, err error) {
-	statement := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, email, user_id, created_at"
+	statement := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, user_id, created_at"
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
-		err = fmt.Errorf("\nError preparing statement to create a session for user: %s ", u.Name)
+		err = fmt.Errorf("\nError preparing statement to create a session for user: %s\n with error: %w ", u.Email, err)
 		return
 	}
 	defer stmt.Close()
 
 	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, u.CreatedAt).Scan(&sess.Id, sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
 	if err != nil {
-		err = fmt.Errorf("\nError creating a session for user: %s ", u.Name)
+		err = fmt.Errorf("\nError creating a session for user: %s, %w ", u.Email, err)
 		return
 	}
 	return
