@@ -51,7 +51,6 @@ func (e HandlerErr) Is(other error) bool {
 
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
-	fmt.Println("HERE ERROR")
 	if e != nil {
 		switch op {
 		case "Initialize template":
@@ -101,7 +100,6 @@ func DbError(e error, fname string, op string, t time.Time, w http.ResponseWrite
 
 // PwError deals with password errors
 func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
-	fmt.Println("pwerr")
 	h := returnHandlerErr(fname, op, t, e)
 	w.WriteHeader(http.StatusUnauthorized)
 	InitHTML(w, "errors", badpw)

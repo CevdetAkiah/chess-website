@@ -41,13 +41,10 @@ func SetCookie(w http.ResponseWriter, r *http.Request, sess service.Session) {
 func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.DbService) {
 	if u.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
-		if err != nil {
-			util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
-		}
+		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
 		SetCookie(w, r, session)
 	} else {
-		util.ErrHandler(nil, "Authenticate", "Password", time.Now(), w)
+		err := fmt.Errorf("Bad password")
+		util.ErrHandler(err, "Authenticate", "Password", time.Now(), w)
 	}
 }
-
-// TODO: FIX password recognition not working if the password doesn't match
