@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.Server) {
+func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
 	// Set up database service
 	r.ParseForm()
 	// Get form values
@@ -30,18 +30,13 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.Server
 }
 
 // Authenticate checks a user exists and creates a session for the user
-func Authenticate(w http.ResponseWriter, r *http.Request, serve *service.Server) {
+func Authenticate(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
 	// Parse the form and get the email
 	r.ParseForm()
 	email := r.PostFormValue("email")
 	// If the user exists, get the user from the database
 	user, err := serve.UserByEmail(email)
-	if err != nil {
-		util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
-	}
+	util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
 	// If the password is ok, create a session and set a session cookie
 	data.AuthSession(w, r, user, serve)
 }
-
-// TODO: write uo deleting session from the database with a LOGOUT function.
-// TODO: use context to timeout sessions

@@ -16,7 +16,9 @@ func InitHTML(w http.ResponseWriter, filename string, data ...interface{}) {
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, data)
 	// Handle the error if any
-	ErrHandler(err, "IndexHTML", "Initialize template", time.Now(), w)
+	if err != nil {
+		ErrHandler(err, "IndexHTML", "Initialize template", time.Now(), w)
+	}
 	// Write the buffer to the writer
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	buf.WriteTo(w)

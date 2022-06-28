@@ -38,7 +38,7 @@ func SetCookie(w http.ResponseWriter, r *http.Request, sess service.Session) {
 
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
-func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.Server) {
+func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.DbService) {
 	if u.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
 		if err != nil {

@@ -26,10 +26,11 @@ func main() {
 
 	// set up the database service.
 	// Can swap out with any database
-	po := postgres.Operator{}
-	serv := service.Server{
-		Db:       postgres.Db,
-		Operator: po,
+
+	serv := service.DbService{
+		Db:             postgres.Db,
+		UserService:    postgres.UserAccess{},
+		SessionService: postgres.SessionAccess{},
 	}
 
 	// Pass the request to be handled in the route package
