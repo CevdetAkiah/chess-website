@@ -25,13 +25,13 @@ type User struct {
 // DbService uses interface Storage to CRUD new users
 type DbService struct {
 	Db             *sql.DB
-	UserService    DbAccess
+	UserService    UserAccess
 	SessionService SessAccess
 }
 
 // DB interaction user functions. Abstracts db access
 // TODO: think about splitting this interface into smaller ones if possible.
-type DbAccess interface {
+type UserAccess interface {
 	Create(user User) (err error)
 	Update(user User) (err error)
 	Delete(user User) (err error)

@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -9,6 +10,8 @@ import (
 
 // Index initialises the index template
 func Index(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
+
+	fmt.Println()
 	util.InitHTML(w, "index", nil)
 }
 

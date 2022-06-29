@@ -1,24 +1,25 @@
 package route
 
 import (
-	"net/http"
 	"testing"
 )
 
+// TODO: write a dummy serv struct
 func TestIndex(t *testing.T) {
-	// mux.HandleFunc("/", Index)
-	request, _ := http.NewRequest("GET", "/", nil)
-	mux.ServeHTTP(writer, request)
+	mux.HandleFunc("/", Request(&testServ))
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
 	}
+
+	// if strings.Contains(body, "/signup") == false {
+	// 	t.Errorf("Body does not contain login")
+	// }
 }
 
 func TestErrorPage(t *testing.T) {
 	// mux.HandleFunc("/errors", ErrorPage)
-	request, _ := http.NewRequest("GET", "/errors", nil)
-	mux.ServeHTTP(writer, request)
+	mux.HandleFunc("/errors", Request(&testServ))
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
@@ -26,19 +27,16 @@ func TestErrorPage(t *testing.T) {
 }
 
 func TestSignup(t *testing.T) {
-	// mux.HandleFunc("/signup", Signup)
-	request, _ := http.NewRequest("GET", "/signup", nil)
-	mux.ServeHTTP(writer, request)
+	mux.HandleFunc("/signup", Request(&testServ))
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
 	}
+
 }
 
 func TestLogin(t *testing.T) {
-	// mux.HandleFunc("/login", SignupAccount)
-	request, _ := http.NewRequest("GET", "/login", nil)
-	mux.ServeHTTP(writer, request)
+	mux.HandleFunc("/login", Request(&testServ))
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)

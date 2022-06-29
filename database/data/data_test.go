@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"go-projects/chess/service"
 	"net/http"
 	"net/http/httptest"
@@ -55,19 +56,21 @@ func TestAssignCookie(t *testing.T) {
 //TODO: fix TestDeleteCookie
 func TestDeleteCookie(t *testing.T) {
 	writer := httptest.NewRecorder()
-	request, _ := http.NewRequest("GET", "/test", nil)
+	request, _ := http.NewRequest("GET", "/logout", nil)
 
 	testCookie := &http.Cookie{
 		Name:     "session",
 		Value:    "test",
-		HttpOnly: true,  
+		HttpOnly: true,
 	}
 	t.Log("HERE")
 
 	http.SetCookie(writer, testCookie)
 	t.Log("HERE after set cookie")
 
-	DeleteCookie(writer, request)
+	session := DeleteCookie(writer, request)
+	fmt.Println(session)
+
 	t.Log("HERE after set delete")
 
 	cookie, err := request.Cookie("session")
