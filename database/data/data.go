@@ -36,6 +36,7 @@ func AssignCookie(w http.ResponseWriter, r *http.Request, sess service.Session) 
 	http.Redirect(w, r, "/", 302)
 }
 
+// DeleteCookie removes the cookie from the browser and returns session
 func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Session) {
 	// get the cookie from the request
 	cookie, err := r.Cookie("session")
