@@ -26,30 +26,26 @@ func CreateUUID() string {
 
 // AssignCookie puts a cookie into the response writer using the session uuid as the value
 func AssignCookie(w http.ResponseWriter, r *http.Request, sess service.Session) {
-	cookie := http.Cookie{
+	cookie := &http.Cookie{
 		Name:     "session",
 		Value:    sess.Uuid,
 		HttpOnly: true,
 	}
 
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/", 302)
 }
 
-func DeleteSession(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
+func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Session) {
+	// get the cookie from the request
 	cookie, err := r.Cookie("session")
-	util.ErrHandler(err, "DeleteSession", "Session", time.Now(), w)
-
+	util.ErrHandler(err, "DeleteCookie", "Session", time.Now(), w)
 	// remove cookie from the browser
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)
-	// remove the session from the database
-	session := service.Session{Uuid: cookie.Value}
-	if serve != nil {
-		serve.DeleteByUUID(session)
-	}
-	http.Redirect(w, r, "/", 302)
-
+	// return the session to be removed from the database
+	session = service.Session{Uuid: cookie.Value}
+	return
 }
 
 // AuthSession checks if a users password matches the password for the user in the db

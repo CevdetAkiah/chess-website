@@ -28,7 +28,11 @@ func Login(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
-	data.DeleteSession(w, r, serve)
+	// send the cookie to be removed from the browser and return the session
+	session := data.DeleteCookie(w, r)
+	// remove the session from the database
+	serve.DeleteByUUID(session)
+	http.Redirect(w, r, "/", 302)
 }
 
 // TODO: use context to timeout sessions

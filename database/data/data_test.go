@@ -52,23 +52,29 @@ func TestAssignCookie(t *testing.T) {
 
 }
 
-//TODO: fix TestDeleteSession
-func TestDeleteSession(t *testing.T) {
+//TODO: fix TestDeleteCookie
+func TestDeleteCookie(t *testing.T) {
 	writer := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "/test", nil)
 
-	testCookie := http.Cookie{
+	testCookie := &http.Cookie{
 		Name:     "session",
 		Value:    "test",
-		HttpOnly: true,
+		HttpOnly: true,  
 	}
-	http.SetCookie(writer, &testCookie)
-	DeleteSession(writer, request, nil)
+	t.Log("HERE")
+
+	http.SetCookie(writer, testCookie)
+	t.Log("HERE after set cookie")
+
+	DeleteCookie(writer, request)
+	t.Log("HERE after set delete")
 
 	cookie, err := request.Cookie("session")
 	if err != http.ErrNoCookie {
-		t.Errorf("Expected %d, got %s", http.ErrNoCookie, cookie.String())
+		t.Errorf("Got %s, wanted %d", cookie.Value, http.ErrNoCookie)
 	}
+
 }
 
 // TODO: write a test for AuthSession
