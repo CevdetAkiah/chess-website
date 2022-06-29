@@ -30,11 +30,11 @@ func TestCreateUUID(t *testing.T) {
 	}
 }
 
-func TestSetCookie(t *testing.T) {
+func TestAssignCookie(t *testing.T) {
 	writer := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "/test", nil)
 	testSess := service.Session{Uuid: "test session"}
-	SetCookie(writer, request, testSess)
+	AssignCookie(writer, request, testSess)
 
 	testCookie := http.Cookie{
 		Name:     "session",
@@ -50,6 +50,25 @@ func TestSetCookie(t *testing.T) {
 		t.Errorf("Response code is %v", writer.Code)
 	}
 
+}
+
+//TODO: fix TestDeleteSession
+func TestDeleteSession(t *testing.T) {
+	writer := httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "/test", nil)
+
+	testCookie := http.Cookie{
+		Name:     "session",
+		Value:    "test",
+		HttpOnly: true,
+	}
+	http.SetCookie(writer, &testCookie)
+	DeleteSession(writer, request, nil)
+
+	cookie, err := request.Cookie("session")
+	if err != http.ErrNoCookie {
+		t.Errorf("Expected %d, got %s", http.ErrNoCookie, cookie.String())
+	}
 }
 
 // TODO: write a test for AuthSession

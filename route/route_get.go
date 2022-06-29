@@ -1,9 +1,9 @@
 package route
 
 import (
+	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
-	"log"
 	"net/http"
 )
 
@@ -28,16 +28,7 @@ func Login(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
-	cookie, err := r.Cookie("session")
-
-	//TODO: add to errHandler for this scenario
-	if err != nil {
-		log.Fatalln(http.ErrNoCookie)
-	}
-	session := service.Session{Uuid: cookie.Value}
-	serve.DeleteByUUID(session)
-
-	http.Redirect(w, r, "/signup", 302)
+	data.DeleteSession(w, r, serve)
 }
 
 // TODO: use context to timeout sessions

@@ -53,10 +53,10 @@ func TestTmpError(t *testing.T) {
 }
 
 // test the DbError function
-func TestDbError(t *testing.T) {
+func TestUserError(t *testing.T) {
 	fname := "UserByEmail"
 	op := "Database"
-	DbError(err, fname, op, time.Now(), writer)
+	UserError(err, fname, op, time.Now(), writer)
 	if writer.Code != http.StatusBadRequest {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusBadRequest, writer.Code)
 	}

@@ -56,9 +56,11 @@ func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWr
 		case "Initialize template":
 			TmpError(e, fname, op, t, w)
 		case "Database":
-			DbError(e, fname, op, t, w)
+			UserError(e, fname, op, t, w)
 		case "Password":
 			PwError(e, fname, op, t, w)
+		case "Session":
+			SessError(e, fname, op, t, w)
 		}
 	}
 	return
@@ -73,28 +75,41 @@ func TmpError(e error, fname string, op string, t time.Time, w http.ResponseWrit
 	InitHTML(w, "errors", h.Error())
 }
 
-// DbError deals with database errors
-func DbError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+// UserError deals with user database errors
+func UserError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	var sqlErr *pq.Error
 	h := returnHandlerErr(fname, op, t, e)
 
-	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) { // email already exists
+	// email already exists in database so can't sign up with it
+	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) {
 		w.WriteHeader(http.StatusBadRequest)
 		InitHTML(w, "errors", dupEmail.Error())
 		log.Println(h.Error())
 
+		// Can't find user in database wrong email
 	} else if fname == "UserByEmail" {
 		w.WriteHeader(http.StatusBadRequest)
 		InitHTML(w, "errors", h.Error())
 		log.Println(h.Error())
 
-	} else if fname == "CreateSession" {
+	} else {
+		InitHTML(w, "errors", h.Error())
+		log.Println(h.Error())
+	}
+}
+
+func SessError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+	h := returnHandlerErr(fname, op, t, e)
+
+	if fname == "CreateSession" {
 		w.WriteHeader(http.StatusFailedDependency)
 		InitHTML(w, "errors", h.Error())
 		log.Println(h.Error())
 
-	} else {
+	} else if fname == "Logout" {
+		w.WriteHeader(http.StatusBadRequest)
 		InitHTML(w, "errors", h.Error())
+		log.Println(h.Error())
 	}
 }
 
