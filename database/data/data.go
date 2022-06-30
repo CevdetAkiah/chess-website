@@ -51,7 +51,7 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
-func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve *service.DbService) {
+func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve service.DbService) {
 	if u.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
 		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)

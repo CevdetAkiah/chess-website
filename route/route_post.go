@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
+func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbService) {
 	// Set up database service
 	r.ParseForm()
 	// Get form values
@@ -30,7 +30,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve *service.DbServ
 }
 
 // Authenticate checks a user exists and creates a session for the user
-func Authenticate(w http.ResponseWriter, r *http.Request, serve *service.DbService) {
+func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbService) {
 	// Parse the form and get the email
 	r.ParseForm()
 	email := r.PostFormValue("email")

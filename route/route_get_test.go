@@ -9,7 +9,7 @@ import (
 // TODO: write a dummy serv struct
 func TestIndex(t *testing.T) {
 	request := httptest.NewRequest("GET", "/", nil)
-	Index(writer, request, nil)
+	Index(writer, request, testServ)
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
@@ -23,7 +23,7 @@ func TestIndex(t *testing.T) {
 func TestErrorPage(t *testing.T) {
 	// mux.HandleFunc("/errors", ErrorPage)
 	request := httptest.NewRequest("GET", "/errors", nil)
-	ErrorPage(writer, request, nil)
+	ErrorPage(writer, request, testServ)
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
@@ -37,7 +37,7 @@ func TestErrorPage(t *testing.T) {
 
 func TestSignup(t *testing.T) {
 	request := httptest.NewRequest("GET", "/signup", nil)
-	Signup(writer, request, nil)
+	Signup(writer, request, testServ)
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)
@@ -52,7 +52,7 @@ func TestSignup(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	request := httptest.NewRequest("GET", "/login", nil)
-	Login(writer, request, nil)
+	Login(writer, request, testServ)
 
 	if writer.Code != 200 {
 		t.Errorf("Response code is %d, expected %d", writer.Code, 200)

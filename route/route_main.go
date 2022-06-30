@@ -6,7 +6,7 @@ import (
 )
 
 // Request multiplexes http requests
-func Request(serv *service.DbService) http.HandlerFunc {
+func Request(serv service.DbService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		switch r.Method {
