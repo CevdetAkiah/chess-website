@@ -9,5 +9,5 @@ var (
 	testServ        service.DbService
 	testUserService service.UserAccess
 	testSessService service.SessAccess
-	testDb              *sql.DB
+	testDb          *sql.DB
 )

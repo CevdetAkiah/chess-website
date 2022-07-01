@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// Pass the request to be handled in the route package
-	mux.HandleFunc("/", route.Request(&serv))
+	mux.HandleFunc("/", route.Request(serv))
 
 	fmt.Println("Connected to port :8080 at", time.Now())
 	server.ListenAndServe()

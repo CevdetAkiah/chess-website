@@ -1,6 +1,7 @@
 package route
 
 import (
+	"database/sql"
 	"go-projects/chess/service"
 	"net/http"
 	"net/http/httptest"
@@ -22,6 +23,8 @@ func TestMain(m *testing.M) {
 func setUp() {
 	mux = http.NewServeMux()
 	writer = httptest.NewRecorder()
+	testDb, _ = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
+
 	testServ = service.DbService{
 		Db:             testDb,
 		UserService:    testUserService,
