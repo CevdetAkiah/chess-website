@@ -24,7 +24,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbServi
 		Password: ePw,
 	}
 	// Insert user into database
-	err := serve.NewUser(u)
+	err := serve.NewUser(&u)
 	util.ErrHandler(err, "NewUser", "Database", time.Now(), w)
 	http.Redirect(w, r, "/", 302)
 }

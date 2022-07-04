@@ -11,3 +11,5 @@ func (serve DbService) CreateSession(u User) (sess Session, err error) {
 	sess, err = serve.SessionService.CreateSession(u)
 	return
 }
+
+// TODO: write tests for DeleteByUUID and CreateSession

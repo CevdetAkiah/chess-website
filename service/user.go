@@ -1,12 +1,12 @@
 package service
 
 // NewUser stores a new user inside a database
-func (serve DbService) NewUser(user User) (err error) {
+func (serve DbService) NewUser(user *User) (err error) {
 	err = serve.UserService.Create(user)
 	return
 }
 
-func (serve DbService) Update(user User) (err error) {
+func (serve DbService) Update(user *User) (err error) {
 	err = serve.UserService.Update(user)
 	return
 }

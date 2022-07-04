@@ -25,7 +25,7 @@ func init() {
 }
 
 // Create inserts the user into the postgres database website table users
-func (user UserAccess) Create(u service.User) (err error) {
+func (user UserAccess) Create(u *service.User) (err error) {
 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
 	stmnt, err := Db.Prepare(statement)
 	if err != nil {
@@ -43,7 +43,7 @@ func (user UserAccess) Create(u service.User) (err error) {
 }
 
 // Update alters a users email in the postgres database
-func (user UserAccess) Update(u service.User) (err error) {
+func (user UserAccess) Update(u *service.User) (err error) {
 	_, err = Db.Exec("update users set email = $1", u.Email)
 	if err != nil {
 		err = fmt.Errorf("\nError updating user: %w", err)

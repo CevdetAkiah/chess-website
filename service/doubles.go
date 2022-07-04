@@ -24,7 +24,7 @@ func init() {
 		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
-	query, err := ioutil.ReadFile("../database/psql-setup/setup")
+	query, err := ioutil.ReadFile("../database/testpsql-setup/setup")
 	// query,
 	if err != nil {
 		panic(err)
@@ -35,7 +35,7 @@ func init() {
 }
 
 // Create inserts the user into the postgres database website table users
-func (user testUserAccess) Create(u User) (err error) {
+func (user testUserAccess) Create(u *User) (err error) {
 	statement := "insert into testusers (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
 	stmnt, err := testDb.Prepare(statement)
 	if err != nil {
@@ -53,7 +53,7 @@ func (user testUserAccess) Create(u User) (err error) {
 }
 
 // Update alters a users email in the postgres database
-func (user testUserAccess) Update(u User) (err error) {
+func (user testUserAccess) Update(u *User) (err error) {
 	_, err = testDb.Exec("update testusers set email = $1", u.Email)
 	if err != nil {
 		err = fmt.Errorf("\nError updating user: %w", err)

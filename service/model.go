@@ -32,8 +32,8 @@ type DbService struct {
 // DB interaction user functions. Abstracts db access
 // TODO: think about splitting this interface into smaller ones if possible.
 type UserAccess interface {
-	Create(user User) (err error)
-	Update(user User) (err error)
+	Create(user *User) (err error)
+	Update(user *User) (err error)
 	Delete(user User) (err error)
 	UserByEmail(email string) (user User, err error)
 }
