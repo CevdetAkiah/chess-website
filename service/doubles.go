@@ -3,8 +3,6 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
-	"log"
 
 	_ "github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
@@ -17,22 +15,6 @@ var (
 	testDb *sql.DB
 	err    error
 )
-
-func init() {
-	testDb, err = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
-	if err != nil {
-		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
-		log.Fatalln(err)
-	}
-	query, err := ioutil.ReadFile("../database/testpsql-setup/setup")
-	// query,
-	if err != nil {
-		panic(err)
-	}
-	if _, err := testDb.Exec(string(query)); err != nil {
-		panic(err)
-	}
-}
 
 // Create inserts the user into the postgres database website table users
 func (user testUserAccess) Create(u *User) (err error) {

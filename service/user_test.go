@@ -1,6 +1,10 @@
 package service
 
 import (
+	"database/sql"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,6 +20,19 @@ var (
 
 func TestMain(m *testing.M) {
 	setUp()
+	testDb, err = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
+	if err != nil {
+		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
+		log.Fatalln(err)
+	}
+	query, err := ioutil.ReadFile("../database/testpsql-setup/setup")
+	// query,
+	if err != nil {
+		panic(err)
+	}
+	if _, err := testDb.Exec(string(query)); err != nil {
+		panic(err)
+	}
 	code := m.Run()
 	os.Exit(code)
 }
@@ -34,11 +51,7 @@ func setUp() {
 		SessionService: testSessionAccess{},
 	}
 
-	// delete all from testusers table
-	// delete all from testsessions table
 }
-
-// TODO: learn how to test these functions
 
 func TestNewUser(t *testing.T) {
 	user := User{
@@ -51,7 +64,6 @@ func TestNewUser(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// TODO: need to fix Update service as I don't think it's updating a specific user - need to investigate.
 func TestUpdate(t *testing.T) {
 	user := User{
 		Name:     "tom",

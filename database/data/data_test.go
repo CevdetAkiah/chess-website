@@ -8,6 +8,11 @@ import (
 	"testing"
 )
 
+var (
+	mux    *http.ServeMux
+	writer *httptest.ResponseRecorder
+)
+
 func TestEncrypt(t *testing.T) {
 	testText := "test"
 
@@ -35,6 +40,7 @@ func TestAssignCookie(t *testing.T) {
 	writer := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "/test", nil)
 	testSess := service.Session{Uuid: "test session"}
+
 	AssignCookie(writer, request, testSess)
 
 	testCookie := http.Cookie{
