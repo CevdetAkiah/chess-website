@@ -58,14 +58,14 @@ func TestUpdate(t *testing.T) {
 		Email:    "tom@email.com",
 		Password: "12345",
 	}
+
 	err := mockServ.NewUser(&user)
 
-	upDateUser := User{
-		Name:     "tom",
-		Email:    "tom@email.com",
-		Password: "12345",
-	}
-	err = mockServ.Update(&upDateUser)
+	user.Email = "tom@newemail.com"
+
+	err = mockServ.Update(&user)
+	require.NoError(t, err)
+	user, err = mockServ.UserByEmail("tom@newemail.com")
 	require.NoError(t, err)
 }
 

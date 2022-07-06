@@ -54,7 +54,8 @@ func (user testUserAccess) Create(u *User) (err error) {
 
 // Update alters a users email in the postgres database
 func (user testUserAccess) Update(u *User) (err error) {
-	_, err = testDb.Exec("update testusers set email = $1", u.Email)
+	_, err = testDb.Exec("update testusers set email = $1 where id = $2", u.Email, u.Id)
+
 	if err != nil {
 		err = fmt.Errorf("\nError updating user: %w", err)
 		return
