@@ -44,6 +44,7 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 	// remove cookie from the browser
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)
+
 	// return the session to be removed from the database
 	session = service.Session{Uuid: cookie.Value}
 	return
@@ -51,7 +52,7 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
-func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve service.DbService) {
+func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve service.SessAccess) (err error) {
 	if u.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
 		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
@@ -60,4 +61,5 @@ func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve s
 		err := fmt.Errorf("Bad password")
 		util.ErrHandler(err, "Authenticate", "Password", time.Now(), w)
 	}
+	return
 }

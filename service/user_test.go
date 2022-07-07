@@ -20,6 +20,29 @@ var (
 
 func TestMain(m *testing.M) {
 	setUp()
+
+	code := m.Run()
+	os.Exit(code)
+}
+
+var (
+	mockServ DbService
+	user     = User{
+		Name:     "tom",
+		Email:    "tom@email.com",
+		Password: "12345",
+	}
+)
+
+func setUp() {
+	mux = http.NewServeMux()
+	writer = httptest.NewRecorder()
+
+	mockServ = DbService{
+		Db:             testDb,
+		UserService:    testUserAccess{},
+		SessionService: testSessionAccess{},
+	}
 	testDb, err = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
 	if err != nil {
 		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
@@ -33,44 +56,15 @@ func TestMain(m *testing.M) {
 	if _, err := testDb.Exec(string(query)); err != nil {
 		panic(err)
 	}
-	code := m.Run()
-	os.Exit(code)
-}
-
-var (
-	mockServ DbService
-)
-
-func setUp() {
-	mux = http.NewServeMux()
-	writer = httptest.NewRecorder()
-
-	mockServ = DbService{
-		Db:             testDb,
-		UserService:    testUserAccess{},
-		SessionService: testSessionAccess{},
-	}
 
 }
 
 func TestNewUser(t *testing.T) {
-	user := User{
-		Name:     "tom",
-		Email:    "tom@email.com",
-		Password: "12345",
-	}
-
 	err := mockServ.NewUser(&user)
 	require.NoError(t, err)
 }
 
 func TestUpdate(t *testing.T) {
-	user := User{
-		Name:     "tom",
-		Email:    "tom@email.com",
-		Password: "12345",
-	}
-
 	err := mockServ.NewUser(&user)
 
 	user.Email = "tom@newemail.com"
@@ -82,24 +76,14 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestUserByEmail(t *testing.T) {
-	user := User{
-		Name:     "tom",
-		Email:    "tom@newemail.com",
-		Password: "12345",
-	}
 	err := mockServ.NewUser(&user)
 
-	u, err := mockServ.UserByEmail("tom@newemail.com")
+	u, err := mockServ.UserByEmail("tom@email.com")
 	require.NoError(t, err)
 	require.Equal(t, user.Password, u.Password)
 }
 
 func TestDeleteUser(t *testing.T) {
-	user := User{
-		Name:     "tom",
-		Email:    "tom@newemail.com",
-		Password: "12345",
-	}
 
 	err := mockServ.NewUser(&user)
 
@@ -109,7 +93,7 @@ func TestDeleteUser(t *testing.T) {
 		t.Error("Error: ", err)
 	}
 
-	u, err := mockServ.UserByEmail("tom@newemail.com")
+	u, err := mockServ.UserByEmail("tom@email.com")
 
 	if err == nil {
 		t.Errorf("User: %s hasn't been deleted", u.Name)
