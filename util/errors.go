@@ -16,7 +16,7 @@ import (
 var (
 	HandlerError error
 	dupEmail     = errors.New("Email already registered")
-	badpw        = errors.New("Incorrect email")
+	badpw        = errors.New("Incorrect password")
 )
 
 // HandlerErr holds

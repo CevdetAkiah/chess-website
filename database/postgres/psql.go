@@ -124,3 +124,13 @@ func GetAllUsers() (us []service.User, err error) {
 	rows.Close()
 	return
 }
+
+// SessionById grabs session from testsessions using given id
+func SessionById(id int) (sess service.Session, err error) {
+	err = Db.QueryRow("SELECT uuid, email FROM testsessions WHERE id = $1", id).Scan(&sess.Uuid, &sess.Email)
+	if err != nil {
+		err = fmt.Errorf("\nError getting session by id: %w", err)
+		return
+	}
+	return
+}
