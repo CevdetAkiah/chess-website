@@ -62,6 +62,7 @@ func (user UserAccess) Delete(u service.User) (err error) {
 	return
 }
 
+// CreateSession creates a session in the postgres database
 func (user SessionAccess) CreateSession(u service.User) (sess service.Session, err error) {
 	statement := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, user_id, created_at"
 	stmt, err := Db.Prepare(statement)
@@ -79,7 +80,7 @@ func (user SessionAccess) CreateSession(u service.User) (sess service.Session, e
 	return
 }
 
-// Delete session from database
+// Delete session from postgres database
 func (session SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	statement := "delete from sessions where uuid = $1"
 	stmt, err := Db.Prepare(statement)

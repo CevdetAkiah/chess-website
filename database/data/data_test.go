@@ -151,13 +151,16 @@ func TestAuthSession(t *testing.T) {
 	}
 	user.Password = Encrypt(user.Password)
 	err := mockServ.NewUser(&user)
+
 	// get the user back from testdb
 	user, err = mockServ.UserByEmail("test@email.com")
 
 	// if AuthSession can match form pw to testdb pw then the user is given a session and AuthSession is behaving
 	err = AuthSession(writer, request, user, mockServ)
-	sess, err := SessionById(user.Id)
-
 	require.NoError(t, err)
+
+	sess, err := SessionById(user.Id)
+	require.NoError(t, err)
+
 	require.Equal(t, user.Uuid, sess.Uuid)
 }

@@ -22,7 +22,7 @@ type User struct {
 	CreatedAt time.Time
 }
 
-// DbService uses interface Storage to CRUD new users
+// DbService uses interface UserAccess to CRUD new users
 type DbService struct {
 	Db             *sql.DB
 	UserService    UserAccess

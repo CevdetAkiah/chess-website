@@ -8,8 +8,9 @@ import (
 	"time"
 )
 
+// SignupAccount is posted from the signup.html template
+// SignupAccount creates a user using posted form values and inserts the user into the database
 func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	// Set up database service
 	r.ParseForm()
 	// Get form values
 	name := r.PostFormValue("name")
@@ -29,6 +30,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbServi
 	http.Redirect(w, r, "/", 302)
 }
 
+// Authenticate is activated from the login page
 // Authenticate checks a user exists and creates a session for the user
 func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbService) {
 	// Parse the form and get the email
@@ -37,6 +39,8 @@ func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbServic
 	// If the user exists, get the user from the database
 	user, err := serve.UserByEmail(email)
 	util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
+
 	// If the password is ok, create a session and set a session cookie
 	data.AuthSession(w, r, user, serve)
+	return
 }
