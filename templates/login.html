@@ -10,10 +10,11 @@
 
 <body>
   <form method="post" action="/authenticate">
+    <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
     <input type="text" name="email" placeholder="Email">
     <input type="text" name="password" placeholder="Password">
     <button type="submit">Login</button>
   </form>
 </body>
 
-</html> 
+</html>

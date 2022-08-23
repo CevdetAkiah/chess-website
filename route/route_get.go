@@ -9,22 +9,22 @@ import (
 
 // Index initialises the index template
 func Index(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, "index", nil)
+	util.InitHTML(w, r, "index", serve)
 }
 
 // ErrorPage initialises the error template
 func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, "errors", nil)
+	util.InitHTML(w, r, "errors", serve)
 }
 
 // Signup initialised the signup template and deals with user registration
 func Signup(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, "signup", nil)
+	util.InitHTML(w, r, "signup", serve)
 }
 
 // Login initialises the login template
 func Login(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, "login", nil)
+	util.InitHTML(w, r, "login", serve)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, serve service.DbService) {

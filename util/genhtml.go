@@ -6,18 +6,30 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+
+	"github.com/justinas/nosurf"
 )
 
-func InitHTML(w http.ResponseWriter, filename string, data ...interface{}) {
+type TemplateData struct {
+	CSRFToken string
+	data      interface{}
+}
+
+func InitHTML(w http.ResponseWriter, r *http.Request, filename string, data ...interface{}) {
 	var buf bytes.Buffer
+
+	TplData := TemplateData{
+		CSRFToken: nosurf.Token(r), // CSRFToken nosurf checks against
+		data:      data,
+	}
 
 	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.html", filename)))
 
 	// Write the template to the buffer first
-	err := tpl.Execute(&buf, data)
+	err := tpl.Execute(&buf, TplData)
 	// Handle the error if any
 	if err != nil {
-		ErrHandler(err, "IndexHTML", "Initialize template", time.Now(), w)
+		ErrHandler(err, "InitHTML", "Initialize template ", time.Now(), w)
 	}
 	// Write the buffer to the writer
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")

@@ -44,8 +44,8 @@ func main() {
 	// Recoverer recovers from panics and provides a stack trace
 	mux.Use((middleware.Recoverer))
 
-	// TODO: figure out how to use the csrftoken provided by nosurf. Will get "bad request" error until I can write in a handshake.
-	mux.Use(route.NoSurf)
+	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
+	mux.Use(NoSurf)
 
 	// Pass the request to be handled in the route package
 

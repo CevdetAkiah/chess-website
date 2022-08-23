@@ -53,7 +53,7 @@ func (e HandlerErr) Is(other error) bool {
 func ErrHandler(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	if e != nil {
 		switch op {
-		case "Initialize template":
+		case "Initialize template ":
 			TmpError(e, fname, op, t, w)
 		case "Database":
 			UserError(e, fname, op, t, w)
@@ -72,7 +72,7 @@ func TmpError(e error, fname string, op string, t time.Time, w http.ResponseWrit
 	errors.As(e, &tErr)
 	h := returnHandlerErr(fname, op+tErr.Name, t, e)
 	w.WriteHeader(http.StatusInternalServerError)
-	InitHTML(w, "errors", h.Error())
+	InitHTML(w, nil, "errors", h.Error())
 }
 
 // UserError deals with user database errors
@@ -83,17 +83,17 @@ func UserError(e error, fname string, op string, t time.Time, w http.ResponseWri
 	// email already exists in database so can't sign up with it
 	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, "errors", dupEmail.Error())
+		InitHTML(w, nil, "errors", dupEmail.Error())
 		log.Println(h.Error())
 
 		// Can't find user in database wrong email
 	} else if fname == "UserByEmail" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, "errors", h.Error())
+		InitHTML(w, nil, "errors", h.Error())
 		log.Println(h.Error())
 
 	} else {
-		InitHTML(w, "errors", h.Error())
+		InitHTML(w, nil, "errors", h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -103,12 +103,12 @@ func SessError(e error, fname string, op string, t time.Time, w http.ResponseWri
 
 	if fname == "CreateSession" {
 		w.WriteHeader(http.StatusFailedDependency)
-		InitHTML(w, "errors", h.Error())
+		InitHTML(w, nil, "errors", h.Error())
 		log.Println(h.Error())
 
 	} else if fname == "Logout" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, "errors", h.Error())
+		InitHTML(w, nil, "errors", h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -117,6 +117,6 @@ func SessError(e error, fname string, op string, t time.Time, w http.ResponseWri
 func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	h := returnHandlerErr(fname, op, t, e)
 	w.WriteHeader(http.StatusUnauthorized)
-	InitHTML(w, "errors", badpw)
+	InitHTML(w, nil, "errors", badpw)
 	log.Println(h.Error())
 }

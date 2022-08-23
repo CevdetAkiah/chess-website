@@ -9,6 +9,7 @@
 </head>
 
 <form method="post" action="/signupAccount">
+  <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
   <input type="text" name="name" placeholder="User name">
   <input type="email" name="email" placeholder="Email">
   <input type="pw" name="password" placeholder="Password">
