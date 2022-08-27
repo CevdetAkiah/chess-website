@@ -27,7 +27,7 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, data ...i
 
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, TplData)
-	// Handle the error if any
+	// Handle the error if any 
 	if err != nil {
 		ErrHandler(err, "InitHTML", "Initialize template ", time.Now(), w)
 	}

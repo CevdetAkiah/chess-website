@@ -1,7 +1,6 @@
 package data
 
 import (
-	"crypto/sha1"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,11 +9,13 @@ import (
 	"go-projects/chess/util"
 
 	uuid "github.com/satori/go.uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Encrypt a password
 func Encrypt(text string) (cryptext string) {
-	cryptext = fmt.Sprintf("%x", sha1.Sum([]byte(text)))
+	b, _ := bcrypt.GenerateFromPassword([]byte(text), 4)
+	cryptext = string(b)
 	return
 }
 

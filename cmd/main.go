@@ -24,15 +24,13 @@ func main() {
 	fmt.Println("connected to database website")
 
 	mux := chi.NewRouter()
-	// mux := http.NewServeMux()
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
 		Handler: mux,
 	}
 
-	// set up the database service.
+	// Set up the database service.
 	// Can swap out with any database
-
 	serv := service.DbService{
 		Db:             postgres.Db,
 		UserService:    postgres.UserAccess{},
@@ -61,6 +59,6 @@ func main() {
 	mux.HandleFunc("/authenticate", route.Request(serv))
 
 	fmt.Println("Connected to port :8080 at", time.Now())
-	server.ListenAndServe()
 
+	server.ListenAndServe()
 }
