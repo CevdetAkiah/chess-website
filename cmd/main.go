@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// TODO: add packages used; NoSurf and Chi Router
-
 func main() {
 	err := postgres.Db.Ping()
 	if err != nil {
@@ -18,8 +16,6 @@ func main() {
 		log.Fatalln(err)
 	}
 	fmt.Println("connected to database website")
-
-	// mux := chi.NewRouter()
 
 	// Set up the database service.
 	// Can swap out with any database

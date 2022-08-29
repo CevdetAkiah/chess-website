@@ -23,11 +23,12 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, data ...i
 		data:      data,
 	}
 
-	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.html", filename)))
+	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.page.html", filename)))
+	tpl.ParseFiles("../templates/nav.layout.html")
 
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, TplData)
-	// Handle the error if any 
+	// Handle the error if any
 	if err != nil {
 		ErrHandler(err, "InitHTML", "Initialize template ", time.Now(), w)
 	}

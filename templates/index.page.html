@@ -17,15 +17,17 @@
     rel="stylesheet">
 
   <!-- css -->
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../static/index.css">
 </head>
 
 <body>
-  <div class="container grid">
-    <a href="/signup">Signup</a>
-    <a href="/login">Login</a>
-    <a href="/logout">Logout</a>
-  </div>
+
+  {{template "nav" .}}
+
+  <main id="#main">
+    <h1 class="numbered-title">Come see the chess pieces</h1>
+  </main>
+
 </body>
 
 </html>
