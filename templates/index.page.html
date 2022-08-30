@@ -16,12 +16,12 @@
     href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
     rel="stylesheet">
 
+
   <!-- css -->
-  <link rel="stylesheet" href="../static/index.css">
+  <link rel="stylesheet" href='{{if .CssSrc}}{{.CssSrc}}{{else}}../static/css/index.css{{end}}'>
 </head>
 
 <body>
-
   {{template "nav" .}}
 
   <main id="#main">

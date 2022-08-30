@@ -6,23 +6,14 @@ import (
 	"html/template"
 	"net/http"
 	"time"
-
-	"github.com/justinas/nosurf"
 )
-
-type TemplateData struct {
-	CSRFToken string
-	data      interface{}
-}
 
 func InitHTML(w http.ResponseWriter, r *http.Request, filename string, data ...interface{}) {
 	var buf bytes.Buffer
 
-	TplData := TemplateData{
-		CSRFToken: nosurf.Token(r), // CSRFToken nosurf checks against
-		data:      data,
-	}
-
+	// Gather the data for insertion into the templates
+	TplData := templateData(r, data)
+	// Parse both the html page and layout
 	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.page.html", filename)))
 	tpl.ParseFiles("../templates/nav.layout.html")
 

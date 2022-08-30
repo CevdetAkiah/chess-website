@@ -368,10 +368,10 @@ select {
   margin-right: .5em;
 }
 
-/* if the browser doesn't support backdrop-filer then the class above will work */
+/* if the browser doesn't support backdrop-filter then the class above will work */
 @supports(backdrop-filter: blur(1rem)) {
   .primary-navigation {
-    background: hsl(var(--clr-white) / 0.02);
+    background: hsl(var(--clr-white) /0.02);
     backdrop-filter: blur(1.5rem);
   }
 }
