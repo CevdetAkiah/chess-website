@@ -42,6 +42,7 @@ type UserAccess interface {
 type SessAccess interface {
 	CreateSession(user User) (Session, error)
 	DeleteByUUID(sess Session) (err error)
+	CheckSession(uuid string) bool
 }
 
 // Get from the database

@@ -72,7 +72,7 @@ func TmpError(e error, fname string, op string, t time.Time, w http.ResponseWrit
 	errors.As(e, &tErr)
 	h := returnHandlerErr(fname, op+tErr.Name, t, e)
 	w.WriteHeader(http.StatusInternalServerError)
-	InitHTML(w, nil, "errors", h.Error())
+	InitHTML(w, nil, "errors", false, h.Error())
 }
 
 // UserError deals with user database errors
@@ -83,17 +83,17 @@ func UserError(e error, fname string, op string, t time.Time, w http.ResponseWri
 	// email already exists in database so can't sign up with it
 	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", dupEmail.Error())
+		InitHTML(w, nil, "errors", false, dupEmail.Error())
 		log.Println(h.Error())
 
 		// Can't find user in database wrong email
 	} else if fname == "UserByEmail" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", h.Error())
+		InitHTML(w, nil, "errors", false, h.Error())
 		log.Println(h.Error())
 
 	} else {
-		InitHTML(w, nil, "errors", h.Error())
+		InitHTML(w, nil, "errors", false, h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -103,12 +103,12 @@ func SessError(e error, fname string, op string, t time.Time, w http.ResponseWri
 
 	if fname == "CreateSession" {
 		w.WriteHeader(http.StatusFailedDependency)
-		InitHTML(w, nil, "errors", h.Error())
+		InitHTML(w, nil, "errors", false, h.Error())
 		log.Println(h.Error())
 
 	} else if fname == "Logout" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", h.Error())
+		InitHTML(w, nil, "errors", false, h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -117,6 +117,6 @@ func SessError(e error, fname string, op string, t time.Time, w http.ResponseWri
 func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
 	h := returnHandlerErr(fname, op, t, e)
 	w.WriteHeader(http.StatusUnauthorized)
-	InitHTML(w, nil, "errors", badpw)
+	InitHTML(w, nil, "errors", false, badpw)
 	log.Println(h.Error())
 }

@@ -8,15 +8,14 @@ import (
 	"time"
 )
 
-func InitHTML(w http.ResponseWriter, r *http.Request, filename string, data ...interface{}) {
+func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn bool, data ...interface{}) {
 	var buf bytes.Buffer
-
 	// Gather the data for insertion into the templates
-	TplData := templateData(r, data)
+	TplData := templateData(r, loggedIn, data)
+	fmt.Println(filename)
 	// Parse both the html page and layout
 	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.page.html", filename)))
 	tpl.ParseFiles("../templates/nav.layout.html")
-
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, TplData)
 	// Handle the error if any

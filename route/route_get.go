@@ -8,23 +8,23 @@ import (
 )
 
 // Index initialises the index template
-func Index(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, r, "index", serve)
+func Index(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
+	util.InitHTML(w, r, "index", loggedIn, serve)
 }
 
 // ErrorPage initialises the error template
-func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, r, "errors", serve)
+func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
+	util.InitHTML(w, r, "errors", loggedIn, serve)
 }
 
 // Signup initialised the signup template and deals with user registration
-func Signup(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, r, "signup", serve)
+func Signup(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
+	util.InitHTML(w, r, "signup", loggedIn, serve)
 }
 
 // Login initialises the login template
-func Login(w http.ResponseWriter, r *http.Request, serve service.DbService) {
-	util.InitHTML(w, r, "login", serve)
+func Login(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
+	util.InitHTML(w, r, "login", loggedIn, serve)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, serve service.DbService) {

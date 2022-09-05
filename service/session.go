@@ -12,4 +12,9 @@ func (serve DbService) CreateSession(u User) (sess Session, err error) {
 	return
 }
 
+func (serve DbService) CheckSession(uuid string) (active bool) {
+	active = serve.SessionService.CheckSession(uuid)
+	return
+}
+
 // TODO: write tests for DeleteByUUID and CreateSession

@@ -15,17 +15,18 @@ type TemplateData struct {
 	CSRFToken string
 	Data      interface{}
 	CssSrc    string
+	LoggedIn  bool
 }
 
 // hashCSS creates a new css file from the source file and current nano second for the purpose of cache busting.
+
+// TODO: error handling
 func hashCSS() string {
-	// remove any old css files from hashCSS
+	// remove any old css files from hashCSS dir
 	files, err := ioutil.ReadDir("../static/hashCSS")
 	if len(files) != 0 {
 		for _, file := range files {
-			fmt.Println(file.Name())
-			path := "../static/hashCSS/" + file.Name()
-			os.Remove(path)
+			os.Remove(fmt.Sprintf("../static/hashCSS/%s", file.Name()))
 		}
 	}
 
@@ -50,12 +51,14 @@ func hashCSS() string {
 	return new.Name()
 }
 
-func templateData(r *http.Request, data ...interface{}) TemplateData {
+func templateData(r *http.Request, access bool, data ...interface{}) TemplateData {
 	// get updated css file name for cache busting purposes
 	cssFileName := hashCSS()
+
 	return TemplateData{
 		CSRFToken: nosurf.Token(r), // CSRFToken nosurf checks against
 		Data:      data,
 		CssSrc:    cssFileName, // caching workaround for the CSS file. // TODO: disable this when in production
+		LoggedIn:  access,
 	}
 }

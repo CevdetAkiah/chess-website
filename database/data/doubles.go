@@ -108,3 +108,14 @@ func mockCreateUUID() string {
 	sID := uuid.NewV4()
 	return sID.String()
 }
+
+// CheckSession checks if the session is active using the given uuid
+func (sa testSessionAccess) CheckSession(uuid string) (active bool) {
+	var err error
+	err = testDb.QueryRow("SELECT EXISTS(SELECT 1 FROM sessions WHERE uuid = $1", uuid).Scan(&active)
+	if err != nil {
+		active = false
+		return
+	}
+	return
+}

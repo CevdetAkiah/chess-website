@@ -25,7 +25,7 @@ func init() {
 }
 
 // Create inserts the user into the postgres database website table users
-func (user UserAccess) Create(u *service.User) (err error) {
+func (ua UserAccess) Create(u *service.User) (err error) {
 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
 	stmnt, err := Db.Prepare(statement)
 	if err != nil {
@@ -43,7 +43,7 @@ func (user UserAccess) Create(u *service.User) (err error) {
 }
 
 // Update alters a users email in the postgres database
-func (user UserAccess) Update(u *service.User) (err error) {
+func (ua UserAccess) Update(u *service.User) (err error) {
 	_, err = Db.Exec("update users set email = $1 where id = $2", u.Email, u.Id)
 	if err != nil {
 		err = fmt.Errorf("\nError updating user: %w", err)
@@ -53,7 +53,7 @@ func (user UserAccess) Update(u *service.User) (err error) {
 }
 
 // Delete removes a user from the postgres database
-func (user UserAccess) Delete(u service.User) (err error) {
+func (ua UserAccess) Delete(u service.User) (err error) {
 	_, err = Db.Exec("delete from users where id = $1", u.Id)
 	if err != nil {
 		err = fmt.Errorf("\nError deleting from users %s, error: %w", u.Name, err)
@@ -63,7 +63,7 @@ func (user UserAccess) Delete(u service.User) (err error) {
 }
 
 // CreateSession creates a session in the postgres database
-func (user SessionAccess) CreateSession(u service.User) (sess service.Session, err error) {
+func (sa SessionAccess) CreateSession(u service.User) (sess service.Session, err error) {
 	statement := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, user_id, created_at"
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
@@ -81,7 +81,7 @@ func (user SessionAccess) CreateSession(u service.User) (sess service.Session, e
 }
 
 // Delete session from postgres database
-func (session SessionAccess) DeleteByUUID(sess service.Session) (err error) {
+func (sa SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	statement := "delete from sessions where uuid = $1"
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
@@ -93,7 +93,7 @@ func (session SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	return
 }
 
-func (user UserAccess) UserByEmail(email string) (u service.User, err error) {
+func (ua UserAccess) UserByEmail(email string) (u service.User, err error) {
 	err = Db.QueryRow("SELECT id, uuid, name, email, password, created_at FROM users WHERE email = $1", email).Scan(&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("\nError while getting user by email: %s \n\t Base error: %w", email, err)
@@ -123,6 +123,17 @@ func GetAllUsers() (us []service.User, err error) {
 		us = append(us, user)
 	}
 	rows.Close()
+	return
+}
+
+// CheckSession checks if the session is active using the given uuid
+func (sa SessionAccess) CheckSession(uuid string) (active bool) {
+	var err error
+	err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM sessions WHERE uuid = $1", uuid).Scan(&active)
+	if err != nil {
+		active = false
+		return
+	}
 	return
 }
 
