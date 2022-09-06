@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -68,7 +69,7 @@ func TestEncrypt(t *testing.T) {
 		t.Logf("cryptText: %s \t testText: %s", cryptText, testText)
 	}
 
-	if Encrypt(testText) != cryptText {
+	if bcrypt.CompareHashAndPassword([]byte(cryptText), []byte(testText)) != nil {
 		t.Fail()
 		t.Logf("testText: %s \t cryptText: %s", testText, cryptText)
 	}

@@ -13,13 +13,13 @@ func Request(serv service.DbService) http.HandlerFunc {
 		var loggedIn bool
 
 		// check to see if there is an active session/user is logged in
+		// TODO: fix session checker as loggedIn is showing false after logging in
 		cookie, _ := r.Cookie("session")
 		if cookie != nil {
 			loggedIn = serv.SessionService.CheckSession(cookie.Value)
 		} else {
 			loggedIn = false
 		}
-
 		fmt.Println(loggedIn)
 
 		switch r.Method {

@@ -19,6 +19,15 @@ func Encrypt(text string) (cryptext string) {
 	return
 }
 
+func CheckPw(storedPw string, formPw string) (ok bool) {
+	if bcrypt.CompareHashAndPassword([]byte(storedPw), []byte(formPw)) == nil {
+		ok = true
+	} else {
+		ok = false
+	}
+	return
+}
+
 // CreateUUID to store in a cookie
 func CreateUUID() string {
 	sID := uuid.NewV4()
@@ -54,7 +63,8 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
 func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve service.SessAccess) (err error) {
-	if u.Password == Encrypt(r.PostFormValue("password")) {
+	CheckPw(u.Password, r.PostFormValue("password")) 
+	if CheckPw(u.Password, r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
 		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
 		AssignCookie(w, r, session)
