@@ -6,7 +6,6 @@ import (
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
-	"time"
 )
 
 // SignupAccount is posted from the signup.html template
@@ -42,8 +41,12 @@ func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbServic
 	email := r.PostFormValue("email")
 	// If the user exists, get the user from the database
 	user, err := serve.UserByEmail(email)
-	util.SendError(err)
-	util.ErrHandler("UserByEmail", "Database", time.Now(), w, r)
+
+	if err != nil {
+		util.SendError(err)
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", "UserByEmail", "Database")
+		http.Redirect(w, r, url, 303)
+	}
 
 	// If the password is ok, create a session and set a session cookie
 	data.AuthSession(w, r, user, serve)

@@ -56,7 +56,7 @@ func (e HandlerErr) Is(other error) bool {
 }
 
 // ErrHandler provides more information for errors that occur in the handlers
-func ErrHandler(fname string, op string, t time.Time, w http.ResponseWriter, r *http.Request) {
+func ErrHandler(w http.ResponseWriter, r *http.Request, fname string, op string, t time.Time) {
 	fmt.Println("ERRHANDLER: ", fname, op)
 	fmt.Println("ERROR: ", e)
 	if e != nil {

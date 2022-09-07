@@ -15,6 +15,7 @@ var (
 	err    error
 )
 
+// TODO: fix this. Probably need to add in a http request to each test func.
 func TestMain(m *testing.M) {
 	setUp()
 	code := m.Run()
@@ -48,14 +49,14 @@ func TestErrHandler(t *testing.T) {
 	op := "Initialize template"
 	SendError(err)
 
-	ErrHandler(fname, op, time.Now(), writer, nil)
+	ErrHandler(writer, nil, fname, op, time.Now())
 	body := writer.Body.String()
 	if strings.Contains(body, "Initialize template") == false {
 		t.Error("Error page not loaded")
 	}
 
 	op = "Database"
-	ErrHandler(fname, op, time.Now(), writer, nil)
+	ErrHandler(writer, nil, fname, op, time.Now())
 	body = writer.Body.String()
 	if strings.Contains(body, "Database") == false {
 		t.Error("Error page not loaded")
@@ -63,7 +64,7 @@ func TestErrHandler(t *testing.T) {
 
 	// testing Password case
 	op = "Password"
-	ErrHandler(fname, op, time.Now(), writer, nil)
+	ErrHandler(writer, nil, fname, op, time.Now())
 	body = writer.Body.String()
 	if strings.Contains(body, "Incorrect password") == false {
 		t.Error("Error page not loaded")
@@ -71,7 +72,7 @@ func TestErrHandler(t *testing.T) {
 
 	op = "Session"
 	fname = "Logout"
-	ErrHandler(fname, op, time.Now(), writer, nil)
+	ErrHandler(writer, nil, fname, op, time.Now())
 	body = writer.Body.String()
 	if strings.Contains(body, "Session") == false {
 		t.Error("Error page not loaded")
@@ -84,7 +85,7 @@ func TestTmpError(t *testing.T) {
 	fname := "template error"
 	SendError(err)
 	op := "Initialize template"
-	TmpError(fname, op, time.Now(), writer)
+	TmpError(writer, nil, fname, op, time.Now())
 	if writer.Code != http.StatusInternalServerError {
 		t.FailNow()
 	}
@@ -94,7 +95,7 @@ func TestTmpError(t *testing.T) {
 func TestUserError(t *testing.T) {
 	fname := "UserByEmail"
 	op := "Database"
-	UserError(err, fname, op, time.Now(), writer)
+	UserError(writer, nil, err, fname, op, time.Now())
 	if writer.Code != http.StatusBadRequest {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusBadRequest, writer.Code)
 	}
@@ -104,7 +105,7 @@ func TestUserError(t *testing.T) {
 func TestPwError(t *testing.T) {
 	fname := "CheckPw"
 	op := "Password"
-	PwError(err, fname, op, time.Now(), writer, nil)
+	PwError(writer, nil, err, fname, op, time.Now())
 	if writer.Code != http.StatusUnauthorized {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusUnauthorized, writer.Code)
 	}
@@ -113,7 +114,7 @@ func TestPwError(t *testing.T) {
 func TestSessError(t *testing.T) {
 	fname := "CreateSession"
 	op := "Session"
-	SessError(err, fname, op, time.Now(), writer)
+	SessError(writer, nil, err, fname, op, time.Now())
 	if writer.Code != http.StatusFailedDependency {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusFailedDependency, writer.Code)
 	}

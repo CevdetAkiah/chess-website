@@ -6,7 +6,6 @@ import (
 	"go-projects/chess/service"
 	"html/template"
 	"net/http"
-	"time"
 )
 
 func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn bool, serv service.DbService, errMsg string) {
@@ -20,7 +19,9 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn 
 	err := tpl.Execute(&buf, TplData)
 	// Handle the error if any
 	if err != nil {
-		ErrHandler("InitHTML", "Initialize template ", time.Now(), w, r)
+		SendError(err)
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", "InitHTML", "Initialize template")
+		http.Redirect(w, r, url, 303)
 	}
 	// Write the buffer to the writer
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
