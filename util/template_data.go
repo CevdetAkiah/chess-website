@@ -13,7 +13,7 @@ import (
 
 type TemplateData struct {
 	CSRFToken string
-	Data      interface{}
+	ErrMsg    string
 	CssSrc    string
 	LoggedIn  bool
 }
@@ -51,13 +51,14 @@ func hashCSS() string {
 	return new.Name()
 }
 
-func templateData(r *http.Request, access bool, data ...interface{}) TemplateData {
+func templateData(r *http.Request, access bool, eMsg string) TemplateData {
 	// get updated css file name for cache busting purposes
 	cssFileName := hashCSS()
+	token := nosurf.Token(r)
 
 	return TemplateData{
-		CSRFToken: nosurf.Token(r), // CSRFToken nosurf checks against
-		Data:      data,
+		CSRFToken: token, // CSRFToken nosurf checks against
+		ErrMsg:    eMsg,
 		CssSrc:    cssFileName, // caching workaround for the CSS file. // TODO: disable this when in production
 		LoggedIn:  access,
 	}

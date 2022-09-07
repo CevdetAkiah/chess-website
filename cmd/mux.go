@@ -17,14 +17,12 @@ func mux(serv service.DbService) *chi.Mux {
 	mux.Use((middleware.Recoverer))
 
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
-	mux.Use(NoSurf)
-
+	// mux.Use(NoSurf) // TODO: figure out how to get this to work with error handling
 	// Pass the request to be handled in t\he route package
 
 	// fileServer serves all static files
 	fileServer := http.FileServer(http.Dir("../static/")) // TODO: change the request header to text/css when css files are served
 	mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
-	
 
 	// Get
 	mux.HandleFunc("/", route.Request(serv))

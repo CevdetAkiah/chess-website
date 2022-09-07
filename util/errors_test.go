@@ -46,14 +46,16 @@ func TestErrHandler(t *testing.T) {
 	fname := "TestErrHandler"
 
 	op := "Initialize template"
-	ErrHandler(err, fname, op, time.Now(), writer)
+	SendError(err)
+
+	ErrHandler(fname, op, time.Now(), writer, nil)
 	body := writer.Body.String()
 	if strings.Contains(body, "Initialize template") == false {
 		t.Error("Error page not loaded")
 	}
 
 	op = "Database"
-	ErrHandler(err, fname, op, time.Now(), writer)
+	ErrHandler(fname, op, time.Now(), writer, nil)
 	body = writer.Body.String()
 	if strings.Contains(body, "Database") == false {
 		t.Error("Error page not loaded")
@@ -61,7 +63,7 @@ func TestErrHandler(t *testing.T) {
 
 	// testing Password case
 	op = "Password"
-	ErrHandler(err, fname, op, time.Now(), writer)
+	ErrHandler(fname, op, time.Now(), writer, nil)
 	body = writer.Body.String()
 	if strings.Contains(body, "Incorrect password") == false {
 		t.Error("Error page not loaded")
@@ -69,7 +71,7 @@ func TestErrHandler(t *testing.T) {
 
 	op = "Session"
 	fname = "Logout"
-	ErrHandler(err, fname, op, time.Now(), writer)
+	ErrHandler(fname, op, time.Now(), writer, nil)
 	body = writer.Body.String()
 	if strings.Contains(body, "Session") == false {
 		t.Error("Error page not loaded")
@@ -80,8 +82,9 @@ func TestErrHandler(t *testing.T) {
 // test the tmpError function
 func TestTmpError(t *testing.T) {
 	fname := "template error"
+	SendError(err)
 	op := "Initialize template"
-	TmpError(err, fname, op, time.Now(), writer)
+	TmpError(fname, op, time.Now(), writer)
 	if writer.Code != http.StatusInternalServerError {
 		t.FailNow()
 	}
@@ -101,7 +104,7 @@ func TestUserError(t *testing.T) {
 func TestPwError(t *testing.T) {
 	fname := "CheckPw"
 	op := "Password"
-	PwError(err, fname, op, time.Now(), writer)
+	PwError(err, fname, op, time.Now(), writer, nil)
 	if writer.Code != http.StatusUnauthorized {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusUnauthorized, writer.Code)
 	}

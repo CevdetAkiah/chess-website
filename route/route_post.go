@@ -26,7 +26,9 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbServi
 	}
 	// Insert user into database
 	err := serve.NewUser(&u)
-	util.ErrHandler(err, "NewUser", "Database", time.Now(), w)
+	util.SendError(err)
+
+	util.ErrHandler("NewUser", "Database", time.Now(), w, r)
 	http.Redirect(w, r, "/", 302)
 }
 
@@ -38,7 +40,8 @@ func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbServic
 	email := r.PostFormValue("email")
 	// If the user exists, get the user from the database
 	user, err := serve.UserByEmail(email)
-	util.ErrHandler(err, "UserByEmail", "Database", time.Now(), w)
+	util.SendError(err)
+	util.ErrHandler("UserByEmail", "Database", time.Now(), w, r)
 
 	// If the password is ok, create a session and set a session cookie
 	data.AuthSession(w, r, user, serve)

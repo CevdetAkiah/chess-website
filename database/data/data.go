@@ -50,7 +50,8 @@ func AssignCookie(w http.ResponseWriter, r *http.Request, sess service.Session) 
 func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Session) {
 	// get the cookie from the request
 	cookie, err := r.Cookie("session")
-	util.ErrHandler(err, "DeleteCookie", "Session", time.Now(), w)
+	util.SendError(err)
+	util.ErrHandler("DeleteCookie", "Session", time.Now(), w, r)
 	// remove cookie from the browser
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)
@@ -63,14 +64,19 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 // AuthSession checks if a users password matches the password for the user in the db
 // then creates a session and sets the cookie in the browser
 func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve service.SessAccess) (err error) {
-	CheckPw(u.Password, r.PostFormValue("password")) 
+	CheckPw(u.Password, r.PostFormValue("password"))
 	if CheckPw(u.Password, r.PostFormValue("password")) {
 		session, err := serve.CreateSession(u)
-		util.ErrHandler(err, "CreateSession", "Database", time.Now(), w)
+		util.SendError(err)
+		util.ErrHandler("CreateSession", "Database", time.Now(), w, r)
 		AssignCookie(w, r, session)
 	} else {
+		// Send the error to the error handler
 		err := fmt.Errorf("Bad password")
-		util.ErrHandler(err, "Authenticate", "Password", time.Now(), w)
+		util.SendError(err)
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", "Authenticate", "Password")
+		http.Redirect(w, r, url, 303)
+		// util.ErrHandler(err, "Authenticate", "Password", time.Now(), w)
 	}
 	return
 }
