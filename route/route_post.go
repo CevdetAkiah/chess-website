@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -26,10 +27,11 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbServi
 	}
 	// Insert user into database
 	err := serve.NewUser(&u)
-	util.SendError(err)
-
-	util.ErrHandler("NewUser", "Database", time.Now(), w, r)
-	http.Redirect(w, r, "/", 302)
+	if err != nil {
+		util.SendError(err)
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", "NewUser", "Database")
+		http.Redirect(w, r, url, 303)
+	}
 }
 
 // Authenticate is activated from the login page

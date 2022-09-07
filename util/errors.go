@@ -58,73 +58,76 @@ func (e HandlerErr) Is(other error) bool {
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(fname string, op string, t time.Time, w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ERRHANDLER: ", fname, op)
+	fmt.Println("ERROR: ", e)
 	if e != nil {
 		switch op {
 		case "Initialize template ":
-			TmpError(fname, op, t, w)
+			TmpError(w, r, fname, op, t)
 		case "Database":
-			UserError(e, fname, op, t, w)
+			UserError(w, r, e, fname, op, t)
 		case "Password":
-			PwError(e, fname, op, t, w, r)
+			PwError(w, r, e, fname, op, t)
 		case "Session":
-			SessError(e, fname, op, t, w)
+			SessError(w, r, e, fname, op, t)
 		}
 	}
 	return
 }
 
 // TmpError deals with template errors
-func TmpError(fname string, op string, t time.Time, w http.ResponseWriter) {
+func TmpError(w http.ResponseWriter, r *http.Request, fname string, op string, t time.Time) {
 	var tErr template.ExecError
 	errors.As(e, &tErr)
 	h := returnHandlerErr(fname, op+tErr.Name, t, e)
 	w.WriteHeader(http.StatusInternalServerError)
-	InitHTML(w, nil, "errors", false, service.DbService{}, h.Error())
+	InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
 }
 
 // UserError deals with user database errors
-func UserError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+func UserError(w http.ResponseWriter, r *http.Request, e error, fname string, op string, t time.Time) {
 	var sqlErr *pq.Error
 	h := returnHandlerErr(fname, op, t, e)
 
 	// email already exists in database so can't sign up with it
 	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", false, service.DbService{}, dupEmail.Error())
+		InitHTML(w, r, "errors", false, service.DbService{}, dupEmail.Error())
 		log.Println(h.Error())
 
 		// Can't find user in database wrong email
 	} else if fname == "UserByEmail" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
 		log.Println(h.Error())
 
 	} else {
-		InitHTML(w, nil, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
 		log.Println(h.Error())
 	}
 }
 
-func SessError(e error, fname string, op string, t time.Time, w http.ResponseWriter) {
+func SessError(w http.ResponseWriter, r *http.Request, e error, fname string, op string, t time.Time) {
 	h := returnHandlerErr(fname, op, t, e)
 
 	if fname == "CreateSession" {
 		w.WriteHeader(http.StatusFailedDependency)
-		InitHTML(w, nil, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
 		log.Println(h.Error())
 
 	} else if fname == "Logout" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, nil, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
 		log.Println(h.Error())
 	}
 }
 
 // PwError deals with password errors
-func PwError(e error, fname string, op string, t time.Time, w http.ResponseWriter, r *http.Request) {
+func PwError(w http.ResponseWriter, r *http.Request, e error, fname string, op string, t time.Time) {
 	h := returnHandlerErr(fname, op, t, e)
 	fmt.Println("PwError: ", e)
 	w.WriteHeader(http.StatusUnauthorized)
 	InitHTML(w, r, "errors", false, service.DbService{}, badpw.Error())
 	log.Println(h.Error())
 }
+
+// TODO: change error handling so errors route through the url

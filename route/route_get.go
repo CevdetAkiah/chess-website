@@ -19,7 +19,6 @@ func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService, 
 	vals := r.URL.Query()
 	fmt.Println("ERROR PAGE ", vals)
 	util.ErrHandler(vals.Get("fname"), vals.Get("op"), time.Now(), w, r)
-	// util.InitHTML(w, r, "errors", loggedIn, serve)
 }
 
 // Signup initialised the signup template and deals with user registration
