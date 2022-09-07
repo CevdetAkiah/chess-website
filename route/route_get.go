@@ -18,7 +18,7 @@ func Index(w http.ResponseWriter, r *http.Request, serve service.DbService, logg
 func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
 	vals := r.URL.Query()
 	fmt.Println("ERROR PAGE ", vals)
-	util.ErrHandler(vals.Get("fname"), vals.Get("op"), time.Now(), w, r)
+	util.ErrHandler(w, r, vals.Get("fname"), vals.Get("op"), time.Now())
 }
 
 // Signup initialised the signup template and deals with user registration

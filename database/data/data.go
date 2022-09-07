@@ -3,7 +3,6 @@ package data
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -50,8 +49,11 @@ func AssignCookie(w http.ResponseWriter, r *http.Request, sess service.Session) 
 func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Session) {
 	// get the cookie from the request
 	cookie, err := r.Cookie("session")
-	util.SendError(err)
-	util.ErrHandler("DeleteCookie", "Session", time.Now(), w, r)
+	if err != nil {
+		util.SendError(err)
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", "DeleteCookie", "Session")
+		http.Redirect(w, r, url, 303)
+	}
 	// remove cookie from the browser
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)
