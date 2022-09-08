@@ -47,7 +47,6 @@ func TestErrHandler(t *testing.T) {
 	fname := "TestErrHandler"
 
 	op := "Initialize template"
-	SendError(err)
 
 	ErrHandler(writer, nil, fname, op, time.Now())
 	body := writer.Body.String()
@@ -83,8 +82,8 @@ func TestErrHandler(t *testing.T) {
 // test the tmpError function
 func TestTmpError(t *testing.T) {
 	fname := "template error"
-	SendError(err)
 	op := "Initialize template"
+	RouteError(nil, nil, err, fname, op)
 	TmpError(writer, nil, fname, op, time.Now())
 	if writer.Code != http.StatusInternalServerError {
 		t.FailNow()
@@ -95,7 +94,7 @@ func TestTmpError(t *testing.T) {
 func TestUserError(t *testing.T) {
 	fname := "UserByEmail"
 	op := "Database"
-	UserError(writer, nil, err, fname, op, time.Now())
+	UserError(nil, nil, err, fname, op, time.Now())
 	if writer.Code != http.StatusBadRequest {
 		t.Errorf("\nExpected code %d \t got %d", http.StatusBadRequest, writer.Code)
 	}

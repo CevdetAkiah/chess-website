@@ -1,7 +1,6 @@
 package route
 
 import (
-	"fmt"
 	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -27,9 +26,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, serve service.DbServi
 	// Insert user into database
 	err := serve.NewUser(&u)
 	if err != nil {
-		util.SendError(err)
-		url := fmt.Sprintf("/errors?fname=%s&op=%s", "NewUser", "Database")
-		http.Redirect(w, r, url, 303)
+		util.RouteError(w, r, err, "NewUser", "Database")
 	}
 }
 
@@ -43,9 +40,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request, serve service.DbServic
 	user, err := serve.UserByEmail(email)
 
 	if err != nil {
-		util.SendError(err)
-		url := fmt.Sprintf("/errors?fname=%s&op=%s", "UserByEmail", "Database")
-		http.Redirect(w, r, url, 303)
+		util.RouteError(w, r, err, "UserByEmail", "Database")
 	}
 
 	// If the password is ok, create a session and set a session cookie

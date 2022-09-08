@@ -29,8 +29,13 @@ type HandlerErr struct {
 	Err   error
 }
 
-func SendError(sent error) {
+func RouteError(w http.ResponseWriter, r *http.Request, sent error, fname string, op string) {
 	e = sent
+
+	if r != nil {
+		url := fmt.Sprintf("/errors?fname=%s&op=%s", fname, op)
+		http.Redirect(w, r, url, 303)
+	}
 }
 
 // returnHandlerErr returns a HandlerErr struct

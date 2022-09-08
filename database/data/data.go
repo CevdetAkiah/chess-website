@@ -50,9 +50,7 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 	// get the cookie from the request
 	cookie, err := r.Cookie("session")
 	if err != nil {
-		util.SendError(err)
-		url := fmt.Sprintf("/errors?fname=%s&op=%s", "DeleteCookie", "Session")
-		http.Redirect(w, r, url, 303)
+		util.RouteError(w, r, err, "DeleteCookie", "Session")
 	}
 	// remove cookie from the browser
 	cookie.MaxAge = -1
@@ -70,17 +68,14 @@ func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve s
 		session, err := serve.CreateSession(u)
 
 		if err != nil {
-			util.SendError(err)
-			url := fmt.Sprintf("/errors?fname=%s&op=%s", "CreateSession", "Database")
-			http.Redirect(w, r, url, 303)
+			util.RouteError(w, r, err, "CreateSession", "Database")
 		}
 
 		AssignCookie(w, r, session)
+
 	} else {
 		err := fmt.Errorf("Bad password")
-		util.SendError(err)
-		url := fmt.Sprintf("/errors?fname=%s&op=%s", "Authenticate", "Password")
-		http.Redirect(w, r, url, 303)
+		util.RouteError(w, r, err, "Authenticate", "Password")
 	}
 	return
 }
