@@ -84,3 +84,13 @@ func AuthSession(w http.ResponseWriter, r *http.Request, u service.User, serve s
 	}
 	return
 }
+
+func CheckLogin(r *http.Request, serv service.DbService) (loggedIn bool) {
+	cookie, err := r.Cookie("session")
+	if err == nil {
+		loggedIn, err = serv.SessionService.CheckSession(cookie.Value)
+	} else {
+		loggedIn = false
+	}
+	return
+}

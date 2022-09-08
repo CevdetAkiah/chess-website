@@ -127,9 +127,8 @@ func GetAllUsers() (us []service.User, err error) {
 }
 
 // CheckSession checks if the session is active using the given uuid
-func (sa SessionAccess) CheckSession(uuid string) (active bool) {
-	var err error
-	err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM sessions WHERE uuid = $1", uuid).Scan(&active)
+func (sa SessionAccess) CheckSession(uuid string) (active bool, err error) {
+	err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM sessions WHERE uuid = $1)", uuid).Scan(&active)
 	if err != nil {
 		active = false
 		return

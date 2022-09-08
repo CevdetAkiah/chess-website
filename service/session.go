@@ -12,8 +12,8 @@ func (serve DbService) CreateSession(u User) (sess Session, err error) {
 	return
 }
 
-func (serve DbService) CheckSession(uuid string) (active bool) {
-	active = serve.SessionService.CheckSession(uuid)
+func (serve DbService) CheckSession(uuid string) (active bool, err error) {
+	active, err = serve.SessionService.CheckSession(uuid)
 	return
 }
 

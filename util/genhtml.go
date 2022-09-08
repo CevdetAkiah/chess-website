@@ -11,10 +11,16 @@ import (
 func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn bool, serv service.DbService, errMsg string) {
 	var buf bytes.Buffer
 	// Gather the data for insertion into the templates
-	TplData := templateData(r, loggedIn, errMsg)
+	TplData := templateData(r, errMsg)
+
 	// Parse both the html page and layout
 	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.page.html", filename)))
-	tpl.ParseFiles("../templates/nav.layout.html")
+	if loggedIn {
+		tpl.ParseFiles("../templates/nav-loggedin.layout.html")
+	} else {
+		tpl.ParseFiles("../templates/nav-loggedout.layout.html")
+	}
+
 	// Write the template to the buffer first
 	err := tpl.Execute(&buf, TplData)
 	// Handle the error if any

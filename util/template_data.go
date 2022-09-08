@@ -15,7 +15,6 @@ type TemplateData struct {
 	CSRFToken string
 	ErrMsg    string
 	CssSrc    string
-	LoggedIn  bool
 }
 
 // hashCSS creates a new css file from the source file and current nano second for the purpose of cache busting.
@@ -51,7 +50,7 @@ func hashCSS() string {
 	return new.Name()
 }
 
-func templateData(r *http.Request, access bool, eMsg string) TemplateData {
+func templateData(r *http.Request, eMsg string) TemplateData {
 	// get updated css file name for cache busting purposes
 	cssFileName := hashCSS()
 	token := nosurf.Token(r)
@@ -61,6 +60,5 @@ func templateData(r *http.Request, access bool, eMsg string) TemplateData {
 		CSRFToken: token, // CSRFToken nosurf checks against
 		ErrMsg:    eMsg,
 		CssSrc:    cssFileName, // caching workaround for the CSS file. // TODO: disable this when in production
-		LoggedIn:  access,
 	}
 }
