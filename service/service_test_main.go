@@ -58,6 +58,7 @@ func setUp() {
 	}
 
 }
+
 // TODO: separate out the user test functions into another file
 func TestNewUser(t *testing.T) {
 	err := mockServ.NewUser(&user)

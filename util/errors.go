@@ -62,8 +62,6 @@ func (e HandlerErr) Is(other error) bool {
 
 // ErrHandler provides more information for errors that occur in the handlers
 func ErrHandler(w http.ResponseWriter, r *http.Request, fname string, op string, t time.Time) {
-	fmt.Println("ERRHANDLER: ", fname, op)
-	fmt.Println("ERROR: ", e)
 	if e != nil {
 		switch op {
 		case "Initialize template ":
@@ -134,5 +132,3 @@ func PwError(w http.ResponseWriter, r *http.Request, e error, fname string, op s
 	InitHTML(w, r, "errors", false, service.DbService{}, badpw.Error())
 	log.Println(h.Error())
 }
-
-// TODO: change error handling so errors route through the url

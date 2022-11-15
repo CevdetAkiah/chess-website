@@ -145,3 +145,26 @@ func SessionById(id int) (sess service.Session, err error) {
 	}
 	return
 }
+
+
+
+// TODO: think about re writing the service package so the underlying user type is used like below.
+
+// // Create inserts the user into the postgres database website table users
+// func (ua UserAccess) Create(name string, email string, password string, CreatedAt time.Time) (err error) {
+// 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
+
+// 	stmnt, err := Db.Prepare(statement)
+// 	if err != nil {
+// 		err = fmt.Errorf("\nError preparing statement to insert user into users table: %w", err)
+// 		return
+// 	}
+// 	defer stmnt.Close()
+// 	err = stmnt.QueryRow(data.CreateUUID(), name, email, password, CreatedAt).Scan(&ua.Id, &ua.Uuid, &ua.CreatedAt)
+// 	if err != nil {
+// 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
+// 		return
+// 	}
+
+// 	return
+// }

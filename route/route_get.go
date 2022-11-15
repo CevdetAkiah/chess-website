@@ -1,7 +1,6 @@
 package route
 
 import (
-	"fmt"
 	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -17,7 +16,6 @@ func Index(w http.ResponseWriter, r *http.Request, serve service.DbService, logg
 // ErrorPage initialises the error template
 func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
 	vals := r.URL.Query()
-	fmt.Println("ERROR PAGE ", vals)
 	util.ErrHandler(w, r, vals.Get("fname"), vals.Get("op"), time.Now())
 }
 
