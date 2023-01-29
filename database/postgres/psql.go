@@ -1,66 +1,13 @@
 package postgres
 
 import (
-	"database/sql"
 	"fmt"
-	"go-projects/chess/database/data"
 	service "go-projects/chess/service"
-	"log"
 
 	_ "github.com/lib/pq"
 )
 
-var Db *sql.DB
-
-type UserAccess service.User
 type SessionAccess service.Session
-
-func init() {
-	var err error
-	Db, err = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
-	if err != nil {
-		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
-		log.Fatalln(err)
-	}
-}
-
-// Create inserts the user into the postgres database website table users
-func (ua UserAccess) Create(u *service.User) (err error) {
-	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
-	stmnt, err := Db.Prepare(statement)
-	if err != nil {
-		err = fmt.Errorf("\nError preparing statement to insert user into users table: %w", err)
-		return
-	}
-	defer stmnt.Close()
-	err = stmnt.QueryRow(data.CreateUUID(), u.Name, u.Email, u.Password, u.CreatedAt).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
-	if err != nil {
-		err = fmt.Errorf("\nError inserting user into users table: %w", err)
-		return
-	}
-
-	return
-}
-
-// Update alters a users email in the postgres database
-func (ua UserAccess) Update(u *service.User) (err error) {
-	_, err = Db.Exec("update users set email = $1 where id = $2", u.Email, u.Id)
-	if err != nil {
-		err = fmt.Errorf("\nError updating user: %w", err)
-		return
-	}
-	return
-}
-
-// Delete removes a user from the postgres database
-func (ua UserAccess) Delete(u service.User) (err error) {
-	_, err = Db.Exec("delete from users where id = $1", u.Id)
-	if err != nil {
-		err = fmt.Errorf("\nError deleting from users %s, error: %w", u.Name, err)
-		return
-	}
-	return
-}
 
 // CreateSession creates a session in the postgres database
 func (sa SessionAccess) CreateSession(u service.User) (sess service.Session, err error) {
@@ -93,39 +40,6 @@ func (sa SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	return
 }
 
-func (ua UserAccess) UserByEmail(email string) (u service.User, err error) {
-	err = Db.QueryRow("SELECT id, uuid, name, email, password, created_at FROM users WHERE email = $1", email).Scan(&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt)
-	if err != nil {
-		err = fmt.Errorf("\nError while getting user by email: %s \n\t Base error: %w", email, err)
-	}
-	return
-}
-
-func Retrieve(id int) (u service.User, err error) {
-	err = Db.QueryRow("select id, uuid , name, email from users where id = $1", id).Scan(&u.Id, &u.Uuid, &u.Name, &u.Email)
-	return
-}
-
-// GetAllUsers returns all users from the postgres database
-func GetAllUsers() (us []service.User, err error) {
-	rows, err := Db.Query("select id, fname, lname, email from users")
-	if err != nil {
-		err = fmt.Errorf("\nError while getting all users with err: %w", err)
-		return
-	}
-	for rows.Next() {
-		user := service.User{}
-		err = rows.Scan(&user.Id, &user.Uuid, &user.Name, &user.Email)
-		if err != nil {
-			err = fmt.Errorf("\nError while retrieving user %s all users with err: %w", user.Name, err)
-			return
-		}
-		us = append(us, user)
-	}
-	rows.Close()
-	return
-}
-
 // CheckSession checks if the session is active using the given uuid
 func (sa SessionAccess) CheckSession(uuid string) (active bool, err error) {
 	err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM sessions WHERE uuid = $1)", uuid).Scan(&active)
@@ -145,26 +59,3 @@ func SessionById(id int) (sess service.Session, err error) {
 	}
 	return
 }
-
-
-
-// TODO: think about re writing the service package so the underlying user type is used like below.
-
-// // Create inserts the user into the postgres database website table users
-// func (ua UserAccess) Create(name string, email string, password string, CreatedAt time.Time) (err error) {
-// 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
-
-// 	stmnt, err := Db.Prepare(statement)
-// 	if err != nil {
-// 		err = fmt.Errorf("\nError preparing statement to insert user into users table: %w", err)
-// 		return
-// 	}
-// 	defer stmnt.Close()
-// 	err = stmnt.QueryRow(data.CreateUUID(), name, email, password, CreatedAt).Scan(&ua.Id, &ua.Uuid, &ua.CreatedAt)
-// 	if err != nil {
-// 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
-// 		return
-// 	}
-
-// 	return
-// }
