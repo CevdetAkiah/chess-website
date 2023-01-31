@@ -16,6 +16,7 @@ func init() {
 		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
+	
 }
 
 func Retrieve(id int) (u service.User, err error) {

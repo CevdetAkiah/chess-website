@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	// test database connection
 	err := postgres.Db.Ping()
 	if err != nil {
 		err = fmt.Errorf("Cannot connect to database with error: %w", err)
@@ -20,16 +21,16 @@ func main() {
 	}
 	fmt.Println("connected to database website")
 
-	// Set up the database service.
-	// Can swap out with any database
-	serv := service.DbService{
-		Db:             postgres.Db,
-		UserService:    postgres.UserAccess{},
-		SessionService: postgres.SessionAccess{},
-	}
+	// set up the database service/access
+	DBAccess := service.NewDbService(
+		postgres.Db,
+		postgres.UserAccess{},
+		postgres.SessionAccess{},
+		log.New(os.Stdout, "database-api", log.LstdFlags))
 
-	mux := mux(serv)
+	mux := mux(DBAccess)
 
+	// set up server
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
 		Handler: mux,

@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type SessionAccess service.Session
+type SessionAccess service.DBSession
 
 // CreateSession creates a session in the postgres database
 func (sa SessionAccess) CreateSession(u service.User) (sess service.Session, err error) {

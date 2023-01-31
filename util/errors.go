@@ -29,6 +29,7 @@ type HandlerErr struct {
 	Err   error
 }
 
+// routes the error through the url
 func RouteError(w http.ResponseWriter, r *http.Request, sent error, fname string, op string) {
 	e = sent
 
@@ -60,9 +61,10 @@ func (e HandlerErr) Is(other error) bool {
 	return ok
 }
 
-// ErrHandler provides more information for errors that occur in the handlers
+// ErrHandler provides more information for errors that occur in the handlers and directs the error to the correct error function
 func ErrHandler(w http.ResponseWriter, r *http.Request, fname string, op string, t time.Time) {
 	if e != nil {
+		fmt.Println("OP: ", op)
 		switch op {
 		case "Initialize template ":
 			TmpError(w, r, fname, op, t)

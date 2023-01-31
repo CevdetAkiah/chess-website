@@ -1,20 +1,26 @@
 package service
 
-// DeleteByUUID deletes a session from the database using the cookie uuid. Mostly used logging out.
-func (serve DbService) DeleteByUUID(sess Session) (err error) {
-	err = serve.SessionService.DeleteByUUID(sess)
-	return
+import (
+	"net/http"
+	"time"
+)
+
+type Session struct {
+	Id        int
+	Uuid      string
+	Email     string
+	UserId    int
+	CreatedAt time.Time
 }
 
-// CreateSession stores a new session in the database on logging in.
-func (serve DbService) CreateSession(u User) (sess Session, err error) {
-	sess, err = serve.SessionService.CreateSession(u)
-	return
-}
+// AssignCookie puts a cookie into the response writer using the session uuid as the value
+func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:     "session",
+		Value:    s.Uuid,
+		HttpOnly: true,
+	}
 
-func (serve DbService) CheckSession(uuid string) (active bool, err error) {
-	active, err = serve.SessionService.CheckSession(uuid)
-	return
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/", 302)
 }
-
-// TODO: write tests for DeleteByUUID and CreateSession

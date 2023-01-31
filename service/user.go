@@ -1,23 +1,37 @@
 package service
 
-// NewUser stores a new user inside a database
-func (serve DbService) NewUser(user *User) (err error) {
-	err = serve.UserService.Create(user)
-	return
+import (
+	"net/http"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+type User struct {
+	Id        int
+	Uuid      string
+	Name      string
+	Email     string
+	Password  string
+	CreatedAt time.Time
 }
 
-func (serve DbService) Update(user *User) (err error) {
-	err = serve.UserService.Update(user)
-	return
+func BuildUser(name, email, password string) *User {
+	return &User{Name: name, Email: email, Password: password}
 }
 
-// DeleteUser deletes a user from a database
-func (serve DbService) DeleteUser(u User) (err error) {
-	err = serve.UserService.Delete(u)
-	return
+func (u *User) Authenticate(r *http.Request) (ok bool) {
+	if u.checkPw(r.FormValue("password")) {
+		return true
+	}
+	return false
 }
 
-func (serve DbService) UserByEmail(email string) (u User, err error) {
-	u, err = serve.UserService.UserByEmail(email)
+func (u *User) checkPw(formPw string) (ok bool) {
+	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(formPw)) == nil {
+		ok = true
+	} else {
+		ok = false
+	}
 	return
 }

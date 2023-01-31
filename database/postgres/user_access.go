@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type UserAccess service.User
+type UserAccess service.UserDB
 
 // Create inserts the user into the postgres database website table users
 func (ua UserAccess) Create(u *service.User) (err error) {
@@ -24,11 +24,11 @@ func (ua UserAccess) Create(u *service.User) (err error) {
 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
 		return
 	}
-
+	
 	return
 }
 
-// Update alters a users email in the postgres database
+// Update alters a user's email in the postgres database
 func (ua UserAccess) Update(u *service.User) (err error) {
 	_, err = Db.Exec("update users set email = $1 where id = $2", u.Email, u.Id)
 	if err != nil {
