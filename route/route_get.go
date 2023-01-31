@@ -28,14 +28,6 @@ func Login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "login", DBAccess, "")
 }
 
-// func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-// 	// send the cookie to be removed from the browser and return the session
-// 	session := data.DeleteCookie(w, r)
-// 	// remove the session from the database
-// 	DBAccess.DeleteByUUID(session)
-// 	http.Redirect(w, r, "/", 302)
-// }
-
 func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	// send the cookie to be removed from the browser
 	session := service.Session{}

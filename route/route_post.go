@@ -23,7 +23,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 		util.RouteError(w, r, err, "NewUser", "Database")
 	}
 
-	http.Redirect(w, r, "/", 200)
+	http.Redirect(w, r, "/", 302)
 }
 
 // Authenticate is activated from the login page
