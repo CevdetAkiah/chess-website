@@ -18,6 +18,9 @@ func (serve DbService) DeleteByUUID(sess Session) (err error) {
 
 // CreateSession stores a new session in the database on logging in.
 func (serve DbService) CreateSession(u User) (sess Session, err error) {
+	if u.Name == "" {
+		return Session{}, nil // return empty session
+	}
 	sess, err = serve.SessionService.CreateSession(u)
 	return
 }

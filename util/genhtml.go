@@ -8,14 +8,14 @@ import (
 	"net/http"
 )
 
-func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn bool, serv service.DbService, errMsg string) {
+func InitHTML(w http.ResponseWriter, r *http.Request, filename string, DBAccess service.DbService, errMsg string) {
 	var buf bytes.Buffer
 	// Gather the data for insertion into the templates
 	TplData := templateData(r, errMsg)
 
 	// Parse both the html page and layout
 	tpl := template.Must(template.ParseFiles(fmt.Sprintf("../templates/%s.page.html", filename)))
-	if loggedIn {
+	if CheckLogin(r, DBAccess) {
 		tpl.ParseFiles("../templates/nav-loggedin.layout.html")
 	} else {
 		tpl.ParseFiles("../templates/nav-loggedout.layout.html")
@@ -30,5 +30,15 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, loggedIn 
 	// Write the buffer to the writer
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	buf.WriteTo(w)
+	return
+}
+
+func CheckLogin(r *http.Request, DBAccess service.DbService) (ok bool) {
+	cookie, err := r.Cookie("session")
+	if err == nil {
+		ok, err = DBAccess.SessionService.CheckSession(cookie.Value)
+	} else {
+		ok = false
+	}
 	return
 }

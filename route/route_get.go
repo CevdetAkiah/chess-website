@@ -9,31 +9,31 @@ import (
 )
 
 // Index initialises the index template
-func Index(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
-	util.InitHTML(w, r, "index", loggedIn, serve, "")
+func Index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	util.InitHTML(w, r, "index", DBAccess, "")
 }
 
 // ErrorPage initialises the error template
-func ErrorPage(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
+func ErrorPage(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	vals := r.URL.Query()
 	util.ErrHandler(w, r, vals.Get("fname"), vals.Get("op"), time.Now())
 }
 
 // Signup initialised the signup template and deals with user registration
-func Signup(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
-	util.InitHTML(w, r, "signup", loggedIn, serve, "")
+func Signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	util.InitHTML(w, r, "signup", DBAccess, "")
 }
 
 // Login initialises the login template
-func Login(w http.ResponseWriter, r *http.Request, serve service.DbService, loggedIn bool) {
-	util.InitHTML(w, r, "login", loggedIn, serve, "")
+func Login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	util.InitHTML(w, r, "login", DBAccess, "")
 }
 
-func Logout(w http.ResponseWriter, r *http.Request, serve service.DbService) {
+func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	// send the cookie to be removed from the browser and return the session
 	session := data.DeleteCookie(w, r)
 	// remove the session from the database
-	serve.DeleteByUUID(session)
+	DBAccess.DeleteByUUID(session)
 	http.Redirect(w, r, "/", 302)
 }
 

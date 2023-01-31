@@ -24,3 +24,5 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/", 302)
 }
+
+

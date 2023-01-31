@@ -85,7 +85,7 @@ func TmpError(w http.ResponseWriter, r *http.Request, fname string, op string, t
 	errors.As(e, &tErr)
 	h := returnHandlerErr(fname, op+tErr.Name, t, e)
 	w.WriteHeader(http.StatusInternalServerError)
-	InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
+	InitHTML(w, r, "errors", service.DbService{}, h.Error())
 }
 
 // UserError deals with user database errors
@@ -96,17 +96,17 @@ func UserError(w http.ResponseWriter, r *http.Request, e error, fname string, op
 	// email already exists in database so can't sign up with it
 	if errors.As(e, &sqlErr) && sqlErr.Code == pq.ErrorCode(fmt.Sprint(23505)) {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, r, "errors", false, service.DbService{}, dupEmail.Error())
+		InitHTML(w, r, "errors", service.DbService{}, dupEmail.Error())
 		log.Println(h.Error())
 
 		// Can't find user in database wrong email
 	} else if fname == "UserByEmail" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", service.DbService{}, h.Error())
 		log.Println(h.Error())
 
 	} else {
-		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", service.DbService{}, h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -116,12 +116,12 @@ func SessError(w http.ResponseWriter, r *http.Request, e error, fname string, op
 
 	if fname == "CreateSession" {
 		w.WriteHeader(http.StatusFailedDependency)
-		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", service.DbService{}, h.Error())
 		log.Println(h.Error())
 
 	} else if fname == "Logout" {
 		w.WriteHeader(http.StatusBadRequest)
-		InitHTML(w, r, "errors", false, service.DbService{}, h.Error())
+		InitHTML(w, r, "errors", service.DbService{}, h.Error())
 		log.Println(h.Error())
 	}
 }
@@ -131,6 +131,6 @@ func PwError(w http.ResponseWriter, r *http.Request, e error, fname string, op s
 	h := returnHandlerErr(fname, op, t, e)
 	fmt.Println("PwError: ", e)
 	w.WriteHeader(http.StatusUnauthorized)
-	InitHTML(w, r, "errors", false, service.DbService{}, badpw.Error())
+	InitHTML(w, r, "errors", service.DbService{}, badpw.Error())
 	log.Println(h.Error())
 }

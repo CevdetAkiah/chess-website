@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-func mux(serv service.DbService) *chi.Mux {
+func mux(DBAccess service.DbService) *chi.Mux {
 	mux := chi.NewRouter()
 
 	// mux middleware
@@ -25,15 +25,15 @@ func mux(serv service.DbService) *chi.Mux {
 	mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
 	// Get
-	mux.HandleFunc("/", route.Request(serv))
-	mux.HandleFunc("/signup", route.Request(serv))
-	mux.HandleFunc("/errors", route.Request(serv))
-	mux.HandleFunc("/login", route.Request(serv))
-	mux.HandleFunc("/logout", route.Request(serv))
+	mux.HandleFunc("/", route.Request(DBAccess))
+	mux.HandleFunc("/signup", route.Request(DBAccess))
+	mux.HandleFunc("/errors", route.Request(DBAccess))
+	mux.HandleFunc("/login", route.Request(DBAccess))
+	mux.HandleFunc("/logout", route.Request(DBAccess))
 
 	// Post
-	mux.HandleFunc("/signupAccount", route.Request(serv))
-	mux.HandleFunc("/authenticate", route.Request(serv))
+	mux.HandleFunc("/signupAccount", route.Request(DBAccess))
+	mux.HandleFunc("/authenticate", route.Request(DBAccess))
 
 	return mux
 }

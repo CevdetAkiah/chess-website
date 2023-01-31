@@ -79,12 +79,12 @@ func DeleteCookie(w http.ResponseWriter, r *http.Request) (session service.Sessi
 // 	return
 // }
 
-func CheckLogin(r *http.Request, DBAccess service.DbService) (loggedIn bool) {
-	cookie, err := r.Cookie("session")
-	if err == nil {
-		loggedIn, err = DBAccess.SessionService.CheckSession(cookie.Value)
-	} else {
-		loggedIn = false
-	}
-	return
-}
+// func CheckLogin(r *http.Request, DBAccess service.DbService) (loggedIn bool) {
+// 	cookie, err := r.Cookie("session")
+// 	if err == nil {
+// 		loggedIn, err = DBAccess.SessionService.CheckSession(cookie.Value)
+// 	} else {
+// 		loggedIn = false
+// 	}
+// 	return
+// }
