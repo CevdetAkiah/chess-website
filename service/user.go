@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,7 +18,7 @@ type User struct {
 }
 
 func BuildUser(name, email, password string) *User {
-	return &User{Name: name, Email: email, Password: password}
+	return &User{Name: name, Email: email, Password: encrypt(password)}
 }
 
 func (u *User) Authenticate(r *http.Request) (ok bool) {
@@ -33,5 +34,16 @@ func (u *User) checkPw(formPw string) (ok bool) {
 	} else {
 		ok = false
 	}
+	return
+}
+
+func (u *User) CreateUUID() {
+	u.Uuid = uuid.NewV4().String()
+}
+
+// Encrypt a password
+func encrypt(text string) (cryptext string) {
+	b, _ := bcrypt.GenerateFromPassword([]byte(text), 4)
+	cryptext = string(b)
 	return
 }

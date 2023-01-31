@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"go-projects/chess/database/data"
 	service "go-projects/chess/service"
 
 	_ "github.com/lib/pq"
@@ -19,12 +18,13 @@ func (ua UserAccess) Create(u *service.User) (err error) {
 		return
 	}
 	defer stmnt.Close()
-	err = stmnt.QueryRow(data.CreateUUID(), u.Name, u.Email, u.Password, u.CreatedAt).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
+	u.CreateUUID()
+	err = stmnt.QueryRow(u.Uuid, u.Name, u.Email, u.Password, u.CreatedAt).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
 		return
 	}
-	
+
 	return
 }
 
@@ -55,24 +55,3 @@ func (ua UserAccess) UserByEmail(email string) (u service.User, err error) {
 	}
 	return
 }
-
-// TODO: think about re writing the service package so the underlying user type is used like below.
-
-// // Create inserts the user into the postgres database website table users
-// func (ua UserAccess) Create(name string, email string, password string, CreatedAt time.Time) (err error) {
-// 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
-
-// 	stmnt, err := Db.Prepare(statement)
-// 	if err != nil {
-// 		err = fmt.Errorf("\nError preparing statement to insert user into users table: %w", err)
-// 		return
-// 	}
-// 	defer stmnt.Close()
-// 	err = stmnt.QueryRow(data.CreateUUID(), name, email, password, CreatedAt).Scan(&ua.Id, &ua.Uuid, &ua.CreatedAt)
-// 	if err != nil {
-// 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
-// 		return
-// 	}
-
-// 	return
-// }

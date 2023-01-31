@@ -20,3 +20,11 @@ func NewDbService(Db *sql.DB, UserService UserAccess, SessionService SessAccess,
 // Get from the database
 type Retrieval interface {
 }
+
+// print to stdout
+func (dbs *DbService) Println(s string) {
+	dbs.l.Println(s)
+}
+func (dbs *DbService) Printf(s string, args interface{}) {
+	dbs.l.Printf("%s \"%v\"\n", s, args)
+}

@@ -1,7 +1,6 @@
 package route
 
 import (
-	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
@@ -29,9 +28,18 @@ func Login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "login", DBAccess, "")
 }
 
+// func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+// 	// send the cookie to be removed from the browser and return the session
+// 	session := data.DeleteCookie(w, r)
+// 	// remove the session from the database
+// 	DBAccess.DeleteByUUID(session)
+// 	http.Redirect(w, r, "/", 302)
+// }
+
 func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	// send the cookie to be removed from the browser and return the session
-	session := data.DeleteCookie(w, r)
+	// send the cookie to be removed from the browser
+	session := service.Session{}
+	session.DeleteCookie(w, r)
 	// remove the session from the database
 	DBAccess.DeleteByUUID(session)
 	http.Redirect(w, r, "/", 302)

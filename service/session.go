@@ -25,4 +25,21 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
+func (s Session) DeleteCookie(w http.ResponseWriter, r *http.Request) (err error) {
+	// get the cookie from the request
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return err
+	}
+	// remove cookie from the browser
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 
+	// return the session to be removed from the database
+	s.setUUID(cookie.Value)
+	return
+}
+
+func (s Session) setUUID(uuid string) {
+	s.Uuid = uuid
+}

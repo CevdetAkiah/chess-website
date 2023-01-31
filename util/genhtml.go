@@ -37,8 +37,9 @@ func CheckLogin(r *http.Request, DBAccess service.DbService) (ok bool) {
 	cookie, err := r.Cookie("session")
 	if err == nil {
 		ok, err = DBAccess.SessionService.CheckSession(cookie.Value)
+		return
 	} else {
 		ok = false
+		return
 	}
-	return
 }

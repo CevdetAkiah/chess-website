@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"go-projects/chess/database/data"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
@@ -16,10 +15,8 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 	name := r.PostFormValue("name")
 	email := r.PostFormValue("email")
 	pw := r.PostFormValue("password")
-	// Encrypt password
-	ePw := data.Encrypt(pw)
 	// Create user
-	user := service.BuildUser(name, email, ePw)
+	user := service.BuildUser(name, email, pw)
 	// Insert user into database
 	err := DBAccess.NewUser(user)
 	if err != nil {
