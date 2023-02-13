@@ -21,17 +21,17 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 				ErrorPage(w, r, DBAccess)
 			} else if path == "/login" {
 				Login(w, r, DBAccess)
-			} else if path == "/logout" {
-				Logout(w, r, DBAccess)
 			}
-
 			// POST supplies resources to the server
 		case "POST":
 			if path == "/signupAccount" {
 				SignupAccount(w, r, DBAccess)
 			} else if path == "/authenticate" {
 				Authenticate(w, r, DBAccess)
+			} else if path == "/logout" {
+				Logout(w, r, DBAccess)
 			}
+
 		}
 	}
 }

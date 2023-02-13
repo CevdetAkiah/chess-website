@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+// swagger:route POST /signupAccount user createUser
+// Send account information to register a new account
+// Responses:
+//	200:
+//		description: "successfully made a new account"
+// 		content: text/html
+
 // SignupAccount is posted from the signup.html template
 // SignupAccount creates a user using posted form values and inserts the user into the database
 func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
@@ -25,6 +32,13 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 
 	http.Redirect(w, r, "/", 302)
 }
+
+// swagger:route POST /authenticate user authenticateUser
+// Send email and password for authentication
+// Responses:
+//	200:
+//		description: "successfully logged in"
+// 		content: text/html
 
 // Authenticate is activated from the login page
 // Authenticate checks a user exists and creates a session for the user
@@ -48,6 +62,23 @@ func Authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 		session.AssignCookie(w, r)
 	}
 	// if pw isn't correct then route to error page
-	err = fmt.Errorf("Incorrect password")
+	err = fmt.Errorf("incorrect password")
 	util.RouteError(w, r, err, "Authenticate handler", "Password")
+}
+
+// swagger:route POST /logout user logoutUser
+// log user out
+// Responses:
+//	200:
+//		description: "successfully logged out"
+// 		content: text/html
+
+// logout deletes the session from the browser and database
+func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	// send the cookie to be removed from the browser
+	session := service.Session{}
+	session.DeleteCookie(w, r)
+	// remove the session from the database
+	DBAccess.DeleteByUUID(session)
+	http.Redirect(w, r, "/", http.StatusFound)
 }

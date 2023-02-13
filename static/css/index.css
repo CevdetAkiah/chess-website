@@ -363,6 +363,15 @@ select {
   text-decoration: none;
 }
 
+.primary-navigation form {
+  --gap: clamp(1.5rem, 5vw, 5em);
+  --underline-gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: transparent
+}
+
 .primary-navigation a>span {
   font-weight: 700;
   margin-right: .5em;

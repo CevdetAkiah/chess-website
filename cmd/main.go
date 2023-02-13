@@ -16,7 +16,7 @@ func main() {
 	// test database connection
 	err := postgres.Db.Ping()
 	if err != nil {
-		err = fmt.Errorf("Cannot connect to database with error: %w", err)
+		err = fmt.Errorf("cannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
 	fmt.Println("connected to database website")
@@ -29,15 +29,17 @@ func main() {
 		log.New(os.Stdout, "database-api ", log.LstdFlags))
 
 	mux := NewMux(DBAccess)
+
 	// set up server
 	server := &http.Server{
-		Addr:    "0.0.0.0:8080",
-		Handler: mux,
+		Addr:         "0.0.0.0:8080",
+		Handler:      mux,
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
 	}
 
-	// fmt.Println("Connected to port :8080 at", time.Now())
 	DBAccess.Println("Connected to port :8080")
-	go func() { // go routine so it doesn't block
+	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)

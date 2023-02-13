@@ -1,0 +1,63 @@
+basePath: /
+info:
+    description: Documentation for chess API
+    title: Chess API
+    version: 1.0.0
+paths:
+    /:
+        get:
+            description: 'Produce the front page: index.page.html'
+            operationId: getIndex
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /authenticate:
+        post:
+            description: Send email and password for authentication
+            operationId: authenticateUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+    /login:
+        get:
+            description: 'Produce the login page: login.page.html and allows the user to log in to the website'
+            operationId: getLogin
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /logout:
+        post:
+            description: log user out
+            operationId: logoutUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+    /signup:
+        get:
+            description: 'Produce the signup page: signup.page.html and allows the user to create a new account'
+            operationId: getSignup
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /signupAccount:
+        post:
+            description: Send account information to register a new account
+            operationId: createUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+schemes:
+    - http
+swagger: "2.0"
