@@ -19,7 +19,7 @@ type TemplateData struct {
 
 // hashCSS creates a new css file from the source file and current nano second for the purpose of cache busting.
 
-// TODO: error handling
+// TODO: error handlin	g
 func hashCSS() string {
 	// remove any old css files from hashCSS dir
 	files, err := ioutil.ReadDir("../static/hashCSS")
@@ -27,6 +27,9 @@ func hashCSS() string {
 		for _, file := range files {
 			os.Remove(fmt.Sprintf("../static/hashCSS/%s", file.Name()))
 		}
+	}
+	if err != nil {
+		panic(err)
 	}
 
 	// Open source css file
@@ -50,11 +53,11 @@ func hashCSS() string {
 	return new.Name()
 }
 
+// templateData compiles data to be inserted into the html templates
 func templateData(r *http.Request, eMsg string) TemplateData {
 	// get updated css file name for cache busting purposes
 	cssFileName := hashCSS()
 	token := nosurf.Token(r)
-	fmt.Println(token)
 
 	return TemplateData{
 		CSRFToken: token, // CSRFToken nosurf checks against

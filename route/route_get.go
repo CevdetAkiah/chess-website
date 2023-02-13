@@ -34,7 +34,7 @@ func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 	session.DeleteCookie(w, r)
 	// remove the session from the database
 	DBAccess.DeleteByUUID(session)
-	http.Redirect(w, r, "/", 302)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // TODO: use context to timeout sessions

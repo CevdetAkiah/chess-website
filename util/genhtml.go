@@ -10,7 +10,7 @@ import (
 
 func InitHTML(w http.ResponseWriter, r *http.Request, filename string, DBAccess service.DbService, errMsg string) {
 	var buf bytes.Buffer
-	// Gather the data for insertion into the templates
+	// Gather the data for insertion into the templates. Includes cache busting
 	TplData := templateData(r, errMsg)
 
 	// Parse both the html page and layout
@@ -30,7 +30,6 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, DBAccess 
 	// Write the buffer to the writer
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	buf.WriteTo(w)
-	return
 }
 
 func CheckLogin(r *http.Request, DBAccess service.DbService) (ok bool) {

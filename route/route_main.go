@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-var loggedIn bool
-
 // Request multiplexes http requests
 func Request(DBAccess service.DbService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

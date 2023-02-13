@@ -28,7 +28,7 @@ func main() {
 		postgres.SessionAccess{},
 		log.New(os.Stdout, "database-api ", log.LstdFlags))
 
-	mux := mux(DBAccess)
+	mux := NewMux(DBAccess)
 	// set up server
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
@@ -57,5 +57,3 @@ func main() {
 	tc, _ := context.WithDeadline(context.Background(), t)
 	server.Shutdown(tc)
 }
-
-
