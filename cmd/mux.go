@@ -18,9 +18,8 @@ func NewMux(DBAccess service.DbService) *mux.Router {
 
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
 	// mux.Use(NoSurf) // TODO: figure out how to get this to work with error handling
-	// Pass the request to be handled in the route package
-	// mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
+	// Pass the request to be handled in the route package
 	// Get
 	getRouter := mux.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", route.Request(DBAccess))
@@ -31,8 +30,7 @@ func NewMux(DBAccess service.DbService) *mux.Router {
 
 	// fileServer serves all static files
 	fileServer := http.FileServer(http.Dir("../static/"))
-	getRouter.Handle("/static/*", http.StripPrefix("/static/", fileServer))
-	// getRouter.PathPrefix("/statis").Handler(http.StripPrefix("/static/", fileServer))
+	getRouter.PathPrefix("/static").Handler(http.StripPrefix("/static/", fileServer))
 
 	// Post
 	postRouter := mux.Methods(http.MethodPost).Subrouter()

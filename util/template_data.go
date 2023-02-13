@@ -58,7 +58,6 @@ func templateData(r *http.Request, eMsg string) TemplateData {
 	// get updated css file name for cache busting purposes
 	cssFileName := hashCSS()
 	token := nosurf.Token(r)
-
 	return TemplateData{
 		CSRFToken: token, // CSRFToken nosurf checks against
 		ErrMsg:    eMsg,
