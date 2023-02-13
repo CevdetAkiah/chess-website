@@ -3,6 +3,8 @@ module go-projects/chess
 go 1.18
 
 require (
+	github.com/go-chi/chi v1.5.4
+	github.com/go-openapi/runtime v0.25.0
 	github.com/gorilla/mux v1.8.0
 	github.com/justinas/nosurf v1.1.1
 	github.com/lib/pq v1.10.6
@@ -21,7 +23,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/loads v0.21.1 // indirect
-	github.com/go-openapi/runtime v0.25.0 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/go-openapi/strfmt v0.21.2 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
