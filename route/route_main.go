@@ -13,25 +13,29 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 		switch r.Method {
 		// GET retrieves resources
 		case "GET":
-			if path == "/" {
+			switch path {
+			case "/":
 				Index(w, r, DBAccess)
-			} else if path == "/signup" {
+			case "/signup":
 				Signup(w, r, DBAccess)
-			} else if path == "/errors" {
+			case "/errors":
 				ErrorPage(w, r, DBAccess)
-			} else if path == "/login" {
+			case "/login":
 				Login(w, r, DBAccess)
 			}
-			// POST supplies resources to the server
+
+			// POST sends resources to the server
 		case "POST":
-			if path == "/signupAccount" {
+			switch path {
+			case "/signupAccount":
 				SignupAccount(w, r, DBAccess)
-			} else if path == "/authenticate" {
+			case "/authenticate":
 				Authenticate(w, r, DBAccess)
-			} else if path == "/logout" {
+			case "/logout":
 				Logout(w, r, DBAccess)
 			}
-
 		}
+
 	}
+
 }
