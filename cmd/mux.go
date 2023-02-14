@@ -6,15 +6,14 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	// "github.com/go-chi/chi/middleware"
+	"github.com/go-openapi/runtime/middleware"
 )
 
 func NewMux(DBAccess service.DbService) *chi.Mux {
 	mux := chi.NewRouter()
 
 	// mux middleware
-	// Recoverer recovers from panics and provides a stack trace
-	mux.Use((middleware.Recoverer))
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
 	mux.Use(NoSurf)
 
@@ -26,14 +25,15 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 	mux.HandleFunc("/login", route.Request(DBAccess))
 
 	// fileServer serves all static files
+	// CSS and JS
 	fileServer := http.FileServer(http.Dir("../static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
-	// options := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
-	// sh := middleware.Redoc(options, nil)
-	// mux.Handle("/docs", sh)
-	
-	// swaggerServer := http.FileServer(http.Dir("./swagger.yaml"))
-	// mux.Handle("/docs", swaggerServer)
+	// swagger file
+	// TODO: hash the swagger file name for cache busting
+	options := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(options, nil)
+	mux.Handle("/docs", sh)
+	mux.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	// Post
 	mux.HandleFunc("/signupAccount", route.Request(DBAccess))

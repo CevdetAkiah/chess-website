@@ -7,7 +7,7 @@ paths:
     /:
         get:
             description: 'Produce the front page: index.page.html'
-            operationId: getIndex
+            operationId: Index
             responses:
                 "200":
                     description: ""
@@ -25,7 +25,7 @@ paths:
     /login:
         get:
             description: 'Produce the login page: login.page.html and allows the user to log in to the website'
-            operationId: getLogin
+            operationId: Login
             responses:
                 "200":
                     description: ""
@@ -43,7 +43,7 @@ paths:
     /signup:
         get:
             description: 'Produce the signup page: signup.page.html and allows the user to create a new account'
-            operationId: getSignup
+            operationId: Signup
             responses:
                 "200":
                     description: ""

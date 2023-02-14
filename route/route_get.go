@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// swagger:route GET / html getIndex
+// swagger:route GET / html Index
 // Produce the front page: index.page.html
 // Responses:
 //	200:
@@ -19,7 +19,7 @@ func Index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "index", DBAccess, "")
 }
 
-// swagger:route GET /signup html getErrorPage
+// swagger:route GET /signup html ErrorPage
 // Produce the error page: errors.page.html and embeds with the function and operation that caused the error
 // Responses:
 //	200:
@@ -32,7 +32,7 @@ func ErrorPage(w http.ResponseWriter, r *http.Request, DBAccess service.DbServic
 	util.ErrHandler(w, r, vals.Get("fname"), vals.Get("op"), time.Now())
 }
 
-// swagger:route GET /signup html getSignup
+// swagger:route GET /signup html Signup
 // Produce the signup page: signup.page.html and allows the user to create a new account
 // Responses:
 //	200:
@@ -44,7 +44,7 @@ func Signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 	util.InitHTML(w, r, "signup", DBAccess, "")
 }
 
-// swagger:route GET /login html getLogin
+// swagger:route GET /login html Login
 // Produce the login page: login.page.html and allows the user to log in to the website
 // Responses:
 //	200:
@@ -55,7 +55,5 @@ func Signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 func Login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "login", DBAccess, "")
 }
-
-
 
 // TODO: use context to timeout sessions
