@@ -10,7 +10,7 @@ paths:
             operationId: Index
             responses:
                 "200":
-                    description: ""
+                    $ref: '#/responses//templates/index.page.html'
             tags:
                 - html
     /authenticate:
@@ -40,6 +40,15 @@ paths:
                     description: ""
             tags:
                 - user
+    /profile:
+        get:
+            description: 'Produce the profile page: profile.page.html and allows the user to log in to the website'
+            operationId: Profile
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
     /signup:
         get:
             description: 'Produce the signup page: signup.page.html and allows the user to create a new account'

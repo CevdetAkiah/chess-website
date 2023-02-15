@@ -10,12 +10,12 @@ import (
 // swagger:route GET / html Index
 // Produce the front page: index.page.html
 // Responses:
-//	200:
+//	200: /templates/index.page.html
 //		description: "successfully loaded the front page"
 // 		content: text/html
 
 // Index initialises the index template
-func Index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "index", DBAccess, "")
 }
 
@@ -27,7 +27,7 @@ func Index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 // 		content: text/html
 
 // ErrorPage initialises the error template
-func ErrorPage(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func errorPage(w http.ResponseWriter, r *http.Request) {
 	vals := r.URL.Query()
 	util.ErrHandler(w, r, vals.Get("fname"), vals.Get("op"), time.Now())
 }
@@ -40,7 +40,7 @@ func ErrorPage(w http.ResponseWriter, r *http.Request, DBAccess service.DbServic
 // 		content: text/html
 
 // Signup initialised the signup template and deals with user registration
-func Signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "signup", DBAccess, "")
 }
 
@@ -52,8 +52,20 @@ func Signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 // 		content: text/html
 
 // Login initialises the login template
-func Login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	util.InitHTML(w, r, "login", DBAccess, "")
+}
+
+// swagger:route GET /profile html Profile
+// Produce the profile page: profile.page.html and allows the user to log in to the website
+// Responses:
+//	200:
+//		description: "successfully loaded the profile page"
+// 		content: text/html
+
+// profile initialises the profile page
+func profile(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	util.InitHTML(w, r, "profile", DBAccess, "")
 }
 
 // TODO: use context to timeout sessions

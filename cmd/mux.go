@@ -29,6 +29,7 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 	mux.HandleFunc("/signup", route.Request(DBAccess))
 	mux.HandleFunc("/errors", route.Request(DBAccess))
 	mux.HandleFunc("/login", route.Request(DBAccess))
+	mux.HandleFunc("/profile", route.Request(DBAccess))
 
 	// fileServer serves all static files
 	// CSS and JS

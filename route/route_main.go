@@ -15,24 +15,26 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 		case "GET":
 			switch path {
 			case "/":
-				Index(w, r, DBAccess)
+				index(w, r, DBAccess)
 			case "/signup":
-				Signup(w, r, DBAccess)
+				signup(w, r, DBAccess)
 			case "/errors":
-				ErrorPage(w, r, DBAccess)
+				errorPage(w, r)
 			case "/login":
-				Login(w, r, DBAccess)
+				login(w, r, DBAccess)
+			case "/profile":
+				profile(w, r, DBAccess)
 			}
 
 			// POST sends resources to the server
 		case "POST":
 			switch path {
 			case "/signupAccount":
-				SignupAccount(w, r, DBAccess)
+				signupAccount(w, r, DBAccess)
 			case "/authenticate":
-				Authenticate(w, r, DBAccess)
+				authenticate(w, r, DBAccess)
 			case "/logout":
-				Logout(w, r, DBAccess)
+				logout(w, r, DBAccess)
 			}
 		}
 

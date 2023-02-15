@@ -16,7 +16,7 @@ import (
 
 // SignupAccount is posted from the signup.html template
 // SignupAccount creates a user using posted form values and inserts the user into the database
-func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	r.ParseForm()
 	// Get form values
 	name := r.PostFormValue("name")
@@ -42,7 +42,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 
 // Authenticate is activated from the login page
 // Authenticate checks a user exists and creates a session for the user
-func Authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	// Parse the form and get the email
 	r.ParseForm()
 	email := r.PostFormValue("email")
@@ -74,7 +74,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 // 		content: text/html
 
 // logout deletes the session from the browser and database
-func Logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	// send the cookie to be removed from the browser
 	session := service.Session{}
 	session.DeleteCookie(w, r)
