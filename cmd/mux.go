@@ -22,7 +22,6 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 	// mux middleware
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
 	mux.Use(NoSurf)
-
 	// Pass the request to be handled in the route package
 	// Get
 	mux.HandleFunc("/", route.Request(DBAccess))

@@ -9,7 +9,6 @@ import (
 func Request(DBAccess service.DbService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-
 		switch r.Method {
 		// GET retrieves resources
 		case "GET":

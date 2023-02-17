@@ -17,7 +17,7 @@
     href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
     rel="stylesheet">
 
-  <script src="../static/js/4profile-options.js" type="text/javascript" defer></script>
+  <script src="../static/js/3profile-options.js" type="text/javascript" defer></script>
 
   <title>My Profile</title>
 </head>
@@ -26,36 +26,35 @@
   {{template "nav" .}}
 
   <nav role="profileoptions">
-    <ul class="flex grid underline-indicators">
+    <input type="text" id="csrf_token" value="{{.CSRFToken}}" hidden>
+    <ul class="flex grid underline-indicators primary-navigation">
 
-      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="1">Change username</a>
-        <form method="PUT" action="/updateUserName" hidden="true">
-          <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-          <input type="text" name="name" placeholder="username">
-          <button type="submit">Submit</button>
-        </form>
+      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change username</a>
+        <ul role="form" hidden>
+          <input type="text" name="username" id="username" placeholder="username">
+          <button onclick="sendUserName()">Submit</button>
+        </ul>
+
       </li>
-      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="2">Change email</a>
-        <form method="PUT" action="/updateEmail" hidden="true">
-          <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-          <input type="text" name="name" placeholder="email">
-          <button type="submit">Submit</button>
-        </form>
+      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change email</a>
+        <ul role="form" hidden>
+          <input type="email" name="email" id="email" placeholder="email">
+          <button onclick="sendEmail()">Submit</button>
+        </ul>
       </li>
 
-      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="3">Change
+      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change
           password</a>
-        <form method="PUT" action="/updatePassword" hidden="true">
-          <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-          <input type="text" name="name" placeholder="password">
-          <button type="submit">Submit</button>
-        </form>
+        <ul role="form" hidden>
+          <input type="text" name="password" id="password" placeholder="password">
+          <button onclick="sendPassword()">Submit</button>
+        </ul>
       </li>
-      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="4"> Delete account</a>
-        <form method="PUT" action="/deleteUser" hidden="true">
-          <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-          <button type="submit">PLEASE CLICK HERE IF YOU ARE SURE YOU WANT TO DELETE YOUR ACCOUNT</button>
-        </form>
+      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Delete account</a>
+        <ul role="form" hidden>
+          <input type="text" id="delete" hidden>
+          <button onclick="sendDelete()">CLICK HERE IF YOU ARE SURE YOU WANT TO DELETE YOUR ACCOUNT</button>
+        </ul>
 
       </li>
     </ul>
