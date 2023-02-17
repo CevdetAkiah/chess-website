@@ -17,7 +17,7 @@
     href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
     rel="stylesheet">
 
-  <script src="../static/js/profile-options.js" type="text/javascript" defer></script>
+  <script src="../static/js/4profile-options.js" type="text/javascript" defer></script>
 
   <title>My Profile</title>
 </head>
@@ -29,21 +29,21 @@
     <ul class="flex grid underline-indicators">
 
       <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="1">Change username</a>
-        <form method="PUT" action="/updateUsername" hidden="true">
+        <form method="PUT" action="/updateUserName" hidden="true">
           <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
           <input type="text" name="name" placeholder="username">
           <button type="submit">Submit</button>
         </form>
       </li>
       <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="2">Change email</a>
-        <form id="2" method="PUT" action="/updateEmail" hidden="true">
+        <form method="PUT" action="/updateEmail" hidden="true">
           <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
           <input type="text" name="name" placeholder="email">
           <button type="submit">Submit</button>
         </form>
       </li>
 
-      <li id="3" role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="3">Change
+      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="3">Change
           password</a>
         <form method="PUT" action="/updatePassword" hidden="true">
           <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
@@ -54,7 +54,7 @@
       <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2" tabindex="4"> Delete account</a>
         <form method="PUT" action="/deleteUser" hidden="true">
           <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-          <button type="submit">PLEASE CLICK HERE IF YOU ARE SURE</button>
+          <button type="submit">PLEASE CLICK HERE IF YOU ARE SURE YOU WANT TO DELETE YOUR ACCOUNT</button>
         </form>
 
       </li>

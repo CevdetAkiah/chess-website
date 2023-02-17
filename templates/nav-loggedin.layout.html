@@ -16,7 +16,7 @@
 
 
 
-<form method="post" id="logoutForm" action="/logout" hidden>
+<form method="post" id="logoutForm" action="/logout" hidden aria-readonly="true">
   <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
   <button type="submit">Logout</button>
 </form>

@@ -47,6 +47,9 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 	mux.HandleFunc("/authenticate", route.Request(DBAccess))
 	mux.HandleFunc("/logout", route.Request(DBAccess))
 
+	// Put
+	mux.HandleFunc("/updateUserName", route.Request(DBAccess))
+
 	return mux
 }
 
