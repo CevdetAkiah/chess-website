@@ -22,10 +22,7 @@ func BuildUser(name, email, password string) *User {
 }
 
 func (u *User) Authenticate(r *http.Request) (ok bool) {
-	if u.checkPw(r.FormValue("password")) {
-		return true
-	}
-	return false
+	return u.checkPw(r.FormValue("password"))
 }
 
 func (u *User) checkPw(formPw string) (ok bool) {

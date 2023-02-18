@@ -48,6 +48,11 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 
 	// Put
 	mux.HandleFunc("/updateUserName", route.Request(DBAccess))
+	mux.HandleFunc("/updateEmail", route.Request(DBAccess))
+	mux.HandleFunc("/updatePassword", route.Request(DBAccess))
+
+	// Delete
+	mux.HandleFunc("/deleteUser", route.Request(DBAccess))
 
 	return mux
 }

@@ -8,6 +8,7 @@ type SessAccess interface {
 	CreateSession(user User) (Session, error)
 	DeleteByUUID(sess Session) (err error)
 	CheckSession(uuid string) (active bool, err error)
+	SessionByUuid(uuid string) (Session, error)
 }
 
 // DeleteByUUID deletes a session from the database using the cookie uuid. Mostly used logging out.

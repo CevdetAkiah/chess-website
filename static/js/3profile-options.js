@@ -4,7 +4,7 @@ const profileOptions = document.querySelector('[role="profileoptions"]');
 
 profileOptions.addEventListener('click', showForm);
 
-// function changeOptionFocus(e) {
+
 //   const targetOption = e.target
 //   targetOption.addEventListener('click', showForm);
 

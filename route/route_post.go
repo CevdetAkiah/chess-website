@@ -58,12 +58,13 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 		if err != nil {
 			util.RouteError(w, r, err, "Authenticate handler", "Database")
 		}
-
 		session.AssignCookie(w, r)
+	} else {
+		// if pw isn't correct then route to error page
+		err = fmt.Errorf("incorrect password")
+		util.RouteError(w, r, err, "Authenticate handler", "Password")
 	}
-	// if pw isn't correct then route to error page
-	err = fmt.Errorf("incorrect password")
-	util.RouteError(w, r, err, "Authenticate handler", "Password")
+
 }
 
 // swagger:route POST /logout user logoutUser
@@ -78,6 +79,11 @@ func logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 	// send the cookie to be removed from the browser
 	session := service.Session{}
 	session.DeleteCookie(w, r)
+	uuid, err := r.Cookie("session")
+	if err != nil {
+		util.RouteError(w, r, err, "Logout", "Database")
+	}
+	session.Uuid = uuid.Value
 	// remove the session from the database
 	DBAccess.DeleteByUUID(session)
 	http.Redirect(w, r, "/", http.StatusFound)

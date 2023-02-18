@@ -31,7 +31,9 @@ func (sa SessionAccess) CreateSession(u service.User) (sess service.Session, err
 func (sa SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	statement := "delete from sessions where uuid = $1"
 	stmt, err := Db.Prepare(statement)
+	fmt.Println(sess.Uuid)
 	if err != nil {
+		err = fmt.Errorf("\nError deleting session from database")
 		return
 	}
 	defer stmt.Close()
@@ -50,9 +52,19 @@ func (sa SessionAccess) CheckSession(uuid string) (active bool, err error) {
 	return
 }
 
-// SessionById grabs session from testsessions using given id
-func SessionById(id int) (sess service.Session, err error) {
-	err = Db.QueryRow("SELECT uuid, email FROM testsessions WHERE id = $1", id).Scan(&sess.Uuid, &sess.Email)
+// SessionByUuid gets session from sessions using given uuid
+func (sa SessionAccess) SessionByUuid(uuid string) (sess service.Session, err error) {
+	err = Db.QueryRow("SELECT id, email FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email)
+	if err != nil {
+		err = fmt.Errorf("\nError getting session by uuid: %w", err)
+		return
+	}
+	return
+}
+
+// SessionById gets session from testsessions using given id
+func SessionByUuid(id int) (sess service.Session, err error) {
+	err = Db.QueryRow("SELECT id, email FROM sessions WHERE id = $1", id).Scan(&sess.Uuid, &sess.Email)
 	if err != nil {
 		err = fmt.Errorf("\nError getting session by id: %w", err)
 		return

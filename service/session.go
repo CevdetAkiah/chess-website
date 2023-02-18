@@ -22,7 +22,7 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
-	http.Redirect(w, r, "/", 302)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (s Session) DeleteCookie(w http.ResponseWriter, r *http.Request) (err error) {

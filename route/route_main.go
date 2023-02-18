@@ -40,6 +40,16 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 			switch path {
 			case "/updateUserName":
 				updateUserName(w, r, DBAccess)
+			case "/updateEmail":
+				updateEmail(w, r, DBAccess)
+			case "/updatePassword":
+				updatePassword(w, r, DBAccess)
+			}
+
+		case "DELETE":
+			switch path {
+			case "/deleteUser":
+				deleteUser(w, r, DBAccess)
 			}
 		}
 
