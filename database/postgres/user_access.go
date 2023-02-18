@@ -30,7 +30,7 @@ func (ua UserAccess) Create(u *service.User) (err error) {
 
 // Update alters a user's email in the postgres database
 func (ua UserAccess) Update(u *service.User) (err error) {
-	_, err = Db.Exec("update users set email = $1 where id = $2", u.Email, u.Id)
+	_, err = Db.Exec("update users set name = $1 where id = $2", u.Name, u.Id)
 	if err != nil {
 		err = fmt.Errorf("\nError updating user: %w", err)
 		return

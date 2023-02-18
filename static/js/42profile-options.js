@@ -46,6 +46,8 @@ function sendJSON(element) {
   let method = "PUT"
   let option = element.id
   let csrf = document.getElementById("csrf_token")
+  let jsonMap = {}
+  jsonMap[option] = element.value
 
   // set path
   switch (option) {
@@ -74,8 +76,10 @@ function sendJSON(element) {
   xhr.setRequestHeader("x-csrf-token", csrf.value)
   xhr.setRequestHeader("Content-Type", "application/json");
 
+
   // send data as JSON
-  var data = JSON.stringify({ option: element.value })
+  var data = JSON.stringify(jsonMap)
+  console.log(data)
 
   xhr.send(data);
 }

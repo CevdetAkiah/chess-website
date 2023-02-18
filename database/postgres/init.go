@@ -1,5 +1,7 @@
 package postgres
 
+// For connecting to postgres by CLI: sudo -u postgres psql
+
 import (
 	"database/sql"
 	"fmt"
@@ -16,7 +18,7 @@ func init() {
 		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
-	
+
 }
 
 func Retrieve(id int) (u service.User, err error) {

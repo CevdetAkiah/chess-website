@@ -4,9 +4,9 @@
 //
 //	Schemes: http
 //	BasePath: /
-//	Version: 1.0.0
+//	Version: 0.48.3
 //
-//	Consumes:
+//	Consumes: application/json
 //	-
 //
 //	Produces:

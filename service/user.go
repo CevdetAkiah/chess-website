@@ -11,9 +11,9 @@ import (
 type User struct {
 	Id        int
 	Uuid      string
-	Name      string
-	Email     string
-	Password  string
+	Name      string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 	CreatedAt time.Time
 }
 
