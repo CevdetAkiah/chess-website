@@ -36,12 +36,11 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 				logout(w, r, DBAccess)
 			}
 
+			// PUT updates a resource on the server
 		case "PUT":
 			switch path {
-			case "/updateUserName":
-				updateUserName(w, r, DBAccess)
-			case "/updateEmail":
-				updateEmail(w, r, DBAccess)
+			case "/updateUser":
+				updateUser(w, r, DBAccess)
 			case "/updatePassword":
 				updatePassword(w, r, DBAccess)
 			}

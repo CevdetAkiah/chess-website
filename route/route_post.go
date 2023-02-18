@@ -30,7 +30,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 		util.RouteError(w, r, err, "NewUser", "Database")
 	}
 
-	http.Redirect(w, r, "/", 302)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // swagger:route POST /authenticate user authenticateUser
@@ -48,7 +48,6 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 	email := r.PostFormValue("email")
 	// If the user exists, get the user from the database
 	user, err := DBAccess.UserByEmail(email)
-
 	if err != nil {
 		util.RouteError(w, r, err, "UserByEmail", "Database")
 	}

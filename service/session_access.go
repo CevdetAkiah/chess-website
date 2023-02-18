@@ -9,6 +9,7 @@ type SessAccess interface {
 	DeleteByUUID(sess Session) (err error)
 	CheckSession(uuid string) (active bool, err error)
 	SessionByUuid(uuid string) (Session, error)
+	UpdateSession(user User) (err error)
 }
 
 // DeleteByUUID deletes a session from the database using the cookie uuid. Mostly used logging out.
@@ -26,7 +27,12 @@ func (serve DbService) CreateSession(u User) (sess Session, err error) {
 	return
 }
 
-func (serve DbService) CheckSession(uuid string) (active bool, err error) {
-	active, err = serve.SessionService.CheckSession(uuid)
+func (serve DbService) CheckSession(uuid string) (ok bool, err error) {
+	ok, err = serve.SessionService.CheckSession(uuid)
+	return
+}
+
+func (serve DbService) UpdateSession(user User) (err error) {
+	err = serve.UpdateSession(user)
 	return
 }

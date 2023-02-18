@@ -47,22 +47,20 @@ function sendJSON(element) {
   let option = element.id
   let csrf = document.getElementById("csrf_token")
   let jsonMap = {}
+  // object to ensure values are mapped correctly to objects offered by api
   jsonMap[option] = element.value
 
   // set path
   switch (option) {
-    case "username":
-      path = "/updateUserName"
-      break;
-    case "email":
-      path = "/updateEmail"
-      break;
-    case "password":
-      path = "/updatePassword"
-      break;
     case "delete":
       path = "/deleteUser"
       method = "DELETE"
+      break;
+    case "password":
+      path = "/updatePassword"
+      break
+    default:
+      path = "/updateUser"
   }
 
   // create XHR object
@@ -76,10 +74,7 @@ function sendJSON(element) {
   xhr.setRequestHeader("x-csrf-token", csrf.value)
   xhr.setRequestHeader("Content-Type", "application/json");
 
-
   // send data as JSON
   var data = JSON.stringify(jsonMap)
-  console.log(data)
-
   xhr.send(data);
 }

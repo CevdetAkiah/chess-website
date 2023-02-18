@@ -31,7 +31,6 @@ func (sa SessionAccess) CreateSession(u service.User) (sess service.Session, err
 func (sa SessionAccess) DeleteByUUID(sess service.Session) (err error) {
 	statement := "delete from sessions where uuid = $1"
 	stmt, err := Db.Prepare(statement)
-	fmt.Println(sess.Uuid)
 	if err != nil {
 		err = fmt.Errorf("\nError deleting session from database")
 		return
@@ -57,6 +56,15 @@ func (sa SessionAccess) SessionByUuid(uuid string) (sess service.Session, err er
 	err = Db.QueryRow("SELECT id, email FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email)
 	if err != nil {
 		err = fmt.Errorf("\nError getting session by uuid: %w", err)
+		return
+	}
+	return
+}
+
+func (sa SessionAccess) UpdateSession(user service.User) (err error) {
+	_, err = Db.Exec("update sessions set email = $1 where uuid = $2", user.Email, user.Uuid)
+	if err != nil {
+		err = fmt.Errorf("\nError updating session by uuid: %w", err)
 		return
 	}
 	return

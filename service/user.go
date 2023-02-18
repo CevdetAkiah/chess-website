@@ -18,14 +18,14 @@ type User struct {
 }
 
 func BuildUser(name, email, password string) *User {
-	return &User{Name: name, Email: email, Password: encrypt(password)}
+	return &User{Name: name, Email: email, Password: Encrypt(password)}
 }
 
 func (u *User) Authenticate(r *http.Request) (ok bool) {
-	return u.checkPw(r.FormValue("password"))
+	return u.CheckPw(r.FormValue("password"))
 }
 
-func (u *User) checkPw(formPw string) (ok bool) {
+func (u *User) CheckPw(formPw string) (ok bool) {
 	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(formPw)) == nil {
 		ok = true
 	} else {
@@ -39,7 +39,7 @@ func (u *User) CreateUUID() {
 }
 
 // Encrypt a password
-func encrypt(text string) (cryptext string) {
+func Encrypt(text string) (cryptext string) {
 	b, _ := bcrypt.GenerateFromPassword([]byte(text), 4)
 	cryptext = string(b)
 	return

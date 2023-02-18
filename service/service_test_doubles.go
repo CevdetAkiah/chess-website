@@ -118,3 +118,12 @@ func (sa testSessionAccess) SessionByUuid(uuid string) (sess Session, err error)
 	}
 	return
 }
+
+func (sa testSessionAccess) UpdateSession(user User) (err error) {
+	_, err = testDb.Exec("update sessions set email = $1, where uuid = $2", user.Email, user.Uuid)
+	if err != nil {
+		err = fmt.Errorf("\nError updating session by uuid: %w", err)
+		return
+	}
+	return
+}
