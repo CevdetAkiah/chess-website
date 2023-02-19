@@ -47,7 +47,8 @@ function sendJSON(element) {
   let option = element.id
   let csrf = document.getElementById("csrf_token")
   let jsonMap = {}
-  // object to ensure values are mapped correctly to objects offered by api
+  let newPath = "/profile"
+  // object to ensure values are mapped correctly to objects/structs offered by api
   jsonMap[option] = element.value
 
   // set path
@@ -55,6 +56,7 @@ function sendJSON(element) {
     case "delete":
       path = "/deleteUser"
       method = "DELETE"
+      newPath = "/"
       break;
     case "password":
       path = "/updatePassword"
@@ -77,4 +79,11 @@ function sendJSON(element) {
   // send data as JSON
   var data = JSON.stringify(jsonMap)
   xhr.send(data);
+
+  xhr.onload = function () {
+    window.location.href = newPath;
+  };
+
+
 }
+

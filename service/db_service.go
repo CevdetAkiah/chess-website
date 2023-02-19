@@ -22,9 +22,9 @@ type Retrieval interface {
 }
 
 // print to stdout
-func (dbs *DbService) Println(s string) {
-	dbs.l.Println(s)
+func (dbs *DbService) Println(a ...any) {
+	dbs.l.Println(a...)
 }
-func (dbs *DbService) Printf(s string, args interface{}) {
-	dbs.l.Printf("%s \"%v\"\n", s, args)
+func (dbs *DbService) Printf(format string, a ...any) {
+	dbs.l.Printf(format, a...)
 }

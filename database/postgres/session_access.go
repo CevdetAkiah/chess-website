@@ -53,7 +53,7 @@ func (sa SessionAccess) CheckSession(uuid string) (active bool, err error) {
 
 // SessionByUuid gets session from sessions using given uuid
 func (sa SessionAccess) SessionByUuid(uuid string) (sess service.Session, err error) {
-	err = Db.QueryRow("SELECT id, email FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email)
+	err = Db.QueryRow("SELECT uuid, email FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email)
 	if err != nil {
 		err = fmt.Errorf("\nError getting session by uuid: %w", err)
 		return
