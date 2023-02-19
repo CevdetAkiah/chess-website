@@ -80,6 +80,7 @@ function sendJSON(element) {
   var data = JSON.stringify(jsonMap)
   xhr.send(data);
 
+  // reload the page once request dealt with. If delete method then redirect to the index page.
   xhr.onload = function () {
     window.location.href = newPath;
   };

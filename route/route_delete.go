@@ -5,6 +5,13 @@ import (
 	"net/http"
 )
 
+// swagger:route DELETE /deleteUser user deleteUser
+// Delete user from database and remove session from browser and db
+// Responses:
+//	200: account delete
+//		description: "successfully delete user"
+// 		content: application/json
+
 func deleteUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	// get cookie for uuid
 	cookie, err := r.Cookie("session")

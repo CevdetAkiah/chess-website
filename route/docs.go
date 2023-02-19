@@ -14,3 +14,6 @@
 //
 // swagger:meta
 package route
+
+// TODO: user struct
+// TODO: session struct

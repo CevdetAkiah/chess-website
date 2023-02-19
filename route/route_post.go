@@ -14,6 +14,7 @@ import (
 //		description: "successfully made a new account"
 // 		content: text/html
 
+// TODO: re write signupAccount so api accepts JSON from the frontend
 // SignupAccount is posted from the signup.html template
 // SignupAccount creates a user using posted form values and inserts the user into the database
 func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
@@ -40,6 +41,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 //		description: "successfully logged in"
 // 		content: text/html
 
+// TODO: re write authenticate so api accepts JSON from the frontend
 // Authenticate is activated from the login page
 // Authenticate checks a user exists and creates a session for the user
 func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {

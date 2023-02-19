@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// decodeUserUpdates retreives JSON from the request and updates the user and session
 func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) (user service.User) {
 	// get session cookie
 	cookie, err := r.Cookie("session")
