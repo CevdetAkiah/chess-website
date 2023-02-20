@@ -17,6 +17,7 @@ func (serve DbService) NewUser(user *User) (err error) {
 	return
 }
 
+// Update updates a user details in the database
 func (serve DbService) Update(user *User) (err error) {
 	err = serve.UserService.Update(user)
 	return

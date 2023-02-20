@@ -35,7 +35,7 @@ func updatePassword(w http.ResponseWriter, r *http.Request, DBAccess service.DbS
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	user := decodeUserUpdates(w, r, DBAccess)
 	// encrypt new password
-	user.Password = service.Encrypt(user.Password)
+	user.Password = service.HashPw(user.Password)
 
 	DBAccess.UserService.Update(&user)
 }

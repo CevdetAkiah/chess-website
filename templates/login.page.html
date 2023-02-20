@@ -8,6 +8,7 @@
   <title>LOGIN</title>
   <link rel="stylesheet" type="text/css" href='{{if .CssSrc}}{{.CssSrc}}{{else}}../static/css/index.css{{end}}'>
 
+  <script src="../static/js/post.js" type="text/javascript" defer></script>
 
 
   <!-- Google fonts -->
@@ -23,8 +24,8 @@
 
   <main id="#main">
 
-    <form method="post" action="/authenticate">
-      <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
+    <form id="userform">
+      <input type="text" id="csrf_token" value="{{.CSRFToken}}" hidden>
       <input type="text" name="email" placeholder="Email">
       <input type="text" name="password" placeholder="Password">
       <button type="submit">Login</button>

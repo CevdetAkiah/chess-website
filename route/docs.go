@@ -4,12 +4,12 @@
 //
 //	Schemes: http
 //	BasePath: /
-//	Version: 0.48.3
+//	Version: 0.52.0
 //
 //	Consumes: application/json
 //	-
 //
-//	Produces:
+//	Produces: text/html
 //	-
 //
 // swagger:meta

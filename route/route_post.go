@@ -12,21 +12,23 @@ import (
 // Responses:
 //	200:
 //		description: "successfully made a new account"
-// 		content: text/html
+// 		content: application/json
 
-// TODO: re write signupAccount so api accepts JSON from the frontend
 // SignupAccount is posted from the signup.html template
 // SignupAccount creates a user using posted form values and inserts the user into the database
 func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	r.ParseForm()
-	// Get form values
-	name := r.PostFormValue("name")
-	email := r.PostFormValue("email")
-	pw := r.PostFormValue("password")
-	// Create user
-	user := service.BuildUser(name, email, pw)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// Decode JSON
+	userJSON := service.User{}
+	err := userJSON.DecodeJSON(r)
+	if err != nil {
+		DBAccess.Printf("Error while decoding JSON in signupAccount%v", err)
+	}
+	user := service.BuildUser(userJSON.Name, userJSON.Email, userJSON.Password)
+
 	// Insert user into database
-	err := DBAccess.NewUser(user)
+	err = DBAccess.NewUser(user)
 	if err != nil {
 		util.RouteError(w, r, err, "NewUser", "Database")
 	}
@@ -39,22 +41,25 @@ func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 // Responses:
 //	200:
 //		description: "successfully logged in"
-// 		content: text/html
+// 		content: application/json
 
 // TODO: re write authenticate so api accepts JSON from the frontend
 // Authenticate is activated from the login page
 // Authenticate checks a user exists and creates a session for the user
 func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	// Parse the form and get the email
-	r.ParseForm()
-	email := r.PostFormValue("email")
+	// Decode JSON
+	userJSON := service.User{}
+	err := userJSON.DecodeJSON(r)
+	if err != nil {
+		util.RouteError(w, r, err, "UserByEmail", "Database")
+	}
 	// If the user exists, get the user from the database
-	user, err := DBAccess.UserByEmail(email)
+	user, err := DBAccess.UserByEmail(userJSON.Email)
 	if err != nil {
 		util.RouteError(w, r, err, "UserByEmail", "Database")
 	}
 	// If password is correct then create session for the user
-	if ok := user.Authenticate(r); ok {
+	if ok := user.Authenticate(userJSON.Password); ok {
 		session, err := DBAccess.CreateSession(user)
 		if err != nil {
 			util.RouteError(w, r, err, "Authenticate handler", "Database")

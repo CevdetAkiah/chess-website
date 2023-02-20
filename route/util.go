@@ -1,7 +1,6 @@
 package route
 
 import (
-	"encoding/json"
 	"go-projects/chess/service"
 	"net/http"
 )
@@ -26,8 +25,7 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 	}
 
 	// decode request body
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&user)
+	err = user.DecodeJSON(r)
 	if err != nil {
 		DBAccess.Printf("Error while decoding JSON in decodeUserUpdates%v", err)
 	}

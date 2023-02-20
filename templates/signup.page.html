@@ -9,6 +9,7 @@
   <link rel="stylesheet" type="text/css" href='{{if .CssSrc}}{{.CssSrc}}{{else}}../static/css/index.css{{end}}'>
 
 
+  <script src="../static/js/post.js" type="text/javascript" defer></script>
 
 
   <!-- Google fonts -->
@@ -28,11 +29,11 @@
 
   <main id="#main">
 
-    <form method="post" action="/signupAccount">
-      <input type="text" name="csrf_token" value="{{.CSRFToken}}" hidden>
-      <input type="text" name="name" placeholder="User name">
+    <form id="userform">
+      <input type="text" id="csrf_token" name="csrf_token" value="{{.CSRFToken}}" hidden>
+      <input type="text" name="username" placeholder="User name">
       <input type="email" name="email" placeholder="Email">
-      <input type="pw" name="password" placeholder="Password">
+      <input type="password" name="password" placeholder="Password">
       <button type="submit">Register</button>
     </form>
 

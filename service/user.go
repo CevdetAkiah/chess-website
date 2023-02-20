@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -17,14 +18,24 @@ type User struct {
 	CreatedAt time.Time
 }
 
+// BuildUser returns a user object with a hashed password
 func BuildUser(name, email, password string) *User {
-	return &User{Name: name, Email: email, Password: Encrypt(password)}
+	return &User{Name: name, Email: email, Password: HashPw(password)}
 }
 
-func (u *User) Authenticate(r *http.Request) (ok bool) {
-	return u.CheckPw(r.FormValue("password"))
+// Authenticate OKs the user for login
+func (u *User) Authenticate(password string) (ok bool) {
+	return u.CheckPw(password)
 }
 
+// DecodeJSON deserializes the object from JSON string
+// in an io.Reader to the given interface
+func (u *User) DecodeJSON(r *http.Request) error {
+	d := json.NewDecoder(r.Body)
+	return d.Decode(u)
+}
+
+// CheckPW compares the given password against the hashed user password in the database
 func (u *User) CheckPw(formPw string) (ok bool) {
 	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(formPw)) == nil {
 		ok = true
@@ -38,8 +49,8 @@ func (u *User) CreateUUID() {
 	u.Uuid = uuid.NewV4().String()
 }
 
-// Encrypt a password
-func Encrypt(text string) (cryptext string) {
+// HashPw hashes the provided password
+func HashPw(text string) (cryptext string) {
 	b, _ := bcrypt.GenerateFromPassword([]byte(text), 4)
 	cryptext = string(b)
 	return
