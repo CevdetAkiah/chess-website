@@ -7,6 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>INDEX</title>
 
+  <script src="../static/web-assembly/wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("../static/web-assembly/main.wasm"), go.importObject).then((result) => {
+      go.run(result.instance);
+    });
+  </script>
+
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
 
   <!-- Google fonts -->
