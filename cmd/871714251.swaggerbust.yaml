@@ -2,7 +2,7 @@ basePath: /
 info:
     description: Documentation for chess API
     title: Chess API
-    version: 0.48.3
+    version: 0.52.0
 paths:
     /:
         get:

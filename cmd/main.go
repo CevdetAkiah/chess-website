@@ -19,7 +19,7 @@ func main() {
 		err = fmt.Errorf("cannot connect to database with error: %w", err)
 		log.Fatalln(err)
 	}
-	fmt.Println("connected to database website")
+	fmt.Println("connected to database chess")
 
 	// set up the database service/access
 	DBAccess := service.NewDbService(

@@ -13,7 +13,7 @@ var Db *sql.DB
 
 func init() {
 	var err error
-	Db, err = sql.Open("postgres", "user=cevdet dbname=website password=cevdet sslmode=disable")
+	Db, err = sql.Open("postgres", "user=admin dbname=chess password='@ll@long@watchtower1974' sslmode=disable")
 	if err != nil {
 		err = fmt.Errorf("\nCannot connect to database with error: %w", err)
 		log.Fatalln(err)
