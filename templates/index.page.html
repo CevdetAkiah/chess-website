@@ -27,25 +27,22 @@
 
 <body>
   {{template "nav" .}}
-
+  <!-- <label>Welcome {username}</label> -->
+  
   <main id="#main">
     <h1 class="numbered-title">Log in to play and chat</h1>
 
     <!-- chat box -->
-    <form name = "chat">
-
-      <label>Welcome {username}</label>
-      <!-- message display -->
-      <div class = "mainchat" contenteditable="true" id ="messages"></div>
-      <!-- send message box -->
-      <div>
-        <label> Message</label>
-        <input type="text" name = "message" placeholder ="enter message">
-      </div>
-      <!-- submit message -->
-      <input type = "submit" value = "Send">
-    </form>
-
+    <div class="chatbox">
+      <form name = "chat">
+        <!-- message display -->
+        <div class = "mainchat" contenteditable="true" id ="messages"></div>
+        <!-- send message box -->
+          <input type = "text" class="chatmsg"  name = "message" placeholder ="Send a message" autocomplete="off">
+          <input type = "submit" class="chatbtn" value = "Chat">
+        <!-- submit message -->
+      </form>
+  </div>
   </main>
 
 </body>

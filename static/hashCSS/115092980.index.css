@@ -89,10 +89,9 @@ body {
   background-color: hsl(var(--clr-dark));
   line-height: 1.5;
   min-height: 100vh;
-
+  
   display: grid;
-  grid-template-rows: min-content 1fr;
-
+  
   overflow-x: hidden;
 }
 
@@ -332,15 +331,41 @@ select {
   opacity: 1;
   transform: scale(1.5);
 }
+ 
+.chatbox{
+  display: grid;
+}
 
+.chatbox :focus{
+  outline-style: hidden;
+  outline-color: hsl(var(--clr-light) / 0.1);
+}
 .mainchat{
   width: 20rem;
   height: 30rem;
   padding: 0.5rem;
-  border: 1px solid hsl(var(--clr-light)/0.5);
+  border: 1px solid hsl(var(--clr-light)/0.1);
   background-color: hsl(var(--clr-light) / 0.025);
   overflow-y: auto;
+  grid-area: header;
 }
+
+.chatmsg{
+  width:20rem;
+  background-color: hsl(var(--clr-light) / 0.3);
+  border: 0;
+  grid-area: main;
+}
+
+.chatbtn{
+  background-color: hsl(var(--clr-light)/0.2);
+  border:0;
+  color: hsl(var(--clr-light)/0.6);
+  border-radius: 5%;
+  grid-area: footer;
+}
+
+
 
 /* primary-header */
 
@@ -570,6 +595,7 @@ body {
   background-size: cover;
   background-position: bottom-center;
 }
+
 
 /* Home */
 

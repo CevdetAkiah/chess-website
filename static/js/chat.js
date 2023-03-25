@@ -1,5 +1,6 @@
 let socket = new WebSocket("ws://localhost:8080/ws")
 
+// TODO: protect against script insertion
 // send message from the chat form
 document.forms.chat.onsubmit = function() {
     // TODO: get name from session
@@ -25,19 +26,21 @@ socket.onmessage = function(event){
     let data = JSON.parse(event.data);
     let name = data.name;
     let msg = data.message + "<br>";
+
+        // build message
+    let message = name.bold() + ":  " + msg;
     // if message is longer than the length of the message box add a line break
-    if (msg.length > 30){
-        msgArray = msg.split("");
-        for (let i = 30; i < msg.length; i++){
-            if (i % 30 == 0) {
+    if (message.length > 38){
+        msgArray = message.split("");
+        for (let i = 38; i < message.length; i++){
+            if (i % 38 == 0) {
                 msgArray.splice(i,0,"<br>");
             }
         };
-        msg = msgArray.join("")
+        message = msgArray.join("")
     }
 
-    // build message
-    message = name.bold() + ":  " + msg;
+
     let msgcontainer = document.getElementById('messages');
     // append message to html message area
     msgcontainer.innerHTML += message;
