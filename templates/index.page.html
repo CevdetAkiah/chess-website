@@ -7,6 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>INDEX</title>
 
+<!-- javascript -->
+  <script src="../static/js/chat.js" type="text/javascript" defer></script>
+
+
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
 
   <!-- Google fonts -->
@@ -25,7 +29,23 @@
   {{template "nav" .}}
 
   <main id="#main">
-    <h1 class="numbered-title">Come see the chess pieces</h1>
+    <h1 class="numbered-title">Log in to play and chat</h1>
+
+    <!-- chat box -->
+    <form name = "chat">
+
+      <label>Welcome {username}</label>
+      <!-- message display -->
+      <div class = "mainchat" contenteditable="true" id ="messages"></div>
+      <!-- send message box -->
+      <div>
+        <label> Message</label>
+        <input type="text" name = "message" placeholder ="enter message">
+      </div>
+      <!-- submit message -->
+      <input type = "submit" value = "Send">
+    </form>
+
   </main>
 
 </body>

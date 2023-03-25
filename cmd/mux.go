@@ -14,15 +14,16 @@ import (
 	"github.com/go-chi/chi"
 	// "github.com/go-chi/chi/middleware"
 	"github.com/go-openapi/runtime/middleware"
+	"golang.org/x/net/websocket"
 )
 
-func NewMux(DBAccess service.DbService) *chi.Mux {
+func NewMux(DBAccess service.DbService, wsS *WsServer) *chi.Mux {
 	mux := chi.NewRouter()
 
 	// mux middleware
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
 	mux.Use(NoSurf)
-	
+
 	// Pass the request to be handled in the route package
 	// Get
 	mux.HandleFunc("/", route.Request(DBAccess))
@@ -53,6 +54,9 @@ func NewMux(DBAccess service.DbService) *chi.Mux {
 
 	// Delete
 	mux.HandleFunc("/deleteUser", route.Request(DBAccess))
+
+	// Websocket
+	mux.Handle("/ws", websocket.Handler(wsS.handleWS))
 
 	return mux
 }

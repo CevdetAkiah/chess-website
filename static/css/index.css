@@ -333,6 +333,14 @@ select {
   transform: scale(1.5);
 }
 
+.mainchat{
+  width: 350px;
+  height: 400px;
+  border: 1px solid hsl(var(--clr-light)/0.5);
+  background-color: hsl(var(--clr-light) / 0.025);
+  overflow-y: auto;
+}
+
 /* primary-header */
 
 .logo {

@@ -29,13 +29,13 @@
     <input type="text" id="csrf_token" value="{{.CSRFToken}}" hidden>
     <ul class="flex grid underline-indicators primary-navigation">
 
-      <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change username</a>
+      <li role="option" class="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change username</a>
         <ul role="form" hidden>
           <input type="text" name="username" id="username" placeholder="username">
           <button onclick="sendUserName()">Submit</button>
         </ul>
-
       </li>
+
       <li role="option"><a class="ff-sans-cond uppercase text-white letter-spacing-2">Change email</a>
         <ul role="form" hidden>
           <input type="email" name="email" id="email" placeholder="email">
