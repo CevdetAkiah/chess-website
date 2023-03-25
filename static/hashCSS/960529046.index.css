@@ -334,8 +334,9 @@ select {
 }
 
 .mainchat{
-  width: 350px;
-  height: 400px;
+  width: 20rem;
+  height: 30rem;
+  padding: 0.5rem;
   border: 1px solid hsl(var(--clr-light)/0.5);
   background-color: hsl(var(--clr-light) / 0.025);
   overflow-y: auto;
