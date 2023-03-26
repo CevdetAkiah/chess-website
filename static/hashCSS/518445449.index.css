@@ -336,6 +336,8 @@ select {
   display: grid;
 }
 
+
+
 .chatbox :focus{
   outline-style: hidden;
   outline-color: hsl(var(--clr-light) / 0.1);

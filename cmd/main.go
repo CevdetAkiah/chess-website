@@ -5,6 +5,7 @@ import (
 	"fmt"
 	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/service"
+	"go-projects/chess/util"
 	"io"
 	"log"
 	"net/http"
@@ -18,13 +19,15 @@ import (
 
 // websocket server
 type WsServer struct {
-	lock  sync.Mutex
-	conns map[*websocket.Conn]bool
+	lock     sync.Mutex
+	conns    map[*websocket.Conn]bool
+	DBAccess service.DbService
 }
 
-func NewWebsocket() *WsServer {
+func NewWebsocket(DBA service.DbService) *WsServer {
 	return &WsServer{
-		conns: make(map[*websocket.Conn]bool),
+		conns:    make(map[*websocket.Conn]bool),
+		DBAccess: DBA,
 	}
 }
 
@@ -38,19 +41,47 @@ func (wss *WsServer) handleWS(wsc *websocket.Conn) {
 
 func (wss *WsServer) readConn(wsc *websocket.Conn) {
 	buf := make([]byte, 1024) // TODO: optimize this
+	// TODO: make a msgUser object and send through the websocket as JSON. Will make it easier to manipulate on the other end
+	var username []byte
+	var message []byte
+	// check for session and get user name
+	if util.CheckLogin(wsc.Request(), wss.DBAccess) {
+		username = wss.getUserName(wsc.Request())
+	}
+
 	for {
 		n, err := wsc.Read(buf) // read frame from conn and put data into the buffer
+		fmt.Println(string(buf))
 		if err != nil {
 			if err == io.EOF { // break connection if user closes connection
 				break
 			}
 			fmt.Println("read error:", err) // TODO: handle this error better
 		}
-		msg := buf[:n]
+		message = append(username, buf[:n]...)
 
-		wss.broadcast(msg)
+		wss.broadcast(message)
 	}
 
+}
+
+// getUserName returns the username for the message giver.
+// TODO: refactor this into a general function. Doesn't need to be limited to websocket server
+func (wss *WsServer) getUserName(r *http.Request) []byte {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		fmt.Println(err) // TODO: handle this error better
+	}
+	session, err := wss.DBAccess.SessionService.SessionByUuid(cookie.Value)
+	if err != nil {
+		fmt.Println(err) // TODO: handle this error better
+	}
+	user, err := wss.DBAccess.UserService.UserByEmail(session.Email)
+	if err != nil {
+		fmt.Println(err) // TODO: handle this error better
+	}
+	username := user.Name + ": "
+	return []byte(username)
 }
 
 func (wss *WsServer) broadcast(msg []byte) {
@@ -58,7 +89,7 @@ func (wss *WsServer) broadcast(msg []byte) {
 		// send message to each active connection
 		go func(ws *websocket.Conn) {
 			if _, err := ws.Write(msg); err != nil {
-				fmt.Println("Broadcast error: ", err) // TODO: ahandle this error better
+				fmt.Println("Broadcast error: ", err) // TODO: handle this error better
 			}
 		}(ws)
 	}
@@ -81,7 +112,7 @@ func main() {
 		postgres.SessionAccess{},
 		log.New(os.Stdout, "database-api ", log.LstdFlags),
 	)
-	wsServer := NewWebsocket()
+	wsServer := NewWebsocket(DBAccess)
 	mux := NewMux(DBAccess, wsServer)
 
 	// set up server
