@@ -31,14 +31,3 @@ func InitHTML(w http.ResponseWriter, r *http.Request, filename string, DBAccess 
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	buf.WriteTo(w)
 }
-
-func CheckLogin(r *http.Request, DBAccess service.DbService) (ok bool) {
-	cookie, err := r.Cookie("session")
-	if err == nil {
-		ok, err = DBAccess.SessionService.CheckSession(cookie.Value)
-		return
-	} else {
-		ok = false
-		return
-	}
-}
