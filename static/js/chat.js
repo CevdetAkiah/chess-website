@@ -3,11 +3,6 @@ let socket = new WebSocket("ws://localhost:8080/ws")
 // TODO: protect against script insertion
 // send message from the chat form
 document.forms.chat.onsubmit = function() {
-    // TODO: get name from session
-
-    // get name
-    // let user = "anonymous" 
-
     // get message
     let userMessage = this.message.value;
     // const outgoingMessage = {name: user, message: userMessage};
@@ -23,13 +18,11 @@ document.forms.chat.onsubmit = function() {
 // message receive - show the message in div#messages
 socket.onmessage = function(event){
     // parse message received from server
-    // let data = JSON.parse(event.data);
-    // let name = data.name;
-    // let msg = data.message + "<br>";
-    let message = event.data + "<br>";
-
+    let data = JSON.parse(event.data);
+    let name = data.name;
+    let msg = data.message + "<br>";
         // build message
-    // let message = name.bold() + ":  " + msg;
+    let message = name.bold() + msg;
     // if message is longer than the length of the message box add a line break
     if (message.length > 42){ 
         for (let i = 42; i < message.length; i++){

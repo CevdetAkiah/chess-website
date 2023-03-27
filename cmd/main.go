@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/service"
@@ -39,28 +40,41 @@ func (wss *WsServer) handleWS(wsc *websocket.Conn) {
 	wss.readConn(wsc)
 }
 
+type UserMsg struct {
+	Username string `json:"name"`
+	Message  string `json:"message"`
+}
+
+// encode this as JSON instead
+func encodeUserMsg(uname, msg []byte) []byte {
+	userMessage := &UserMsg{Username: string(uname), Message: string(msg)}
+	outgoingMessage, err := json.Marshal(userMessage)
+	if err != nil {
+		fmt.Println(err) // TODO: handle this error better
+	}
+	return outgoingMessage
+}
+
 func (wss *WsServer) readConn(wsc *websocket.Conn) {
-	buf := make([]byte, 1024) // TODO: optimize this
-	// TODO: make a msgUser object and send through the websocket as JSON. Will make it easier to manipulate on the other end
+	var outgoingMessage []byte
 	var username []byte
-	var message []byte
-	// check for session and get user name
+	buf := make([]byte, 1024) // TODO: optimize this
+
 	if util.CheckLogin(wsc.Request(), wss.DBAccess) {
 		username = wss.getUserName(wsc.Request())
 	}
 
 	for {
 		n, err := wsc.Read(buf) // read frame from conn and put data into the buffer
-		fmt.Println(string(buf))
 		if err != nil {
 			if err == io.EOF { // break connection if user closes connection
 				break
 			}
 			fmt.Println("read error:", err) // TODO: handle this error better
 		}
-		message = append(username, buf[:n]...)
+		outgoingMessage = encodeUserMsg(username, buf[:n])
 
-		wss.broadcast(message)
+		wss.broadcast(outgoingMessage)
 	}
 
 }
