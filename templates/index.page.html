@@ -9,18 +9,19 @@
 
 <!-- javascript -->
   <script src="../static/js/chat.js" type="text/javascript" defer></script>
-
-
+  
+  
+  
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
-
+  
   <!-- Google fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
-    rel="stylesheet" type="text/css">
-
-
+  href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
+  rel="stylesheet" type="text/css">
+  
+  
   <!-- css -->
   <link rel="stylesheet" type="text/css" href='{{if .CssSrc}}{{.CssSrc}}{{else}}../static/css/index.css{{end}}'>
 </head>
@@ -29,9 +30,12 @@
   {{template "nav" .}}
   <!-- <label>Welcome {username}</label> -->
   
-  <main id="#main">
-    <h1 class="numbered-title">Log in to play and chat</h1>
-
+  <main id="#main" class="inline-grid">
+    <!-- Play button -->
+    <h1 class="small-button uppercase"><a href="/chess">click to play</a></h1>
+    
+    <!-- <script src="../static/js/wasm_exec.js"></script>
+    <script src="../static/js/wasm_instantiate.js"></script> -->
     <!-- chat box -->
     <div class="chatbox">
       <form name = "chat">

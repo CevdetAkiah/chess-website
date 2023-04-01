@@ -23,6 +23,8 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 				login(w, r, DBAccess)
 			case "/profile":
 				profile(w, r, DBAccess)
+			case "/chess":
+				chess(w, r, DBAccess)
 			}
 
 			// POST sends resources to the server

@@ -68,4 +68,8 @@ func profile(w http.ResponseWriter, r *http.Request, DBAccess service.DbService)
 	util.InitHTML(w, r, "profile", DBAccess, "")
 }
 
+func chess(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+	util.InitHTML(w, r, "chess", DBAccess, "")
+}
+
 // TODO: use context to timeout sessions

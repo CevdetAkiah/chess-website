@@ -31,6 +31,7 @@ func NewMux(DBAccess service.DbService, wsS *WsServer) *chi.Mux {
 	mux.HandleFunc("/errors", route.Request(DBAccess))
 	mux.HandleFunc("/login", route.Request(DBAccess))
 	mux.HandleFunc("/profile", route.Request(DBAccess))
+	mux.HandleFunc("/chess", route.Request(DBAccess))
 
 	// fileServer serves all static files
 	// CSS and JS
