@@ -1,0 +1,39 @@
+.userForm input {
+    display:block;
+    width: 20em;
+    padding: 0.5em;
+    font-size: 1em;
+    margin: 0.15em 0;
+    border: 0.1em solid #ccc;
+    border-radius: 0.2em;
+    background-color: rgb(49, 47, 47);
+    color: lightgray;
+    line-height: 1.42857143;
+ }
+
+ .userForm label{
+    color: whitesmoke;
+    font-weight: bold;
+ }
+ 
+ .userForm button{
+  background-color: rgb(49, 47, 47);
+  color: whitesmoke;
+  width:5em;
+  height: 2em;
+  font-weight: bold;
+    border-color:rgb(49, 47, 47);
+ }
+ .userForm button:hover{
+    border-color:blue
+ }
+
+.error{
+    color:  red;
+    font-size:12px;
+    text-align: left;
+}
+
+.form-control{
+    margin-bottom: 20px;
+}

@@ -1,0 +1,20 @@
+/* ChessGame.css (or inline styles) */
+.game {
+    width: 25%; /* Set the width to 25% of the screen */
+    height: 50vh; /* Set the height to the full viewport height */
+    position: fixed;
+    top: 15em;
+    right: 20em; /* Position it to the center-right of the screen */
+    background-color: #030403; /* Set a background color (adjust as needed) */
+    border: 1px solid #000; /* Add a border (adjust as needed) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Add any other styling as needed */
+}
+
+.message{
+    position:fixed;
+    top:15em;
+    left:10em;
+}
