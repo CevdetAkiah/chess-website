@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INDEX</title>
+
+<!-- javascript -->
+  <script src="../static/js/chat.js" type="text/javascript" defer></script>
+  
+  <script src="../static/js/wasm_exec.js"></script>
+  <script src="../static/js/wasm_instantiate.js"></script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+  
+  <!-- Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+  href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
+  rel="stylesheet" type="text/css">
+  
+  
+  <!-- css -->
+  <link rel="stylesheet" type="text/css" href='{{if .CssSrc}}{{.CssSrc}}{{else}}../static/css/index.css{{end}}'>
+</head>
+
+<body>
+  {{template "nav" .}}
+  <label>Welcome {username}</label>
+  
+  <!-- <main id="#main" class="inline-grid"> -->
+  <main id ="main" class = "grid-container">
+    <!-- chat box -->
+    <div class="chat-container">
+      <form name = "chat">
+        <!-- message display -->
+        <div class = "mainchat" contenteditable="true" id ="messages"></div>
+        <!-- send message box -->
+          <input type = "text" class="chatmsg"  name = "message" placeholder ="Send a message" autocomplete="off">
+          <input type = "submit" class="chatbtn" value = "Chat">
+        <!-- submit message -->
+      </form>
+  </div>
+
+  
+
+
+
+
+  </main>
+
+</body>
+
+</html>
