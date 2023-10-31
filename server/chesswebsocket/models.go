@@ -7,6 +7,18 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+var (
+	emitMsg            = &emitMessage{Emit: "message"}
+	emitPlayerJoined   = &emitMessage{Emit: "playerJoined"}
+	emitOpponentJoined = &emitMessage{Emit: "opponentJoined"}
+	emitOpponentMove   = &emitMessage{Emit: "opponentMove"}
+)
+
+const (
+	white = "w"
+	black = "b"
+)
+
 // handles websocket logic
 type WsGame struct {
 	lock        sync.Mutex
@@ -25,34 +37,38 @@ type Player struct {
 
 // TODO: experiment with getting rid of player and opponent and using a list  of players instead
 type Game struct {
-	gameID   int
-	player   *Player
-	opponent *Player
+	gameID    int
+	playerOne *Player
+	playerTwo *Player
+}
+
+type emitMessage struct {
+	Emit string `json:"emit"`
 }
 
 // send message to client
 type sendMessage struct {
-	Emit    string `json:"emit"`
+	*emitMessage
 	Message string `json:"message"`
 }
 
 // send chess move to client
 type sendMove struct {
-	Emit   string `json:"emit"`
+	*emitMessage
 	FromMV string `json:"from"`
 	ToMV   string `json:"to"`
 }
 
 // send player info to client
 type sendPlayerInfo struct {
-	Emit         string `json:"emit"`
+	*emitMessage
 	PlayerName   string `json:"pname"`
 	PlayerColour string `json:"playerColour"`
 }
 
 // send opponent info to client
 type sendOpponentInfo struct {
-	Emit           string `json:"emit"`
+	*emitMessage
 	OpponentName   string `json:"opponentName"`
 	OpponentColour string `json:"opponentColour"`
 }

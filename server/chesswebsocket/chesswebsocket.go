@@ -50,14 +50,14 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 
 // send move to the player that is not the current websocket (THE OPPONENT RELATIVE TO THE WEBSOCKET)
 func (wsg *WsGame) handleMove(msg *receiveMessage, wsc *websocket.Conn) {
-	message := &sendMove{Emit: "opponentMove", FromMV: msg.FromMV, ToMV: msg.ToMV}
+	message := &sendMove{emitMessage: emitOpponentMove, FromMV: msg.FromMV, ToMV: msg.ToMV}
 	player := wsc
 
-	if wsg.gamesInPlay[msg.GameID].player.PlayerID == player {
-		opponent := wsg.gamesInPlay[msg.GameID].opponent.PlayerID
+	if wsg.gamesInPlay[msg.GameID].playerOne.PlayerID == player {
+		opponent := wsg.gamesInPlay[msg.GameID].playerTwo.PlayerID
 		opponent.Write(encodeMessage(message))
 	} else {
-		opponent := wsg.gamesInPlay[msg.GameID].player.PlayerID
+		opponent := wsg.gamesInPlay[msg.GameID].playerOne.PlayerID
 		opponent.Write(encodeMessage(message))
 	}
 	// wsg.Broadcast(msg.GameID, message)
@@ -78,23 +78,25 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 			gameID: 1,
 		}
 		player.Colour = randColour()
-		game.player = player
+		game.playerOne = player
 		wsg.gameSearch = append(wsg.gameSearch, game) // add game to the search list
-		playerInfo := &sendPlayerInfo{Emit: "playerJoined", PlayerName: player.Name, PlayerColour: player.Colour}
+
+		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour}
 		player.PlayerID.Write(encodeMessage(playerInfo))
-		playerMessage := &sendMessage{Emit: "message", Message: "welcome " + player.Name + " you are playing as " + player.Colour}
+
+		playerMessage := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
 		player.PlayerID.Write(encodeMessage(playerMessage))
 
 	} else { // join someone's game
 		game := wsg.gameSearch[0]
-		opponent := game.player
-		if opponent.Colour == "w" {
-			player.Colour = "b"
+		opponent := game.playerOne
+		if opponent.Colour == white {
+			player.Colour = black
 		} else {
-			player.Colour = "w"
+			player.Colour = white
 		}
-		game.opponent = opponent // add player to game
-		game.player = player
+		game.playerTwo = opponent // add player to game
+		game.playerOne = player
 		if len(wsg.gamesInPlay) == 0 {
 			wsg.gamesInPlay = make(map[int]*Game)
 		}
@@ -103,21 +105,22 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 		wsg.gameSearch = nil                // game is now in play
 
 		// let the player know they have joined a game and their colour
-		message := &sendMessage{Emit: "message", Message: "welcome " + player.Name + " you are playing as " + player.Colour}
-		playerInfo := &sendPlayerInfo{Emit: "playerJoined", PlayerName: player.Name, PlayerColour: player.Colour}
+		message := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
 		player.PlayerID.Write(encodeMessage(message))
+
+		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour}
 		player.PlayerID.Write(encodeMessage(playerInfo))
 
 		// let the player know their opponent info and set the opponent in their client
-		opponentInfo := &sendOpponentInfo{Emit: "opponentJoined", OpponentName: opponent.Name, OpponentColour: opponent.Colour}
-		message = &sendMessage{Emit: "message", Message: "you are playing against " + opponent.Name + " who is playing as " + opponent.Colour + "\nStart the game"}
+		opponentInfo := &sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
 		player.PlayerID.Write(encodeMessage(opponentInfo))
+		message = &sendMessage{emitMessage: emitMsg, Message: "you are playing against " + opponent.Name + " who is playing as " + opponent.Colour + "\nStart the game"}
 		player.PlayerID.Write(encodeMessage(message))
 
 		// let the opponent know a player has joined and set the opponent's opponent as the player
-		opponentInfo = &sendOpponentInfo{Emit: "opponentJoined", OpponentName: opponent.Name, OpponentColour: opponent.Colour}
-		message = &sendMessage{Emit: "message", Message: opponent.Name + " has joined and is playing " + opponent.Colour + "\nStart the game"}
+		message = &sendMessage{emitMessage: emitMsg, Message: opponent.Name + " has joined and is playing " + opponent.Colour + "\nStart the game"}
 		opponent.PlayerID.Write(encodeMessage(message))
+		opponentInfo = &sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
 		opponent.PlayerID.Write(encodeMessage(opponentInfo))
 	}
 

@@ -12,7 +12,7 @@ import (
 // return either white or black
 func randColour() string {
 	rand.NewSource(time.Now().UnixNano())
-	colours := []string{"w", "b"}
+	colours := []string{white, black}
 	return colours[rand.Intn(len(colours))]
 }
 
