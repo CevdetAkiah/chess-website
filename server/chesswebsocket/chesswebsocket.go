@@ -34,7 +34,6 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 			}
 			fmt.Println("msg read error: ", err)
 		}
-
 		if message != nil {
 			switch message.Emit {
 			case "join":
@@ -60,14 +59,12 @@ func (wsg *WsGame) handleMove(msg *receiveMessage, wsc *websocket.Conn) {
 		opponent := wsg.gamesInPlay[msg.GameID].playerOne.PlayerID
 		opponent.Write(encodeMessage(message))
 	}
-	// wsg.Broadcast(msg.GameID, message)
 }
 
+// print message from client to console
 func (wsg *WsGame) handleMessage(msg *receiveMessage) {
 	fmt.Println(msg.Message)
 }
-
-// TODO: the logic for writing out to players is clumsy and needs re organising
 
 // handle the join event, join a game
 func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {

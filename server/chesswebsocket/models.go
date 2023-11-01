@@ -35,7 +35,6 @@ type Player struct {
 	GameID   string
 }
 
-// TODO: experiment with getting rid of player and opponent and using a list  of players instead
 type Game struct {
 	gameID    int
 	playerOne *Player
@@ -73,7 +72,7 @@ type sendOpponentInfo struct {
 	OpponentColour string `json:"opponentColour"`
 }
 
-// receive information from client
+// receive message from client
 type receiveMessage struct {
 	Emit    string `json:"emit"`
 	User    Player `json:"user"`

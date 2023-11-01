@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	chesswebsocket "go-projects/chess/chesswebsocket"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
-	chesswebsocket "go-projects/chess/websocket"
 	"io"
 	"net/http"
 	"os"

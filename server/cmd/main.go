@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	chesswebsocket "go-projects/chess/websocket"
-
+	chesswebsocket "go-projects/chess/chesswebsocket"
 	postgres "go-projects/chess/database/postgres"
 	"go-projects/chess/service"
 	"log"
