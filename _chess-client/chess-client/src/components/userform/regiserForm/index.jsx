@@ -34,10 +34,10 @@ const RegisterForm = () => {
     return (
                
             <div>
-                <header className="header">REGISTER</header>
                 <form className="registerForm" onSubmit={handleSubmit(sendFormData)} noValidate> 
-                    <label>User name</label>
+                <header className="header">REGISTER</header>
                     <div className="form-control">
+                    <label>User name</label>
                         <input
                             type='text'
                             id = 'username'

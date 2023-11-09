@@ -6,33 +6,23 @@
    color: lightgray;
    font-weight: 500;
 }
-/* 
-.popup-button{
-   background-color: rgba(0,0,0,0);
-   color: blue;
-   height:2em;
-   width:5em;
-   font-size: larger;
-   border:none;
-}
-
-.popup-button:hover{
-   background-color: rgba(60,60,60,0.50) ;
-} */
 
 .registerForm{
    z-index: 1;
    position: fixed;
-   transform: translate(180%,100%);
+   transform: translate(180%,80%); 
    width:30em;
-   height:20em;
+   height:25em;
   background-color: rgb(30, 30, 30);
    box-shadow:0px 0px 10px 0px rgba(0,0,0,0.75);
+   display:flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content:flex-start;
 }
 
 
 .registerForm input {
-    display:block;
     width: 20em;
     padding: 0.5em;
     font-size: 1em;
@@ -57,8 +47,8 @@
    font-weight: bold;
    border-color:rgb(49, 47, 47);
    position: absolute;
-   right:25%;
-   bottom: 1em;
+   left: 8em;
+   bottom: 3em;
  }
  .registerForm button:hover{
     border-color:blue
@@ -71,5 +61,10 @@
 }
 
 .form-control{
+   display: flex;
+   flex-direction:column;
+   align-items: flex-start;
+   transform: translate(0, 3.5em);
+   width:20em;
     margin-bottom: 20px;
 }

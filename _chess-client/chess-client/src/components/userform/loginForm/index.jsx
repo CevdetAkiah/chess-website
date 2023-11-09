@@ -36,10 +36,10 @@ const togglePop = () =>{
     
 return (
     <div >
-        <header className="header">LOG IN</header>
         <form className="loginForm" style={click ? { display: 'none'}: {}}  onSubmit={handleSubmit(sendFormData)} noValidate> 
-            <label>User name</label>
+        <header className="header">LOG IN</header>
             <div className="form-control">
+            <label>User name</label>
                 <input
                     type='text'
                     id = 'username'
@@ -64,8 +64,7 @@ return (
                 <p className="error">{errors.password?.message}</p>
             </div>
             <button type="submit" className="submit">Submit</button>
-        <button className="register" onClick={togglePop} onSubmit="">REGISTER</button>
-         
+            <button className="register" onClick={togglePop} onSubmit="">REGISTER</button>      
         </form>     
         {click ? <RegisterForm toggle={togglePop}/>: null}
     </div>
