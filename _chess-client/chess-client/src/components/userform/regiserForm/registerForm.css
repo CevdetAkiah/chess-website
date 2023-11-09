@@ -1,0 +1,75 @@
+
+.header{
+   position:absolute;
+   right:43%;
+   top:5%;
+   color: lightgray;
+   font-weight: 500;
+}
+/* 
+.popup-button{
+   background-color: rgba(0,0,0,0);
+   color: blue;
+   height:2em;
+   width:5em;
+   font-size: larger;
+   border:none;
+}
+
+.popup-button:hover{
+   background-color: rgba(60,60,60,0.50) ;
+} */
+
+.registerForm{
+   z-index: 1;
+   position: fixed;
+   transform: translate(180%,100%);
+   width:30em;
+   height:20em;
+  background-color: rgb(30, 30, 30);
+   box-shadow:0px 0px 10px 0px rgba(0,0,0,0.75);
+}
+
+
+.registerForm input {
+    display:block;
+    width: 20em;
+    padding: 0.5em;
+    font-size: 1em;
+    margin: 0.15em 0;
+    border: 0.1em solid #ccc;
+    border-radius: 0.2em;
+    background-color: rgb(49, 47, 47);
+    color: lightgray;
+    line-height: 1.42857143;
+ }
+
+ .registerForm label{
+    color: whitesmoke;
+    font-weight: bold;
+ }
+ 
+ .registerForm button{
+   background-color: rgb(49, 47, 47);
+   color: whitesmoke;
+   width:20em;
+   height: 2em;
+   font-weight: bold;
+   border-color:rgb(49, 47, 47);
+   position: absolute;
+   right:25%;
+   bottom: 1em;
+ }
+ .registerForm button:hover{
+    border-color:blue
+ }
+ 
+.error{
+    color:  red;
+    font-size:12px;
+    text-align: left;
+}
+
+.form-control{
+    margin-bottom: 20px;
+}

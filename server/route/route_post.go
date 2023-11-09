@@ -1,7 +1,6 @@
 package route
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
@@ -15,7 +14,7 @@ import (
 //		description: "successfully made a new account"
 // 		content: application/json
 
-// SignupAccount is posted from the signup.html template
+// SignupAccount is posted from the form component of client
 // SignupAccount creates a user using posted form values and inserts the user into the database
 func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -96,16 +95,4 @@ func logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 	// remove the session from the database
 	DBAccess.DeleteByUUID(session)
 	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func testreact(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	// w.Header().Set("Access-Control-Allow-Methods", "POST")
-	// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	var newString string
-	json.NewDecoder(r.Body).Decode(&newString)
-
-	json.NewEncoder(w).Encode(newString)
 }

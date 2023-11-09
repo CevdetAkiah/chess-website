@@ -1,0 +1,16 @@
+
+.userForm button{
+    background-color: rgba(0,0,0,0);
+    color: blue;
+    height:2em;
+    width:4em;
+    font-size: larger;
+    border:none;
+}
+
+
+.userForm button:hover{
+    width: 4em;
+    height: 2em;
+    background-color: rgba(60,60,60,0.50) ;
+ } 

@@ -35,8 +35,6 @@ func Request(DBAccess service.DbService) http.HandlerFunc {
 				authenticate(w, r, DBAccess)
 			case "/logout":
 				logout(w, r, DBAccess)
-			case "/testreact":
-				testreact(w, r, DBAccess)
 			}
 
 			// PUT updates a resource on the server

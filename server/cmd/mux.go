@@ -46,7 +46,6 @@ func NewMux(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 	mux.HandleFunc("/errors", route.Request(DBAccess))
 	mux.HandleFunc("/login", route.Request(DBAccess))
 	mux.HandleFunc("/profile", route.Request(DBAccess))
-	mux.HandleFunc("/testreactget", route.Request(DBAccess))
 
 	// fileServer serves all static files
 	// CSS and JS
@@ -64,7 +63,6 @@ func NewMux(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 	mux.HandleFunc("/signupAccount", route.Request(DBAccess))
 	mux.HandleFunc("/authenticate", route.Request(DBAccess))
 	mux.HandleFunc("/logout", route.Request(DBAccess))
-	mux.HandleFunc("/testreact", route.Request(DBAccess))
 
 	// Put
 	mux.HandleFunc("/updateUser", route.Request(DBAccess))

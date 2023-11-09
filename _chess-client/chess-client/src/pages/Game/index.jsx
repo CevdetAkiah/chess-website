@@ -14,7 +14,6 @@ import {
     types, } from '../../context/actions';
 import { getGameOverState } from '../../functions';
 import  GameOver from '../../components/gameover';
-import UserForm from '../../components/userform';
 
 // import io from 'socket.io-client';
 const serverURL = 'ws://localhost:8080/ws'

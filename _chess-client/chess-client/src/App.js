@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import Game from './pages/Game';
 import { GameProvider } from './context/GameContext';
 import './App.css';
-import UserForm from './components/userform';
+import UserForm from './components/userform/userForm';
+import RegisterForm from './components/userform/regiserForm';
+
+
 
 class ErrorBoundary extends Component {
         constructor(props) {
@@ -34,11 +37,12 @@ class ErrorBoundary extends Component {
 function App() {
     return (
         <ErrorBoundary>
-                <UserForm />
-            <GameProvider>
-                <Game/>
-            </GameProvider>    
-
+                                 <UserForm/>
+                <GameProvider>
+                         <div className="game">
+                                <Game/>
+                        </div>
+                </GameProvider>    
         </ErrorBoundary>
 
     );
