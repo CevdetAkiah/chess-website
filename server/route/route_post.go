@@ -54,7 +54,6 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 	if err != nil {
 		util.RouteError(w, r, err, "UserByEmail", "Database")
 	}
-	fmt.Println(userJSON.Name)
 	// If the user exists, get the user from the database
 	user, err := DBAccess.UserByEmail(userJSON.Email)
 	if err != nil {

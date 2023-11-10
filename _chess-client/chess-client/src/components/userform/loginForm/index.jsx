@@ -13,41 +13,69 @@ const LoginForm = () =>{
     const form = useForm();
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
-    const [click, setClick] = useState(false)
+    const [pop, setPop] = useState(false)
+    const [close, setClose] = useState(false)
 
         // send user date to 
         const sendFormData = (data) => {
-            console.log(data)
             const config = {
                 headers: { 'Content-Type': 'multipart/form-data' }
             }
             if (data) {
-                axios.post(serverURL + "/signupAccount", JSON.stringify(data), config).then((response) => {
-                    console.log("Form response: ", response.status)
+                axios.post(serverURL + "/authenticate", JSON.stringify(data), config).then((response) => {
+                    if (response.status === 200) {
+                        // turn off register form
+                        toggleLoginForm()
+
+                        console.log(response.statusText)
+                    }
                 });
             }
-            
+                        
         }
 
-const togglePop = () =>{
-    setClick(!click);
+        // controls register form popup
+const toggleRegisterForm = () =>{
+    setPop(!pop);
+    setClose(!close)
 };
+
+// closes the login form
+const toggleLoginForm = () => {
+    setClose(!close);
+};
+
+
         
     
 return (
     <div >
-        <form className="loginForm" style={click ? { display: 'none'}: {}}  onSubmit={handleSubmit(sendFormData)} noValidate> 
+        <form className="loginForm" style={ close ? { display: 'none'}: {}}  onSubmit={handleSubmit(sendFormData)} noValidate> 
         <header className="header">LOG IN</header>
             <div className="form-control">
-            <label>User name</label>
-                <input
-                    type='text'
-                    id = 'username'
-                    placeholder='Enter username'
-                    {...register("username", { 
-                        required: 'Username is required', // validation
-                    })}
-                />
+            <label>Email</label>
+            <input
+                type='email'
+                id = 'email'
+                placeholder='Enter email'
+                {...register("email", {
+                    required: 'Email is required', // validation
+                    pattern: { // validation
+                        value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                        message: 'Invalid email format',
+                        validate: {
+                            notAdmin: (fieldValue) => {
+                                return (
+                                    fieldValue !== "admin@chesswebsite.com" || "some other email address" // change depending on admin email
+                                );
+                            },
+                            notBlackListed: (fieldValue) => {
+                                return !fieldValue.endsWith("baddomain.com") || "This domain is not supported"
+                            }
+                        }
+                    }
+                })}
+            />
                 <p className="error">{errors.username?.message}</p>
             </div>
 
@@ -64,9 +92,10 @@ return (
                 <p className="error">{errors.password?.message}</p>
             </div>
             <button type="submit" className="submit">Submit</button>
-            <button className="register" onClick={togglePop} onSubmit="">REGISTER</button>      
+            <button className="register" onClick={toggleRegisterForm} onSubmit="">REGISTER</button>      
         </form>     
-        {click ? <RegisterForm toggle={togglePop}/>: null}
+        {pop ? <RegisterForm toggle={toggleRegisterForm}/>: null}
+            
     </div>
 )
 }

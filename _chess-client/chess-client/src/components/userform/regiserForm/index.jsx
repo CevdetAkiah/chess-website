@@ -13,7 +13,12 @@ const RegisterForm = () => {
     const form = useForm();
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
+    const [click, setClick] = useState(false)
 
+    // control register form popup
+    const togglePop = () => {
+        setClick(!click)
+    }
 
     // send user date to 
     const sendFormData = (data) => {
@@ -24,9 +29,12 @@ const RegisterForm = () => {
         if (data) {
             axios.post(serverURL + "/signupAccount", JSON.stringify(data), config).then((response) => {
                 console.log("Form response: ", response.status)
+                if (response.status === 200) {
+                    // turn off register form
+                    togglePop()
+                }
             });
         }
-        
     }
 
 
@@ -34,7 +42,7 @@ const RegisterForm = () => {
     return (
                
             <div>
-                <form className="registerForm" onSubmit={handleSubmit(sendFormData)} noValidate> 
+                <form style = {click ? {display: 'none'}: {}}autoComplete="off" className="registerForm" onSubmit={handleSubmit(sendFormData)} noValidate> 
                 <header className="header">REGISTER</header>
                     <div className="form-control">
                     <label>User name</label>

@@ -37,6 +37,7 @@ func (u *User) DecodeJSON(r *http.Request) error {
 
 // CheckPW compares the given password against the hashed user password in the database
 func (u *User) CheckPw(formPw string) (ok bool) {
+
 	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(formPw)) == nil {
 		ok = true
 	} else {
@@ -53,5 +54,6 @@ func (u *User) CreateUUID() {
 func HashPw(text string) (cryptext string) {
 	b, _ := bcrypt.GenerateFromPassword([]byte(text), 4)
 	cryptext = string(b)
+
 	return
 }
