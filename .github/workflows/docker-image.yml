@@ -12,9 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - run: cd server
     - uses: actions/setup-go@v4.1.0
-    - run: pwd; ls -l ; go test ./...
+    - run: pwd; ls -l ; go test server/...
     - name: Build
       run: docker build server --tag chess-server:${{ github.sha }}
 
