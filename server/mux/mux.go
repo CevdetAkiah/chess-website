@@ -1,4 +1,4 @@
-package main
+package mux
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-func NewMux(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
+func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 	mux := chi.NewRouter()
 
 	// mux middleware

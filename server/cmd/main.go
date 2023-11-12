@@ -5,6 +5,7 @@ import (
 	"fmt"
 	chesswebsocket "go-projects/chess/chesswebsocket"
 	postgres "go-projects/chess/database/postgres"
+	chess_mux "go-projects/chess/mux"
 	"go-projects/chess/service"
 	"log"
 	"net/http"
@@ -34,12 +35,10 @@ func main() {
 
 	// wsServer := NewWebsocket(DBAccess)
 
-	mux := NewMux(DBAccess, chessWebsocket)
-
 	// set up server
 	server := &http.Server{
 		Addr:         "0.0.0.0:8080",
-		Handler:      mux,
+		Handler:      chess_mux.New(DBAccess, chessWebsocket),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
