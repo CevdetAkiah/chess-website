@@ -13,7 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: cd server
-    - run: go test ./...
+    - uses: actions/setup-go@v4.1.0
+    - run: go test ./...          
     - name: Build
       run: docker build server --tag chess-server:${{ github.sha }}
 
