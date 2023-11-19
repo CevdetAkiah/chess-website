@@ -6,14 +6,14 @@ import (
 )
 
 // decodeUserUpdates retreives JSON from the request and updates the user and session
-func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) (user service.User) {
+func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) (user service.User) {
 	// get session cookie
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		DBAccess.Printf("can't access cookie in decodeUserUpdates with error: %b", err)
 	}
 	// get the session from db using uuid stored in cookie
-	session, err := DBAccess.SessionService.SessionByUuid(cookie.Value)
+	session, err := DBAccess.SessionByUuid(cookie.Value)
 	if err != nil {
 		DBAccess.Printf("can't get session in decodeUserUpdates error: %v", err)
 	}
@@ -31,7 +31,7 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 	}
 
 	// update session
-	err = DBAccess.SessionService.UpdateSession(user)
+	err = DBAccess.UpdateSession(user)
 	if err != nil {
 		DBAccess.Printf("Error while updating session in decodeUserUpdates%v", err)
 	}

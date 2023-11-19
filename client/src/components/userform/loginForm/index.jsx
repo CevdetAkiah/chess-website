@@ -19,17 +19,18 @@ const LoginForm = () =>{
         // send user date to 
         const sendFormData = (data) => {
             const config = {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true,
             }
             if (data) {
                 axios.post(serverURL + "/authenticate", JSON.stringify(data), config).then((response) => {
                     if (response.status === 200) {
                         // turn off register form
                         toggleLoginForm()
-
-                        console.log(response.statusText)
+                        console.log(response.data.username + " you are logged in")
+                        
                     }
-                });
+                });     
             }
                         
         }

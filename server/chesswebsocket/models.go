@@ -25,7 +25,7 @@ type WsGame struct {
 	conns       map[*websocket.Conn]bool
 	gameSearch  []*Game
 	gamesInPlay map[int]*Game
-	DBAccess    service.DbService
+	DBAccess    service.DatabaseAccess
 }
 
 type Player struct {

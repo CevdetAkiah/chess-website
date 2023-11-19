@@ -13,7 +13,7 @@ import (
 type WsServer struct {
 	lock     sync.Mutex
 	conns    map[*websocket.Conn]bool
-	DBAccess service.DbService
+	DBAccess service.DatabaseAccess
 }
 
 type UserMsg struct {
@@ -21,7 +21,7 @@ type UserMsg struct {
 	Message  string `json:"message"`
 }
 
-func NewWebsocket(DBA service.DbService) *WsServer {
+func NewWebsocket(DBA service.DatabaseAccess) *WsServer {
 	return &WsServer{
 		conns:    make(map[*websocket.Conn]bool),
 		DBAccess: DBA,

@@ -18,8 +18,8 @@ type User struct {
 	CreatedAt time.Time
 }
 
-// BuildUser returns a user object with a hashed password
-func BuildUser(name, email, password string) *User {
+// NewUser returns a user object with a hashed password
+func NewUser(name, email, password string) *User {
 	return &User{Name: name, Email: email, Password: HashPw(password)}
 }
 

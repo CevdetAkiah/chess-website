@@ -16,11 +16,11 @@ import (
 // 		content: application/json
 
 // updateUserName updates a user's username or email in the database
-func updateUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func updateUser(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	user := decodeUserUpdates(w, r, DBAccess)
 
-	DBAccess.UserService.Update(&user)
+	DBAccess.Update(&user)
 }
 
 // swagger:route PUT /updatePassword user updatePassword
@@ -31,11 +31,11 @@ func updateUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbServi
 // 		content: application/json
 
 // updatePassword updates a user's password in the database
-func updatePassword(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func updatePassword(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	user := decodeUserUpdates(w, r, DBAccess)
 	// encrypt new password
 	user.Password = service.HashPw(user.Password)
 
-	DBAccess.UserService.Update(&user)
+	DBAccess.Update(&user)
 }

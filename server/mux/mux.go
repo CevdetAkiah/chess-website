@@ -29,23 +29,21 @@ func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"http://localhost:3000", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
 	// Pass the request to be handled in the route package
 	// Get
 	mux.HandleFunc("/", route.Request(DBAccess))
-	mux.HandleFunc("/signup", route.Request(DBAccess))
-	mux.HandleFunc("/errors", route.Request(DBAccess))
-	mux.HandleFunc("/login", route.Request(DBAccess))
-	mux.HandleFunc("/profile", route.Request(DBAccess))
+	// mux.HandleFunc("/signup", route.Request(DBAccess))
+	// mux.HandleFunc("/errors", route.Request(DBAccess))
+	// mux.HandleFunc("/login", route.Request(DBAccess))
+	// mux.HandleFunc("/profile", route.Request(DBAccess))
 
 	// fileServer serves all static files
 	// CSS and JS

@@ -12,7 +12,7 @@ import (
 //		description: "successfully delete user"
 // 		content: application/json
 
-func deleteUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func deleteUser(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
 	// get cookie for uuid
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -20,7 +20,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbServi
 	}
 
 	// get the session from db using uuid stored in cookie
-	session, err := DBAccess.SessionService.SessionByUuid(cookie.Value)
+	session, err := DBAccess.SessionByUuid(cookie.Value)
 	if err != nil {
 		DBAccess.Printf("can't get session in deleteUser error: %v", err)
 	}
@@ -32,13 +32,13 @@ func deleteUser(w http.ResponseWriter, r *http.Request, DBAccess service.DbServi
 	}
 
 	// delete session from db
-	err = DBAccess.SessionService.DeleteByUUID(session)
+	err = DBAccess.DeleteByUUID(session)
 	if err != nil {
 		DBAccess.Printf("delete user from db error %b", err)
 	}
 
 	// delete user from db
-	err = DBAccess.UserService.Delete(user)
+	err = DBAccess.DeleteUser(user)
 	if err != nil {
 		DBAccess.Printf("delete user from db error %b", err)
 	}

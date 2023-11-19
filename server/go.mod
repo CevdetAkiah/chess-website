@@ -9,14 +9,12 @@ require (
 	github.com/justinas/nosurf v1.1.1
 	github.com/lib/pq v1.10.9
 	github.com/satori/go.uuid v1.2.0
-	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.14.0
 	golang.org/x/net v0.17.0
 )
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.4 // indirect
 	github.com/go-openapi/jsonpointer v0.20.0 // indirect
@@ -30,7 +28,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	go.mongodb.org/mongo-driver v1.12.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

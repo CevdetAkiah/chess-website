@@ -1,7 +1,6 @@
 package route
 
 import (
-	"encoding/json"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
@@ -16,8 +15,9 @@ import (
 // 		content: text/html
 
 // Index initialises the index template
-func index(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	util.InitHTML(w, r, "index", DBAccess, "")
+func index(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
+	// util.InitHTML(w, r, "index", DBAccess, "")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // swagger:route GET /signup html ErrorPage
@@ -41,8 +41,8 @@ func errorPage(w http.ResponseWriter, r *http.Request) {
 // 		content: text/html
 
 // Signup initialised the signup template and deals with user registration
-func signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	util.InitHTML(w, r, "signup", DBAccess, "")
+func signup(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
+	// util.InitHTML(w, r, "signup", DBAccess, "")
 }
 
 // swagger:route GET /login html Login
@@ -53,8 +53,8 @@ func signup(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) 
 // 		content: text/html
 
 // Login initialises the login template
-func login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	util.InitHTML(w, r, "login", DBAccess, "")
+func login(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
+	// util.InitHTML(w, r, "login", DBAccess, "")
 }
 
 // swagger:route GET /profile html Profile
@@ -65,14 +65,8 @@ func login(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
 // 		content: text/html
 
 // profile initialises the profile page
-func profile(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	util.InitHTML(w, r, "profile", DBAccess, "")
+func profile(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
+	// util.InitHTML(w, r, "profile", DBAccess, "")
 }
 
 // TODO: use context to timeout sessions
-
-func testreactget(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	newString := "TOSSER"
-	json.NewEncoder(w).Encode(&newString)
-}

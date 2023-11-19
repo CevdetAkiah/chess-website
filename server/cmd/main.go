@@ -5,6 +5,7 @@ import (
 	"fmt"
 	chesswebsocket "go-projects/chess/chesswebsocket"
 	postgres "go-projects/chess/database/postgres"
+	custom_log "go-projects/chess/logger"
 	chess_mux "go-projects/chess/mux"
 	"go-projects/chess/service"
 	"log"
@@ -15,23 +16,23 @@ import (
 )
 
 func main() {
+	l := custom_log.NewLogger()
+
 	// test database connection
-	err := postgres.Db.Ping()
-	if err != nil {
-		err = fmt.Errorf("cannot connect to database with error: %w", err)
-		log.Fatalln(err)
-	}
+	Db := postgres.NewDB()
+
 	fmt.Println("connected to database chess")
 
 	// set up the database service/access to database
-	DBAccess := service.NewDbService(
-		postgres.Db,
-		postgres.UserAccess{},
-		postgres.SessionAccess{},
-		log.New(os.Stdout, "database-api ", log.LstdFlags),
+	DBAccess, err := service.NewDBService(
+		Db,
+		l,
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	chessWebsocket := chesswebsocket.NewChessWebsocket(DBAccess)
+	chessWebsocket := chesswebsocket.NewWebsocket()
 
 	// wsServer := NewWebsocket(DBAccess)
 
@@ -43,7 +44,8 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	DBAccess.Println("Connected to port :8080")
+	DBAccess.Print("Connected to port :8080")
+
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
 		if err != nil {
@@ -57,7 +59,7 @@ func main() {
 	signal.Notify(sigChan, os.Kill)
 
 	sig := <-sigChan
-	DBAccess.Printf("Received terminate message ", sig)
+	DBAccess.Printf("Received terminate message %v", sig)
 
 	// Graceful shutdown. Users are given 2 minutes to finish their game if the server needs to restart for any reason
 	t := time.Now().Add(time.Second * 120)

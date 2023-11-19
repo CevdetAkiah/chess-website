@@ -1,35 +1,21 @@
 package route
 
 import (
+	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
 )
 
 // Request multiplexes http requests
-func Request(DBAccess service.DbService) http.HandlerFunc {
+func Request(DBAccess *service.DatabaseAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		switch r.Method {
-		// GET retrieves resources
-		case "GET":
-			switch path {
-			case "/":
-				index(w, r, DBAccess)
-			case "/signup":
-				signup(w, r, DBAccess)
-			case "/errors":
-				errorPage(w, r)
-			case "/login":
-				login(w, r, DBAccess)
-			case "/profile":
-				profile(w, r, DBAccess)
-			case "/testreactget":
-				testreactget(w, r, DBAccess)
-			}
-			// POST sends resources to the server
+		// POST sends resources to the server
 		case "POST":
 			switch path {
 			case "/signupAccount":
+				NewSignupAccount(custom_log.NewLogger())
 				signupAccount(w, r, DBAccess)
 			case "/authenticate":
 				authenticate(w, r, DBAccess)

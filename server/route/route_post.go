@@ -1,7 +1,10 @@
 package route
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
@@ -14,28 +17,37 @@ import (
 //		description: "successfully made a new account"
 // 		content: application/json
 
+func NewSignupAccount(logger custom_log.MagicLogger) (func(w http.ResponseWriter, r *http.Request, DBAccess service.DatabaseAccess), error) {
+	if logger != nil {
+		return nil, errors.New(fmt.Sprintf("logger was nil"))
+
+	}
+
+	return func(w http.ResponseWriter, r *http.Request, DBAccess service.DatabaseAccess) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Decode JSON
+		userJSON := service.User{}
+		err := userJSON.DecodeJSON(r)
+		if err != nil {
+			logger.Error("Error while decoding JSON in signupAccount %v", err)
+		}
+		user := service.NewUser(userJSON.Name, userJSON.Email, userJSON.Password)
+
+		// Insert user into database
+		err = DBAccess.NewUser(user)
+		if err != nil {
+			// util.RouteError(w, r, err, "NewUser", "Database")
+			fmt.Println(err)
+		}
+
+		http.Redirect(w, r, "/", http.StatusFound)
+	}, nil
+}
+
 // SignupAccount is posted from the form component of client
 // SignupAccount creates a user using posted form values and inserts the user into the database
-func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	// Decode JSON
-	userJSON := service.User{}
-	err := userJSON.DecodeJSON(r)
-	if err != nil {
-		DBAccess.Printf("Error while decoding JSON in signupAccount%v", err)
-	}
-	user := service.BuildUser(userJSON.Name, userJSON.Email, userJSON.Password)
-
-	// Insert user into database
-	err = DBAccess.NewUser(user)
-	if err != nil {
-		// util.RouteError(w, r, err, "NewUser", "Database")
-		fmt.Println(err) //TODO: handle this error
-	}
-
-	http.Redirect(w, r, "/", http.StatusFound)
-}
+// func signupAccount(
 
 // swagger:route POST /authenticate user authenticateUser
 // Send email and password for authentication
@@ -44,10 +56,9 @@ func signupAccount(w http.ResponseWriter, r *http.Request, DBAccess service.DbSe
 //		description: "successfully logged in"
 // 		content: application/json
 
-// TODO: re write authenticate so api accepts JSON from the frontend
-// Authenticate is activated from the login page
+// Authenticate is activated from the login form
 // Authenticate checks a user exists and creates a session for the user
-func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func authenticate(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
 	// Decode JSON
 	userJSON := service.User{}
 	err := userJSON.DecodeJSON(r)
@@ -66,6 +77,18 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 			util.RouteError(w, r, err, "Authenticate handler", "Database")
 		}
 		session.AssignCookie(w, r)
+		// send username back to the front end
+		w.Header().Set("Content-Type", "application/json")
+		verifiedUser := &service.User{
+			Name: user.Name,
+		}
+		userToSend, err := json.Marshal(verifiedUser)
+		fmt.Println("User: ", string(userToSend))
+		if err != nil {
+			DBAccess.Printf("authenticate error: ", err)
+
+		}
+		w.Write(userToSend)
 	} else {
 		// if pw isn't correct then route to error page
 		err = fmt.Errorf("incorrect password")
@@ -82,7 +105,7 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess service.DbSer
 // 		content: text/html
 
 // logout deletes the session from the browser and database
-func logout(w http.ResponseWriter, r *http.Request, DBAccess service.DbService) {
+func logout(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
 	// send the cookie to be removed from the browser
 	session := service.Session{}
 	session.DeleteCookie(w, r)

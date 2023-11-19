@@ -19,10 +19,10 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    s.Uuid,
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode, // allows cors
 	}
 
 	http.SetCookie(w, cookie)
-	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // delete the cookie from the browser
@@ -41,6 +41,6 @@ func (s Session) DeleteCookie(w http.ResponseWriter, r *http.Request) (err error
 	return
 }
 
-func (s Session) setUUID(uuid string) {
+func (s *Session) setUUID(uuid string) {
 	s.Uuid = uuid
 }

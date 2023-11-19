@@ -2,16 +2,14 @@ package chesswebsocket
 
 import (
 	"fmt"
-	"go-projects/chess/service"
 	"io"
 
 	"golang.org/x/net/websocket"
 )
 
-func NewChessWebsocket(DBA service.DbService) *WsGame {
+func NewWebsocket() *WsGame {
 	return &WsGame{
-		conns:    make(map[*websocket.Conn]bool),
-		DBAccess: DBA,
+		conns: make(map[*websocket.Conn]bool),
 	}
 }
 
