@@ -1,7 +1,10 @@
 package route
 
 import (
+	"fmt"
+	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
+	"log"
 	"net/http"
 )
 
@@ -15,27 +18,19 @@ import (
 //		description: "successfully updated user"
 // 		content: application/json
 
-// updateUserName updates a user's username or email in the database
-func updateUser(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	user := decodeUserUpdates(w, r, DBAccess)
+func NewUpdateUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger interface is nil")
+	} else if DBAccess == nil {
+		return nil, fmt.Errorf("database access interface is nil")
+	}
 
-	DBAccess.Update(&user)
-}
-
-// swagger:route PUT /updatePassword user updatePassword
-// Update user account password
-// Responses:
-//	200: account updated
-//		description: "successfully updated user password"
-// 		content: application/json
-
-// updatePassword updates a user's password in the database
-func updatePassword(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	user := decodeUserUpdates(w, r, DBAccess)
-	// encrypt new password
-	user.Password = service.HashPw(user.Password)
-
-	DBAccess.Update(&user)
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := decodeUserUpdates(w, r, DBAccess)
+		if err != nil {
+			log.Fatalf("update user error: %b", err)
+		}
+		DBAccess.Update(&user)
+		w.WriteHeader(http.StatusOK)
+	}, nil
 }

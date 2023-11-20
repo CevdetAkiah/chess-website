@@ -2,99 +2,94 @@ package route
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
+	"log"
 	"net/http"
 )
 
-// swagger:route POST /signupAccount user createUser
+// swagger:route POST /NewSignupAccount user createUser
 // Send account information to register a new account
 // Responses:
-//	200:
+//	201:
 //		description: "successfully made a new account"
 // 		content: application/json
 
-func NewSignupAccount(logger custom_log.MagicLogger) (func(w http.ResponseWriter, r *http.Request, DBAccess service.DatabaseAccess), error) {
-	if logger != nil {
-		return nil, errors.New(fmt.Sprintf("logger was nil"))
-
+// return a handler to add a new user to the database for game state tracking
+func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger was nil")
+	} else if DBAccess == nil {
+		return nil, fmt.Errorf(fmt.Sprintf("DBA was nil"))
 	}
 
-	return func(w http.ResponseWriter, r *http.Request, DBAccess service.DatabaseAccess) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		// Decode JSON
 		userJSON := service.User{}
 		err := userJSON.DecodeJSON(r)
 		if err != nil {
-			logger.Error("Error while decoding JSON in signupAccount %v", err)
+			logger.Infof("Error while decoding JSON in signupAccount %v", err)
 		}
 		user := service.NewUser(userJSON.Name, userJSON.Email, userJSON.Password)
 
 		// Insert user into database
-		err = DBAccess.NewUser(user)
+		err = DBAccess.CreateUser(user)
 		if err != nil {
 			// util.RouteError(w, r, err, "NewUser", "Database")
-			fmt.Println(err)
+			fmt.Println("CreateUser error: ", err)
 		}
-
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.WriteHeader(http.StatusCreated)
 	}, nil
 }
 
-// SignupAccount is posted from the form component of client
-// SignupAccount creates a user using posted form values and inserts the user into the database
-// func signupAccount(
-
-// swagger:route POST /authenticate user authenticateUser
-// Send email and password for authentication
-// Responses:
-//	200:
-//		description: "successfully logged in"
-// 		content: application/json
-
-// Authenticate is activated from the login form
-// Authenticate checks a user exists and creates a session for the user
-func authenticate(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
-	// Decode JSON
-	userJSON := service.User{}
-	err := userJSON.DecodeJSON(r)
-	if err != nil {
-		util.RouteError(w, r, err, "UserByEmail", "Database")
+// NewLoginHandler checks a user exists and creates a session for the user so the server can check for state
+func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger was nil")
+	} else if DBAccess == nil {
+		return nil, fmt.Errorf("DBA was nil")
 	}
-	// If the user exists, get the user from the database
-	user, err := DBAccess.UserByEmail(userJSON.Email)
-	if err != nil {
-		util.RouteError(w, r, err, "UserByEmail", "Database")
-	}
-	// If password is correct then create session for the user
-	if ok := user.Authenticate(userJSON.Password); ok {
-		session, err := DBAccess.CreateSession(user)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Decode JSON
+		userJSON := service.User{}
+		err := userJSON.DecodeJSON(r)
 		if err != nil {
-			util.RouteError(w, r, err, "Authenticate handler", "Database")
+			util.RouteError(w, r, err, "UserByEmail", "Database")
 		}
-		session.AssignCookie(w, r)
-		// send username back to the front end
-		w.Header().Set("Content-Type", "application/json")
-		verifiedUser := &service.User{
-			Name: user.Name,
-		}
-		userToSend, err := json.Marshal(verifiedUser)
-		fmt.Println("User: ", string(userToSend))
+		// If the user exists, get the user from the database
+		user, err := DBAccess.UserByEmail(userJSON.Email)
 		if err != nil {
-			DBAccess.Printf("authenticate error: ", err)
-
+			util.RouteError(w, r, err, "UserByEmail", "Database")
 		}
-		w.Write(userToSend)
-	} else {
-		// if pw isn't correct then route to error page
-		err = fmt.Errorf("incorrect password")
-		util.RouteError(w, r, err, "Authenticate handler", "Password")
-	}
+		// If password is correct then create session for the user
+		if ok := user.Authenticate(userJSON.Password); ok {
+			session, err := DBAccess.CreateSession(user)
+			if err != nil {
+				util.RouteError(w, r, err, "Authenticate handler", "Database")
+			}
+			session.AssignCookie(w, r)
+			// send username back to the front end
+			w.Header().Set("Content-Type", "application/json")
+			verifiedUser := &service.User{
+				Name: user.Name,
+			}
+			userToSend, err := json.Marshal(verifiedUser)
+			if err != nil {
+				log.Fatal("marshalling error: ", err)
+			}
+			w.Write(userToSend)
+		} else {
+			// if pw isn't correct then route to error page
+			err = fmt.Errorf("incorrect password")
+			util.RouteError(w, r, err, "Authenticate handler", "Password") //TODO: send the error to the front end to notify user
+		}
 
+	}, nil
 }
 
 // swagger:route POST /logout user logoutUser
@@ -105,16 +100,25 @@ func authenticate(w http.ResponseWriter, r *http.Request, DBAccess *service.DBSe
 // 		content: text/html
 
 // logout deletes the session from the browser and database
-func logout(w http.ResponseWriter, r *http.Request, DBAccess *service.DBService) {
-	// send the cookie to be removed from the browser
-	session := service.Session{}
-	session.DeleteCookie(w, r)
-	uuid, err := r.Cookie("session")
-	if err != nil {
-		util.RouteError(w, r, err, "Logout", "Database")
+
+func NewLogoutUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger interface is nil")
+	} else if DBAccess == nil {
+		return nil, fmt.Errorf("databaseaccess interface is nil")
 	}
-	session.Uuid = uuid.Value
-	// remove the session from the database
-	DBAccess.DeleteByUUID(session)
-	http.Redirect(w, r, "/", http.StatusFound)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := service.Session{}
+		uuid, err := r.Cookie("session")
+		if err != nil {
+			util.RouteError(w, r, err, "Logout", "Database")
+		}
+		session.Uuid = uuid.Value
+		// remove the session from the database and delete the cookie from the browser
+		session.DeleteCookie(w, r)
+		DBAccess.DeleteByUUID(session)
+		// report that the request was successful but also no data to be sent back to the client
+		w.WriteHeader(http.StatusNoContent)
+	}, nil
 }

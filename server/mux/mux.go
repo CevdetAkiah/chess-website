@@ -3,6 +3,7 @@ package mux
 import (
 	"fmt"
 	chesswebsocket "go-projects/chess/chesswebsocket"
+	custom_log "go-projects/chess/logger"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
 	"io"
@@ -14,13 +15,13 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+	"golang.org/x/net/websocket"
 
 	// "github.com/go-chi/chi/middleware"
 	"github.com/go-openapi/runtime/middleware"
-	"golang.org/x/net/websocket"
 )
 
-func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
+func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux { (*chi.Mux, error) 
 	mux := chi.NewRouter()
 
 	// mux middleware
@@ -37,13 +38,7 @@ func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	// Pass the request to be handled in the route package
-	// Get
-	mux.HandleFunc("/", route.Request(DBAccess))
-	// mux.HandleFunc("/signup", route.Request(DBAccess))
-	// mux.HandleFunc("/errors", route.Request(DBAccess))
-	// mux.HandleFunc("/login", route.Request(DBAccess))
-	// mux.HandleFunc("/profile", route.Request(DBAccess))
+	CustomLogger := custom_log.NewLogger()
 
 	// fileServer serves all static files
 	// CSS and JS
@@ -57,22 +52,45 @@ func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux {
 	mux.Handle("/docs", sh)
 	mux.Handle("/"+swaggerFile, http.FileServer(http.Dir("./")))
 
-	// Post
-	mux.HandleFunc("/signupAccount", route.Request(DBAccess))
-	mux.HandleFunc("/authenticate", route.Request(DBAccess))
-	mux.HandleFunc("/logout", route.Request(DBAccess))
+	// create handlers
+	signupHandler, err := route.NewSignupAccount(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewSignupAccount error: %b", err)
+	}
+	loginHandler, err := route.NewLoginHandler(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewLoginHandler error: %b", err)
+	}
+	deleteUserHandler, err := route.NewDeleteUser(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewDeleteUserHandler error: %b", err)
+	}
+	logoutHandler, err := route.NewLogoutUser(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewLogoutrHandler error: %b", err)
+	}
+	updateUserHandler, err := route.NewUpdateUser(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewUpdateUserHandler error: %b", err)
+	}
+	// Get
+	// TODO: user details for profile options
 
-	// Put
-	mux.HandleFunc("/updateUser", route.Request(DBAccess))
-	mux.HandleFunc("/updatePassword", route.Request(DBAccess))
+	// Post
+	mux.HandleFunc("/signupAccount", signupHandler)
+	mux.HandleFunc("/authenticate", loginHandler)
+	mux.HandleFunc("/logout", logoutHandler)
+
+	// // Put
+	mux.HandleFunc("/updateUser", updateUserHandler)
 
 	// Delete
-	mux.HandleFunc("/deleteUser", route.Request(DBAccess))
+	mux.HandleFunc("/deleteUser", deleteUserHandler)
 
 	// Websocket
 	mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
 
-	return mux
+	return mux, nil
 }
 
 // hash the swagger file name for cache busting reasons

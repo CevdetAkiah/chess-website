@@ -10,7 +10,7 @@ import (
 // type UserAccess service.UserDB
 
 // Create inserts the user into the postgres database website table users
-func (db *DB) Create(u *service.User) (err error) {
+func (db *DB) CreateUser(u *service.User) (err error) {
 	statement := "insert into users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, created_at"
 	stmnt, err := db.conn.Prepare(statement)
 	if err != nil {
@@ -39,7 +39,7 @@ func (db *DB) Update(u *service.User) (err error) {
 }
 
 // Delete removes a user from the postgres database
-func (db *DB) Delete(u service.User) (err error) {
+func (db *DB) DeleteUser(u service.User) (err error) {
 	_, err = db.conn.Exec("delete from users where id = $1", u.Id)
 	if err != nil {
 		err = fmt.Errorf("\nError deleting from users %s, error: %w", u.Name, err)

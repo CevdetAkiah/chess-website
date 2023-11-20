@@ -7,11 +7,10 @@ import (
 
 // DB interaction user functions. Abstracts db access
 type DatabaseAccess interface {
-	Create(user *User) (err error)
+	CreateUser(user *User) (err error)
 	Update(user *User) (err error)
-	Delete(user User) (err error)
+	DeleteUser(user User) (err error)
 	UserByEmail(email string) (user User, err error)
-	NewUser(user *User) (err error)
 	CreateSession(user User) (Session, error)
 	DeleteByUUID(sess Session) (err error)
 	CheckSession(uuid string) (active bool, err error)
@@ -26,7 +25,6 @@ type DBService struct {
 
 // NewDBService creates a new DBService instance with the provided DatabaseAccess implementation
 func NewDBService(dba DatabaseAccess, l custom_log.MagicLogger) (*DBService, error) {
-	//TODO: check magiclogger != nil, if error then return error
 	if l == nil {
 		return &DBService{}, fmt.Errorf("NewDBSerice was passed an empty logger interface")
 	}
@@ -38,9 +36,9 @@ func NewDBService(dba DatabaseAccess, l custom_log.MagicLogger) (*DBService, err
 }
 
 // NewUser stores a new user inside a database
-func (db *DBService) NewUser(user *User) (err error) {
+func (db *DBService) CreateUser(user *User) (err error) {
 	db.l.Info(fmt.Sprintf("Creating user : %v", user))
-	err = db.conn.Create(user)
+	err = db.conn.CreateUser(user)
 	return
 }
 
@@ -54,7 +52,7 @@ func (db *DBService) Update(user *User) (err error) {
 // DeleteUser deletes a user from a database
 func (db *DBService) DeleteUser(user User) (err error) {
 	db.l.Info(fmt.Sprintf("Deleting user : %v", user))
-	err = db.conn.Delete(user)
+	err = db.conn.DeleteUser(user)
 	return
 }
 
