@@ -21,7 +21,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 )
 
-func New(DBAccess service.DbService, wsS *chesswebsocket.WsGame) *chi.Mux { (*chi.Mux, error) 
+func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
 	mux := chi.NewRouter()
 
 	// mux middleware

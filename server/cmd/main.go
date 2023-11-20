@@ -34,12 +34,15 @@ func main() {
 
 	chessWebsocket := chesswebsocket.NewWebsocket()
 
-	// wsServer := NewWebsocket(DBAccess)
+	mux, err := chess_mux.New(DBAccess, chessWebsocket)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// set up server
 	server := &http.Server{
 		Addr:         "0.0.0.0:8080",
-		Handler:      chess_mux.New(DBAccess, chessWebsocket),
+		Handler:      mux,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
