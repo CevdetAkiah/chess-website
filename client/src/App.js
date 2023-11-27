@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Game from './pages/Game';
-import { GameProvider } from './context/GameContext';
+import { GameProvider } from './context/game/GameContext';
 import './App.css';
-import UserForm from './components/userform/userForm';
-import RegisterForm from './components/userform/regiserForm';
+import UserForm from './components/userform/user-form';
+import ComponentSwapper from './components/component-swapper';
+import { SiteProvider } from './context/website/ClientContext';
 
 
 
@@ -37,7 +38,10 @@ class ErrorBoundary extends Component {
 function App() {
     return (
         <ErrorBoundary>
-                                 <UserForm/>
+                <SiteProvider>
+                                 {/* <UserForm/> */}
+                                 <ComponentSwapper/>
+                </SiteProvider>
                 <GameProvider>
                          <div className="game">
                                 <Game/>

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { isLightSquare, Cell as BoardCell } from '../../functions/';
 import PropTypes from 'prop-types';
 import Piece from'../piece';
-import { GameContext } from '../../context/GameContext';
+import { GameContext } from '../../context/game/GameContext';
 import './cell-styles.css';
 
 const Cell = ( {cell, index, makeMove, setFromPos} ) => {

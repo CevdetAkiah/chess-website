@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { GameContext } from '../../context/GameContext';
+import { GameContext } from '../../context/game/GameContext';
 import Layout from '../layout';
 import './gameover-styles.css';
 

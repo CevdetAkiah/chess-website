@@ -22,3 +22,6 @@
 
 # Intellij based editors
 .idea
+
+# node modules
+node_modules
