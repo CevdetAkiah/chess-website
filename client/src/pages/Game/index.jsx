@@ -3,7 +3,7 @@ import './game.css';
 import {Chess} from 'chess.js';
 import { createBoard } from '../../functions/create-board';
 import Board from  '../../components/board';
-import { GameContext } from '../../context/GameContext';
+import { GameContext } from '../../context/game/GameContext';
 import {     
     setMessage,
     setOpponent,
@@ -11,9 +11,8 @@ import {
     setOpponentMoves,
     setPlayer,
     setPlayerColour,
-    types, } from '../../context/actions';
+    types, } from '../../context/game/actions';
 import { getGameOverState } from '../../functions';
-import  GameOver from '../../components/gameover';
 
 // import io from 'socket.io-client';
 const serverURL = 'ws://localhost:8080/ws'
@@ -30,8 +29,7 @@ const Game = ()=> {
     const[fen, setFen] = useState(FEN);
     const {current: chess} = useRef(new Chess(fen));
     const [board,setBoard] = useState(createBoard(fen));
-    const {gameOver} = useContext(GameContext);
-    const { possibleMoves, dispatch, message, playerColour, opponentColour, playerName, opponentName } = useContext(GameContext);
+    const { possibleMoves, dispatch,opponentName } = useContext(GameContext);
 
     useEffect(() => {
         ws.onopen = (event) =>{
