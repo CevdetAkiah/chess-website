@@ -27,7 +27,6 @@ jobs:
         file: ./server/Dockerfile
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-backend:${{ github.sha }}
-        labels: ${{ steps.meta.outputs.labels }}
 
   client:
     runs-on: ubuntu-latest
@@ -48,4 +47,3 @@ jobs:
         file: ./client/Dockerfile
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-frontend:${{ github.sha }}
-        labels: ${{ steps.meta.outputs.labels }}
