@@ -13,13 +13,24 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	l := custom_log.NewLogger()
 
+	// load env variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+	pgUser := os.Getenv("PGUSER")
+	pgDatabase := os.Getenv("PGDATABASE")
+	pgPassword := os.Getenv("PGPASSWORD")
+	pgSSLMode := os.Getenv("PGSSLMODE")
 	// test database connection
-	Db := postgres.NewDB()
+	Db := postgres.NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode)
 
 	fmt.Println("connected to database chess")
 
