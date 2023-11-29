@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chess-frontend
+spec:
+  rules:
+    - host: &host chess.dev.adamland.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chess-frontend
+                port:
+                  number: 8080
+  tls:
+    - hosts: [*host]
+      secretName: chess-frontend-tls
