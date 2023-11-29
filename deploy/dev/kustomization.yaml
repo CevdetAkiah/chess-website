@@ -7,8 +7,8 @@ resources:
 
 images:
   - name: frontend-placeholder
-    newName: docker.io/<cevdet_username>/chess-frontend
+    newName: docker.io/nailien/chess-frontend
     newTag: <tag>
   - name: backend-placeholder
-    newName: docker.io/<cevdet_username>/chess-backend
+    newName: docker.io/nailien/chess-backend
     newTag: <tag>
