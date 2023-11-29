@@ -5,7 +5,6 @@ import { createBoard } from '../../functions/create-board';
 import Board from  '../../components/board';
 import { GameContext } from '../../context/game/GameContext';
 import {     
-    setMessage,
     setOpponent,
     setOpponentColour,
     setOpponentMoves,

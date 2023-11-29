@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import Game from './pages/Game';
 import { GameProvider } from './context/game/GameContext';
 import './App.css';
-import UserForm from './components/userform/user-form';
-import ComponentSwapper from './components/component-swapper';
 import { SiteProvider } from './context/website/ClientContext';
+import  IndexPage  from './pages/Index';
 
 
 
@@ -39,14 +38,8 @@ function App() {
     return (
         <ErrorBoundary>
                 <SiteProvider>
-                                 {/* <UserForm/> */}
-                                 <ComponentSwapper/>
+                        <IndexPage />
                 </SiteProvider>
-                <GameProvider>
-                         <div className="game">
-                                <Game/>
-                        </div>
-                </GameProvider>    
         </ErrorBoundary>
 
     );
