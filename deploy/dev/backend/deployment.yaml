@@ -22,6 +22,27 @@ spec:
             runAsUser: 1000
           image: backend-placeholder
           imagePullPolicy: IfNotPresent
+          env:
+          - name: PGPASS
+            valueFrom:
+              secretKeyRef:
+                name: pg-app
+                key: password
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: pg-app
+                key: user
+          - name: PGDATABASE
+            valueFrom:
+              secretKeyRef:
+                name: pg-app
+                key: dbname
+          - name: PGHOST
+            valueFrom:
+              secretKeyRef:
+                name: pg-app
+                key: host
           ports:
             - name: http
               containerPort: 80
