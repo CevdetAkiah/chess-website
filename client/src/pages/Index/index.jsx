@@ -1,22 +1,39 @@
 import React, { useContext } from 'react';
 import Navbar from '../../components/Navbar';
 import { SiteContext } from '../../context/website/ClientContext';
+import { SiteProvider } from '../../context/website/ClientContext';
 import  Game  from '../Game';
 import { GameProvider } from '../../context/game/GameContext';
+import { SplitScreen } from '../../components/layout/SplitScreen';
+// import { BrowserRouter, Router, Route} from 'react-router-dom';
+
+// const router = createBrowserRouter([
+
+// ])
+
+const LeftComponent =() =>{
+    return(
+            <SiteProvider><Navbar /></SiteProvider>
+    )
+}
+
+const RightComponent =() =>{
+    
+    return(
+        <h1>Hi</ h1>
+    )
+}
 
 
 const IndexPage = () => {
-    const { state } = useContext(SiteContext)
-    const { loggedIn } = state;
-
     return (
-        <div>
-            <div><Navbar/></div>
-            <GameProvider>
-            <div>{loggedIn && <Game/>}</div>
-            </GameProvider>
-        </div>
-    ) 
+        <SiteProvider>
+                <SplitScreen leftWeight={1} rightWeight={3}>      
+                        <LeftComponent/>                
+                        <RightComponent/>
+                </SplitScreen>
+        </SiteProvider>
+    );
 };
 
 export default IndexPage;

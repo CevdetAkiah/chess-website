@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, useContext, useState, useEffect } from 'react';
 import Game from './pages/Game';
 import { GameProvider } from './context/game/GameContext';
 import './App.css';
-import { SiteProvider } from './context/website/ClientContext';
+import { SiteContext, SiteProvider } from './context/website/ClientContext';
 import  IndexPage  from './pages/Index';
+import { SplitScreen } from './components/layout/SplitScreen';
+import Navbar from './components/Navbar';
 
 
 
@@ -32,16 +34,26 @@ class ErrorBoundary extends Component {
 }
 
 
+const LeftComponent =() =>{
+        return(
+                <SiteProvider><Navbar /></SiteProvider>
+        )
+}
 
+const RightComponent =() =>{
+        
+        return(
+                <SiteProvider>
+                        <GameProvider><Game/></GameProvider>
+                </SiteProvider>
+        )
+}
 
 function App() {
     return (
-        <ErrorBoundary>
-                <SiteProvider>
-                        <IndexPage />
-                </SiteProvider>
-        </ErrorBoundary>
-
+        <SiteProvider>
+                <IndexPage />
+        </SiteProvider>
     );
 }
 
