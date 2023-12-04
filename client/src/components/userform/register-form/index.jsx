@@ -27,7 +27,7 @@ const RegisterForm = () => {
         if (data) {
             axios.post(serverURL + "/signupAccount", JSON.stringify(data), config).then((response) => {
                 if (response.status === 201) {
-                    console.log("you are registered") // TODO: register confirmation
+                    // TODO: register confirmation
                     // turn off register form
                     togglePop()
                 }

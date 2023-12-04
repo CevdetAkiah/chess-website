@@ -17,7 +17,6 @@ const LoginForm = () =>{
     const [pop, setPop] = useState(false)
     const [close, setClose] = useState(false)
     const { state, dispatch } = useContext(SiteContext)
-    const { username, loggedIn } = state;
 
         // send user data to the server
         const sendFormData = (data) => {
@@ -32,7 +31,7 @@ const LoginForm = () =>{
                         toggleLoginForm()
                         const name = response.data.username;
                         // set site state to logged in
-                        console.log(name+ " you are logged in")
+                        // TODO: log in confirmation
                         dispatch(setClientUsername(name))
                         dispatch(setLoggedIn(true))
                     }
@@ -41,10 +40,6 @@ const LoginForm = () =>{
                         
         };
 
-        useEffect(() =>{
-            console.log("Username: ", username)
-            console.log("Logged in: ", loggedIn)
-        }, [username,loggedIn]);
     
         // controls register form popup
 const toggleRegisterForm = () =>{
@@ -104,7 +99,7 @@ return (
                 <p className="error">{errors.password?.message}</p>
             </div>
             <button type="submit" className="submit">Submit</button>
-            <button className="register" onClick={toggleRegisterForm} onSubmit="">REGISTER</button>      
+            <button className="register" onClick={toggleRegisterForm} >REGISTER</button>      
         </form>     
         {pop ? <RegisterForm toggle={toggleRegisterForm}/>: null}
             
