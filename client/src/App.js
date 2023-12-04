@@ -6,6 +6,8 @@ import { SiteContext, SiteProvider } from './context/website/ClientContext';
 import  IndexPage  from './pages/Index';
 import { SplitScreen } from './components/layout/SplitScreen';
 import Navbar from './components/Navbar';
+import { SiteProvider } from './context/website/ClientContext';
+import  IndexPage  from './pages/Index';
 
 
 
@@ -34,20 +36,6 @@ class ErrorBoundary extends Component {
 }
 
 
-const LeftComponent =() =>{
-        return(
-                <SiteProvider><Navbar /></SiteProvider>
-        )
-}
-
-const RightComponent =() =>{
-        
-        return(
-                <SiteProvider>
-                        <GameProvider><Game/></GameProvider>
-                </SiteProvider>
-        )
-}
 
 function App() {
     return (
