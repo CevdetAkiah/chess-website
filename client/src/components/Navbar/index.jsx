@@ -5,6 +5,7 @@ import { SiteContext } from '../../context/website/ClientContext';
 
 
 // swap components based on site state
+
 const NavBar = () => {
     const { state } = useContext(SiteContext)
     const { loggedIn } = state;

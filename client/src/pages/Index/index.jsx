@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
+
 import NavBar from '../../components/Navbar';
 import { SiteContext } from '../../context/website/ClientContext';
+
 import { SiteProvider } from '../../context/website/ClientContext';
 import  Game  from '../Game';
 import { GameProvider } from '../../context/game/GameContext';

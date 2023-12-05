@@ -19,7 +19,9 @@ const serverURL = 'ws://localhost:8080/ws'
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // checkmate for testing game over screen
 // const FEN = 'rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3';
+
 // const ws = new WebSocket(serverURL)
+
 
 
 
@@ -86,6 +88,7 @@ const Game = ()=> {
                     ws.current.close();
                 }
             };
+
         },[dispatch, chess, username, loggedIn]);
     
 

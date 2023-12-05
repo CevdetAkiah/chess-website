@@ -1,0 +1,102 @@
+basePath: /
+info:
+    description: Documentation for chess API
+    title: Chess API
+    version: 0.52.0
+paths:
+    /:
+        get:
+            description: 'Produce the front page: index.page.html'
+            operationId: Index
+            responses:
+                "200":
+                    $ref: '#/responses//templates/index.page.html'
+            tags:
+                - html
+    /authenticate:
+        post:
+            description: Send email and password for authentication
+            operationId: authenticateUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+    /deleteUser:
+        delete:
+            description: Delete user from database and remove session from browser and db
+            operationId: deleteUser
+            responses:
+                "200":
+                    $ref: '#/responses/account'
+                    description: delete
+            tags:
+                - user
+    /login:
+        get:
+            description: 'Produce the login page: login.page.html and allows the user to log in to the website'
+            operationId: Login
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /logout:
+        post:
+            description: log user out
+            operationId: logoutUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+    /profile:
+        get:
+            description: 'Produce the profile page: profile.page.html and allows the user to log in to the website'
+            operationId: Profile
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /signup:
+        get:
+            description: 'Produce the signup page: signup.page.html and allows the user to create a new account'
+            operationId: Signup
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - html
+    /signupAccount:
+        post:
+            description: Send account information to register a new account
+            operationId: createUser
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - user
+    /updatePassword:
+        put:
+            description: Update user account password
+            operationId: updatePassword
+            responses:
+                "200":
+                    $ref: '#/responses/account'
+                    description: updated
+            tags:
+                - user
+    /updateUser:
+        put:
+            description: Update user account email or username
+            operationId: updateUser
+            responses:
+                "200":
+                    $ref: '#/responses/account'
+                    description: updated
+            tags:
+                - user
+schemes:
+    - http
+swagger: "2.0"

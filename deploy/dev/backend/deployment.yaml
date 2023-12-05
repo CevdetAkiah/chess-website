@@ -9,8 +9,13 @@ spec:
     matchLabels:
       app.kubernetes.io/name: chess-backend
   template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chess-backend
     spec:
-      securityContext: {}
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: chess-backend
           securityContext:
@@ -20,6 +25,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: backend-placeholder
           imagePullPolicy: IfNotPresent
           env:
@@ -43,6 +49,9 @@ spec:
                 secretKeyRef:
                   name: pg-app
                   key: host
+          envFrom:
+            - configMapRef:
+                name: config-backend
           ports:
             - name: http
               containerPort: 80

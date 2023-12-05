@@ -1,4 +1,5 @@
-import React, { Component, useContext, useState, useEffect, lazy } from 'react';
+
+import React, { Component, useContext, useState, useEffect} from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { SiteContext, SiteProvider } from './context/website/ClientContext';
@@ -49,7 +50,6 @@ const router = () => (
          </main>
         </BrowserRouter> 
 );
-
 
 
 function App() {
