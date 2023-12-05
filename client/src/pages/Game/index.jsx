@@ -14,13 +14,14 @@ import {
 import { getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 
-// import io from 'socket.io-client';
 const serverURL = 'ws://localhost:8080/ws'
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // checkmate for testing game over screen
 // const FEN = 'rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3';
-const ws = new WebSocket(serverURL)
+
+// const ws = new WebSocket(serverURL)
+
 
 
 
@@ -32,22 +33,24 @@ const Game = ()=> {
     const { possibleMoves, dispatch, opponentName } = useContext(GameContext);
     const { state } = useContext(SiteContext);
     const { username, loggedIn } = state; // get username from log in details
-    const joinName = "Anonymous";
-                if (loggedIn){
-                    joinName = username;
-                }
+    
+    const ws = useRef(null); // useRef allows a persistent wesbsocket across re renders; ensuring the connection is only created once.
+
+    
     useEffect(() => {
-            ws.onopen = (event) =>{
+        ws.current = new WebSocket(serverURL)
+            ws.current.onopen = (event) =>{
                 console.log("connection established: ", event)
 
+                const joinName = loggedIn ? username : 'Anonymous';
                 const apiRequest = {emit: "join", user : {name : joinName}}
-                ws.send(JSON.stringify(apiRequest)) 
+                ws.current.send(JSON.stringify(apiRequest)) 
             }            
-            ws.onerror = (err) => {
-                console.log(err)
+            ws.current.onerror = (err) => {
+                console.log("Websocket error: ",err)
             }
     
-            ws.onmessage = (event) => {
+            ws.current.onmessage = (event) => {
                 const msgReceived = JSON.parse(event.data)
                 const emit = msgReceived.emit
                 switch (emit) {
@@ -76,11 +79,16 @@ const Game = ()=> {
                     };
                 }
     
-                
-    
-            ws.onclose = (event) => {
+            ws.current.onclose = (event) => {
                 console.log("connection closed: ", event)
             }
+
+            return () => {
+                if (ws.current){
+                    ws.current.close();
+                }
+            };
+
         },[dispatch, chess, username, loggedIn]);
     
 
@@ -122,7 +130,7 @@ const Game = ()=> {
          if (validMove){
             chess.move({ from, to });
             const apiRequest = {emit: "move", gameID: 1, from: from, to: to }
-            ws.send(JSON.stringify(apiRequest))
+            ws.current.send(JSON.stringify(apiRequest))
             dispatch({ type: types.CLEAR_POSSIBLE_MOVES}) // unhighlight possible moves
             setFen(chess.fen()); // update the fen with the new move/piece positions
         }

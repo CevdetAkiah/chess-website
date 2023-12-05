@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import Navbar from '../../components/Navbar';
+
+import NavBar from '../../components/Navbar';
 import { SiteContext } from '../../context/website/ClientContext';
 
 import { SiteProvider } from '../../context/website/ClientContext';
@@ -14,7 +15,7 @@ import { SplitScreen } from '../../components/layout/SplitScreen';
 
 const LeftComponent =() =>{
     return(
-            <SiteProvider><Navbar /></SiteProvider>
+            <SiteProvider><NavBar /></SiteProvider>
     )
 }
 
@@ -35,7 +36,6 @@ const IndexPage = () => {
                 </SplitScreen>
         </SiteProvider>
     );
-
 };
 
 export default IndexPage;
