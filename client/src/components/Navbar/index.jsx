@@ -5,15 +5,16 @@ import { SiteContext } from '../../context/website/ClientContext';
 
 
 // swap components based on site state
-const Navbar = () => {
+const NavBar = () => {
     const { state } = useContext(SiteContext)
     const { loggedIn } = state;
-    if (loggedIn) {
-        return <Profile/>
-    } else{
-        return <UserForm/>
-    }
+ 
+    return (
+        <nav>
+            {loggedIn ? <Profile />  : <UserForm />}
+        </nav>
+    )
 }
 
 
-export default Navbar;
+export default NavBar;

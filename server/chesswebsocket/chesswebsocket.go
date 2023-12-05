@@ -15,6 +15,15 @@ func NewWebsocket() *WsGame {
 
 func (wsg *WsGame) HandleWS(wsc *websocket.Conn) {
 	wsg.lock.Lock()
+
+	// close the connection once readConn returns
+	defer func() {
+		wsg.lock.Lock()
+		delete(wsg.conns, wsc)
+		wsg.lock.Unlock()
+		wsc.Close()
+	}()
+
 	wsg.conns[wsc] = true
 	wsg.lock.Unlock()
 
@@ -24,6 +33,7 @@ func (wsg *WsGame) HandleWS(wsc *websocket.Conn) {
 
 func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 	message := &receiveMessage{}
+
 	for {
 		err := websocket.JSON.Receive(wsc, &message)
 		if err != nil {
