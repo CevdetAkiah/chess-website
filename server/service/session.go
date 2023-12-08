@@ -19,9 +19,8 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    s.Uuid,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode, // allows cors
+		SameSite: http.SameSiteDefaultMode, // allows cors use http.SameSiteNoneMode in production
 	}
-
 	http.SetCookie(w, cookie)
 }
 

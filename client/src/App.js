@@ -1,5 +1,5 @@
 
-import React, { Component, useContext, useState, useEffect} from 'react';
+import React, { useContext, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { SiteContext, SiteProvider } from './context/website/ClientContext';
@@ -7,8 +7,8 @@ import { GameProvider } from './context/game/GameContext';
 import  IndexPage  from './pages/Index';
 import NavBar from './components/Navbar';
 import Game from './pages/Game';
-
-
+import { checkSession } from './functions/authentication';
+import { setClientUsername, setLoggedIn } from './context/website/actions';
 
 
 // class ErrorBoundary extends Component {
@@ -35,21 +35,21 @@ import Game from './pages/Game';
 //         }
 // }
 
-
 const router = () => (
         <BrowserRouter>
+                <nav>
+                        <NavLink to="game">Play</NavLink>
+                </nav>        
 
-        <nav>
-                <NavLink to="game">Play</NavLink>
-        </nav>        
-
-        <main>
-                <Routes>
-                         <Route path="game/*" element={<GameProvider><Game /></GameProvider>}/>
-                 </Routes>
-         </main>
+                <main>
+                        <Routes>
+                                <Route path="game/*" element={<GameProvider><Game /></GameProvider>}/>
+                        </Routes>
+                </main>
         </BrowserRouter> 
 );
+
+
 
 
 function App() {
@@ -57,7 +57,7 @@ function App() {
         <SiteProvider>  
                  <NavBar />
                 {router()}
-          </SiteProvider>
+        </SiteProvider>
     );
 }
 

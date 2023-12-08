@@ -1,12 +1,10 @@
 package route
 
 import (
-	"encoding/json"
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"go-projects/chess/util"
-	"log"
 	"net/http"
 )
 
@@ -22,7 +20,7 @@ func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAc
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
 	} else if DBAccess == nil {
-		return nil, fmt.Errorf(fmt.Sprintf("DBA was nil"))
+		return nil, fmt.Errorf("DBA was nil")
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -73,16 +71,9 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 				util.RouteError(w, r, err, "Authenticate handler", "Database")
 			}
 			session.AssignCookie(w, r)
+
 			// send username back to the front end
-			w.Header().Set("Content-Type", "application/json")
-			verifiedUser := &service.User{
-				Name: user.Name,
-			}
-			userToSend, err := json.Marshal(verifiedUser)
-			if err != nil {
-				log.Fatal("marshalling error: ", err)
-			}
-			w.Write(userToSend)
+			sendUserDetails(w, user.Name, logger)
 		} else {
 			// if pw isn't correct then route to error page
 			err = fmt.Errorf("incorrect password")

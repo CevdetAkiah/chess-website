@@ -1,12 +1,15 @@
 package route
 
 import (
+	"encoding/json"
 	"fmt"
+	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
 )
 
 // decodeUserUpdates retreives JSON from the request and updates the user and session
+// TODO http responses to the client for each error; http.StatusForbidden?
 func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.DatabaseAccess) (user service.User, err error) {
 	// get session cookie
 	cookie, err := r.Cookie("session")
@@ -39,4 +42,16 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 		return service.User{}, fmt.Errorf("error while updating session in decodeUserUpdates%v", err)
 	}
 	return user, nil
+}
+
+func sendUserDetails(w http.ResponseWriter, name string, logger custom_log.MagicLogger) {
+	w.Header().Set("Content-Type", "application/json")
+	verifiedUser := &service.User{
+		Name: name,
+	}
+	userToSend, err := json.Marshal(verifiedUser)
+	if err != nil {
+		logger.Error(err)
+	}
+	w.Write(userToSend)
 }

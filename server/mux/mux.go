@@ -73,8 +73,13 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	if err != nil {
 		return nil, fmt.Errorf("NewUpdateUserHandler error: %b", err)
 	}
+	authUserHandler, err := route.NewUserAuthentication(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
+	}
 	// Get
 	// TODO: user details for profile options
+	mux.HandleFunc("/authUser", authUserHandler)
 
 	// Post
 	mux.HandleFunc("/signupAccount", signupHandler)
