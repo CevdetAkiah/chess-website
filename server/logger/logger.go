@@ -12,7 +12,7 @@ type Logger struct {
 type MagicLogger interface {
 	Info(v string)
 	Infof(format string, a ...any)
-	Error(v string)
+	Error(v error)
 }
 
 func NewLogger() *Logger {
@@ -28,7 +28,7 @@ func (l *Logger) Infof(format string, a ...any) {
 	l.log.Printf(format, a...)
 }
 
-func (l *Logger) Error(v string) {
+func (l *Logger) Error(v error) {
 	l.log.Println("ERROR: ", v)
 
 }

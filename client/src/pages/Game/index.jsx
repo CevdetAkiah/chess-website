@@ -81,6 +81,7 @@ const Game = ()=> {
     
             ws.current.onclose = (event) => {
                 console.log("connection closed: ", event)
+                ws.current.close();
             }
 
             return () => {

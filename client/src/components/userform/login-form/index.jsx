@@ -16,7 +16,7 @@ const LoginForm = () =>{
     const { errors } = formState;
     const [pop, setPop] = useState(false)
     const [close, setClose] = useState(false)
-    const { state, dispatch } = useContext(SiteContext)
+    const { dispatch } = useContext(SiteContext)
 
         // send user data to the server
         const sendFormData = (data) => {
