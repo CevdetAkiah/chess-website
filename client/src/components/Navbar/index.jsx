@@ -9,27 +9,25 @@ import { checkSession } from '../../functions';
 // swap components based on site state
 
 const NavBar = () => {
-    const { state, dispatch } = useContext(SiteContext)
+    const { state, dispatch } = useContext(SiteContext);
     const { loggedIn } = state;
-
 
     useEffect(() => {
         checkSession()
-        .then((userName) => {
-            if (userName != null) {
-                dispatch((setClientUsername(userName)));
-                dispatch((setLoggedIn(true)));
-            }
-        })  
-    },[dispatch]);
-
+            .then((userName) => {
+                if (userName !== null) {
+                    dispatch(setLoggedIn(true));
+                    dispatch(setClientUsername(userName));
+                }
+            })
+    }, [dispatch]);
 
     return (
         <nav>
-            {loggedIn ? <Profile />  : <UserForm />}
+            {loggedIn ? <Profile /> : <UserForm />}
         </nav>
-    )
-}
-
+    );
+};
 
 export default NavBar;
+
