@@ -4,3 +4,7 @@ metadata:
   name: config-backend
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
+  PGUSER = 'admin'
+PGDATABASE = 'chess'
+PGPASSWORD = 'u%N7E'
+PGSSLMODE= 'disable'

@@ -24,7 +24,7 @@ type WsGame struct {
 	lock        sync.Mutex
 	conns       map[*websocket.Conn]bool
 	gameSearch  []*Game
-	gamesInPlay map[int]*Game
+	gamesInPlay map[string]*Game
 	DBAccess    service.DatabaseAccess
 }
 
@@ -36,7 +36,7 @@ type Player struct {
 }
 
 type Game struct {
-	gameID    int
+	ID        string
 	playerOne *Player
 	playerTwo *Player
 }
@@ -77,7 +77,7 @@ type receiveMessage struct {
 	Emit    string `json:"emit"`
 	User    Player `json:"user"`
 	Message string `json:"message"`
-	GameID  int    `json:"gameID"`
+	GameID  string `json:"uniqueID"`
 	FromMV  string `json:"from"`
 	ToMV    string `json:"to"`
 }
