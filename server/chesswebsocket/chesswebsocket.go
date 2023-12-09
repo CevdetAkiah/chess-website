@@ -77,10 +77,11 @@ func (wsg *WsGame) handleMessage(msg *receiveMessage) {
 // handle the join event, join a game
 func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 	player := newPlayer(&msg.User, wsc)
+	gameID := msg.GameID
 	// join game or create new one
 	if len(wsg.gameSearch) == 0 { //if no available games, create a new one
 		game := &Game{
-			gameID: 1,
+			ID: gameID,
 		}
 		player.Colour = randColour()
 		game.playerOne = player
@@ -103,11 +104,11 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 		game.playerTwo = opponent // add player to game
 		game.playerOne = player
 		if len(wsg.gamesInPlay) == 0 {
-			wsg.gamesInPlay = make(map[int]*Game)
+			wsg.gamesInPlay = make(map[string]*Game)
 		}
 
-		wsg.gamesInPlay[game.gameID] = game // add game to started games map
-		wsg.gameSearch = nil                // game is now in play
+		wsg.gamesInPlay[game.ID] = game // add game to started games map
+		wsg.gameSearch = nil            // game is now in play
 
 		// let the player know they have joined a game and their colour
 		message := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}

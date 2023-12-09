@@ -13,6 +13,7 @@ import {
     types, } from '../../context/game/actions';
 import { getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
+import  { randGameID }  from '../../functions/game-ID';
 
 const serverURL = 'ws://localhost:8080/ws'
 
@@ -21,11 +22,6 @@ const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // const FEN = 'rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3';
 
 // const ws = new WebSocket(serverURL)
-
-
-
-
-
 const Game = ()=> {
     const[fen, setFen] = useState(FEN);
     const {current: chess} = useRef(new Chess(fen));
@@ -36,21 +32,21 @@ const Game = ()=> {
     
     const ws = useRef(null); // useRef allows a persistent wesbsocket across re renders; ensuring the connection is only created once.
 
-    
     useEffect(() => {
         ws.current = new WebSocket(serverURL)
             ws.current.onopen = (event) =>{
                 console.log("connection established: ", event)
-
+                const gameID  = randGameID
+                
                 const joinName = loggedIn ? username : 'Anonymous';
-                const apiRequest = {emit: "join", user : {name : joinName}}
+                const apiRequest = {emit: "join", user : {name : joinName, uniqueID: gameID}}
                 ws.current.send(JSON.stringify(apiRequest)) 
             }            
             ws.current.onerror = (err) => {
                 console.log("Websocket error: ",err)
             }
     
-            ws.current.onmessage = (event) => {
+            ws.current.onmessage = (event) => { 
                 const msgReceived = JSON.parse(event.data)
                 const emit = msgReceived.emit
                 switch (emit) {
@@ -63,8 +59,7 @@ const Game = ()=> {
                         dispatch(setPlayerColour(msgReceived.playerColour))
                         break;
                     case 'opponentJoined':
-                        console.log("opponent: ", msgReceived.opponentName)
-    
+                        console.log("opponent: ", msgReceived.opponentName)  
                         dispatch(setOpponent(msgReceived.opponentName))
                         dispatch(setOpponentColour(msgReceived.opponentColour))
                         break;
