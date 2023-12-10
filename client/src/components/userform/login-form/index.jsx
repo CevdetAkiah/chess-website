@@ -5,6 +5,7 @@ import './login-form.css'
 import RegisterForm from '../register-form';
 import { SiteContext } from '../../../context/website/ClientContext';
 import { setClientUsername, setLoggedIn } from '../../../context/website/actions';
+import { INCORRECT_PASSWORD, USERNAME_NOT_FOUND } from '../error-types';
 
 
 const LoginForm = () =>{
@@ -12,12 +13,12 @@ const LoginForm = () =>{
     const serverURL = "http://localhost:8080"
 
     const form = useForm();
-    const { register, handleSubmit, formState } = form;
-    const { errors } = formState;
+    const { register, handleSubmit,setError, formState: { errors }, reset } = form;
+    // const { errors, setError } = formState;
     const [pop, setPop] = useState(false)
     const [close, setClose] = useState(false)
     const { dispatch } = useContext(SiteContext)
-
+    
         // send user data to the server
         const sendFormData = (data) => {
             const config = {
@@ -34,10 +35,37 @@ const LoginForm = () =>{
                         // TODO: log in confirmation
                         dispatch(setClientUsername(name))
                         dispatch(setLoggedIn(true))
+                        alert("Loggin successful")
+                    }else{
+                        // user not found
+                        console.log("unexpected server response ", response.status)
                     }
-                });     
+                })
+                .catch(function (error) {
+                    reset()
+                    if (error.response.status === 401){
+                        let errorName = "";
+                        switch (error.response.data.trim()){
+                            case INCORRECT_PASSWORD:
+                                errorName = "password"
+                                break;
+                                case USERNAME_NOT_FOUND:
+                                    errorName = "username"
+                                    break;
+                            default:
+                                console.log("unexpected auth error")
+                            }
+                        setError(errorName,{
+                            type: "server",
+                            message: error.response.data
+                        });
+                    }else{
+                        console.log("Authorization error: ", error.response)
+                    }
+                });
             }
-                        
+    
+                  
         };
 
     

@@ -41,11 +41,11 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 				// sending info back
 				sendUserDetails(w, user.Name, logger)
 			} else {
-				w.WriteHeader(http.StatusUnauthorized)
+				w.WriteHeader(http.StatusNoContent)
 				return
 			}
 		} else {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 	}, nil
