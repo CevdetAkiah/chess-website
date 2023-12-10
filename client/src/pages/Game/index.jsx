@@ -15,6 +15,7 @@ import { getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 import  { randGameID }  from '../../functions/game-ID';
 
+const gameID  = randGameID
 const serverURL = 'ws://localhost:8080/ws'
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -36,7 +37,6 @@ const Game = ()=> {
         ws.current = new WebSocket(serverURL)
             ws.current.onopen = (event) =>{
                 console.log("connection established: ", event)
-                const gameID  = randGameID
                 
                 const joinName = loggedIn ? username : 'Anonymous';
                 const apiRequest = {emit: "join", user : {name : joinName, uniqueID: gameID}}
@@ -54,7 +54,6 @@ const Game = ()=> {
                         console.log(msgReceived.message) 
                         break;
                     case 'playerJoined':
-                        console.log("player: ", msgReceived.playerName)
                         dispatch(setPlayer(msgReceived.playerName))
                         dispatch(setPlayerColour(msgReceived.playerColour))
                         break;

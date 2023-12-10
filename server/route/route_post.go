@@ -37,8 +37,7 @@ func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAc
 		// Insert user into database
 		err = DBAccess.CreateUser(user)
 		if err != nil {
-			// util.RouteError(w, r, err, "NewUser", "Database")
-			fmt.Println("CreateUser error: ", err)
+			logger.Error(err)
 		}
 		w.WriteHeader(http.StatusCreated)
 	}, nil
@@ -62,7 +61,9 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		// If the user exists, get the user from the database
 		user, err := DBAccess.UserByEmail(userJSON.Email)
 		if err != nil {
-			util.RouteError(w, r, err, "UserByEmail", "Database")
+			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
+			http.Error(w, "User not found", http.StatusUnauthorized)
+			return
 		}
 		// If password is correct then create session for the user
 		if ok := user.Authenticate(userJSON.Password); ok {
@@ -74,10 +75,10 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 
 			// send username back to the front end
 			sendUserDetails(w, user.Name, logger)
-		} else {
-			// if pw isn't correct then route to error page
-			err = fmt.Errorf("incorrect password")
-			util.RouteError(w, r, err, "Authenticate handler", "Password") //TODO: send the error to the front end to notify user
+		} else if !ok {
+			// if pw isn't correct then inform the client
+			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
+			http.Error(w, "Incorrect password", http.StatusUnauthorized)
 		}
 
 	}, nil
