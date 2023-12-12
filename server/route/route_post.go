@@ -37,9 +37,18 @@ func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAc
 		// Insert user into database
 		err = DBAccess.CreateUser(user)
 		if err != nil {
-			logger.Error(err)
+			if err.Error() == EMAIL_DUPLICATE {
+				logger.Error(err)
+				http.Error(w, EMAIL_DUPLICATE, http.StatusConflict)
+				return
+			} else if err.Error() == USERNAME_DUPLICATE {
+				logger.Error(err)
+				http.Error(w, USERNAME_DUPLICATE, http.StatusConflict)
+				return
+			}
 		}
 		w.WriteHeader(http.StatusCreated)
+
 	}, nil
 }
 

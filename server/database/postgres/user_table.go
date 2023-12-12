@@ -4,6 +4,7 @@ import (
 	"fmt"
 	service "go-projects/chess/service"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
@@ -21,6 +22,17 @@ func (db *DB) CreateUser(u *service.User) (err error) {
 	u.CreateUUID()
 	err = stmnt.QueryRow(u.Uuid, u.Name, u.Email, u.Password, u.CreatedAt).Scan(&u.Id, &u.Uuid, &u.CreatedAt)
 	if err != nil {
+		pqErr := err.(*pq.Error)
+		// unique key violation
+		if pqErr.Code == UNIQUE_KEY_VIOLATION {
+			if pqErr.Constraint == CONSTRAINT_USERNAME {
+				return fmt.Errorf(USERNAME_DUPLICATE)
+			}
+			if pqErr.Constraint == CONSTRAINT_EMAIL {
+				return fmt.Errorf(EMAIL_DUPLICATE)
+			}
+		}
+
 		err = fmt.Errorf("\nError inserting user into users table: %w", err)
 		return
 	}
