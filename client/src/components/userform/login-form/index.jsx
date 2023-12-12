@@ -32,7 +32,6 @@ const LoginForm = () =>{
                         toggleLoginForm()
                         const name = response.data.username;
                         // set site state to logged in
-                        // TODO: log in confirmation
                         dispatch(setClientUsername(name))
                         dispatch(setLoggedIn(true))
                         alert("Loggin successful")
@@ -49,9 +48,9 @@ const LoginForm = () =>{
                             case INCORRECT_PASSWORD:
                                 errorName = "password"
                                 break;
-                                case USERNAME_NOT_FOUND:
-                                    errorName = "username"
-                                    break;
+                            case USERNAME_NOT_FOUND:
+                                errorName = "email"
+                                break;
                             default:
                                 console.log("unexpected auth error")
                             }
@@ -111,7 +110,7 @@ return (
                     }
                 })}
             />
-                <p className="error">{errors.username?.message}</p>
+                <p className="error">{errors.email?.message}</p>
             </div>
 
             <div  className="form-control">
