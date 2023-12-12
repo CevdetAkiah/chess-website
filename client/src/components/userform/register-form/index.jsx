@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import './register-form.css'
+import { EMAIL_DUPLICATE, USERNAME_DUPLICATE } from '../error-types';
 
 
 
@@ -9,7 +10,7 @@ const RegisterForm = () => {
     const serverURL = "http://localhost:8080"
 
     const form = useForm();
-    const { register, handleSubmit, formState } = form;
+    const { register, handleSubmit, formState, reset,setError } = form;
     const { errors } = formState;
     const [click, setClick] = useState(false)
 
@@ -31,7 +32,27 @@ const RegisterForm = () => {
                     // turn off register form
                     togglePop()
                 }
-            });
+            })
+            .catch(function (error) {
+                reset()
+                if (error.response.status == 409){
+                    let errorName ="";
+                    switch (error.response.data.trim()){
+                        case EMAIL_DUPLICATE:
+                            errorName = "email"
+                            break;
+                        case USERNAME_DUPLICATE:
+                            errorName = "username"
+                            break;
+                        default:
+                            console.log("unexpected signup error")
+                    }
+                    setError(errorName,{
+                        type: "server",
+                        message: error.response.data
+                    });
+                }
+            })
         }
     }
 
