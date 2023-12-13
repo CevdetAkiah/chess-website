@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: chess-frontend
 spec:
+  ingressClassName: nginx
   rules:
     - host: &host chess.dev.adamland.xyz
       http:
