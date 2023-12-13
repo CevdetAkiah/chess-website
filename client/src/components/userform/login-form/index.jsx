@@ -10,7 +10,7 @@ import { INCORRECT_PASSWORD, USERNAME_NOT_FOUND } from '../error-types';
 
 const LoginForm = () =>{
     
-    const serverURL = "http://localhost:8080"
+    const serverURL = "http://localhost:8080/authenticate"
 
     const form = useForm();
     const { register, handleSubmit,setError, formState: { errors }, reset } = form;
@@ -26,7 +26,7 @@ const LoginForm = () =>{
                 withCredentials: true,
             }
             if (data) {
-                axios.post(serverURL + "/authenticate", JSON.stringify(data), config).then((response) => {
+                axios.post(serverURL, JSON.stringify(data), config).then((response) => {
                     if (response.status === 200) {
                         // turn off register form
                         toggleLoginForm()

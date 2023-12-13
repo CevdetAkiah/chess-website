@@ -111,15 +111,16 @@ func NewLogoutUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := service.Session{}
-		uuid, err := r.Cookie("session")
-		if err != nil {
-			util.RouteError(w, r, err, "Logout", "Database")
+		if cookie, err := r.Cookie("session"); err == nil {
+			session.Uuid = cookie.Value
+			// remove the session from the database and delete the cookie from the browser
+			session.DeleteCookie(w, r)
+			DBAccess.DeleteByUUID(session)
+			// report that the request was successful but also no data to be sent back to the client
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
 		}
-		session.Uuid = uuid.Value
-		// remove the session from the database and delete the cookie from the browser
-		session.DeleteCookie(w, r)
-		DBAccess.DeleteByUUID(session)
-		// report that the request was successful but also no data to be sent back to the client
-		w.WriteHeader(http.StatusNoContent)
 	}, nil
 }

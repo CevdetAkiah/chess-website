@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import UserForm from '../userform/user-form';
-import Profile from '../profile';
+import Profile from './profile';
 import { SiteContext } from '../../context/website/ClientContext';
 import { setClientUsername, setLoggedIn } from '../../context/website/actions';
 import { checkSession } from '../../functions';
+import  SignOut  from './logout'
 
 
 // swap components based on site state
@@ -24,7 +25,7 @@ const NavBar = () => {
 
     return (
         <nav>
-            {loggedIn ? <Profile /> : <UserForm />}
+            {loggedIn ? <Profile /> : <UserForm />} {loggedIn && <SignOut />}
         </nav>
     );
 };

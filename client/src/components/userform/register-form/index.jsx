@@ -10,7 +10,7 @@ const RegisterForm = () => {
     const serverURL = "http://localhost:8080"
 
     const form = useForm();
-    const { register, handleSubmit, formState, reset,setError } = form;
+    const { register, handleSubmit, formState, reset, setError } = form;
     const { errors } = formState;
     const [click, setClick] = useState(false)
 
@@ -35,7 +35,7 @@ const RegisterForm = () => {
             })
             .catch(function (error) {
                 reset()
-                if (error.response.status == 409){
+                if (error.response.status === 409){
                     let errorName ="";
                     switch (error.response.data.trim()){
                         case EMAIL_DUPLICATE:

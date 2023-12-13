@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { SiteContext } from '../../context/website/ClientContext';
+import { SiteContext } from '../../../context/website/ClientContext'
 
 
 // swap components based on site state
