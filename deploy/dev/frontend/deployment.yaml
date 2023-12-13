@@ -50,9 +50,13 @@ spec:
               mountPath: /var/log/nginx
             - name: cache
               mountPath: /var/cache/nginx
+            - name: npm-cache
+              mountPath: /home/node/.npm   # Mount a writable directory for npm cache
 
       volumes:
         - name: logs
           emptyDir: {}
         - name: cache
+          emptyDir: {}
+        - name: npm-cache
           emptyDir: {}
