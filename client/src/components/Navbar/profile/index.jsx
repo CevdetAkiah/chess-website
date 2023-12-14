@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { SiteContext } from '../../../context/website/ClientContext'
+import './profile.css'
 
 
 // swap components based on site state
@@ -10,9 +11,9 @@ const Profile = () => {
     
     
     return (
-        <div>
-        <h1 style={{color: 'blue'}}>{username}</h1>
-    </div>
+        <div className='profile'>
+             <button>{username}</button>
+       </div>
 )
 }
 

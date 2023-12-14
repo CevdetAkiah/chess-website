@@ -1,4 +1,5 @@
-.profile button{
+
+.logout button{
     background-color: rgba(0,0,0,0);
     color: blue;
     height:2em;
@@ -7,11 +8,10 @@
     border:none;
     display: inline-block;
     margin-right: 1em;
-    text-transform: uppercase;
 }
 
 
-.profile button:hover{
+.logout button:hover{
     width: 4em;
     height: 2em;
     background-color: rgba(60,60,60,0.50) ;
