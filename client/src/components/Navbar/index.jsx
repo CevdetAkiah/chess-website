@@ -5,6 +5,7 @@ import { SiteContext } from '../../context/website/ClientContext';
 import { setClientUsername, setLoggedIn } from '../../context/website/actions';
 import { checkSession } from '../../functions';
 import  SignOut  from './logout'
+import './navbar.css'
 
 
 // swap components based on site state
@@ -24,7 +25,7 @@ const NavBar = () => {
     }, [dispatch]);
 
     return (
-        <nav>
+        <nav className='nav'>
             {loggedIn ? <Profile /> : <UserForm />} {loggedIn && <SignOut />}
         </nav>
     );

@@ -1,0 +1,24 @@
+/* router.css */
+
+.nav-game {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; /*100% of the viewport height*/
+    text-transform: capitalize;
+  }
+  
+  .nav-game a {
+    text-decoration: none;
+    color: white;   
+    padding: 20px;
+    border-radius: 50%;
+    font-size: 8em;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .nav-game a:hover {
+    background-color: darkslategrey;
+    padding:0.5em
+  }
+  

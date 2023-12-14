@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { SiteContext } from '../../../context/website/ClientContext';
 import axios from 'axios';
 import { setLoggedIn } from '../../../context/website/actions';
+import './logout.css'
 
 // logout
 const SignOut = () => {
@@ -21,7 +22,7 @@ const SignOut = () => {
         })
     }
     return (
-        <div><button onClick={logOut}>Sign out</button></div>
+        <div className='logout'><button onClick={logOut}>SIGN OUT</button></div>
     )
 }
 
