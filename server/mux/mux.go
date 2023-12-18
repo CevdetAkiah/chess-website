@@ -6,12 +6,7 @@ import (
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -69,9 +64,15 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
 	}
 
+	healthzHandler, err := route.NewHealthz(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("NewHealthz error: %b", err)
+	}
+
 	// Get
 	// TODO: user details for profile options
 	mux.HandleFunc("/authUser", authUserHandler)
+	mux.HandleFunc("/healthz", healthzHandler)
 
 	// Post
 	mux.HandleFunc("/signupAccount", signupHandler)
@@ -88,37 +89,4 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
 
 	return mux, nil
-}
-
-// hash the swagger file name for cache busting reasons
-func hashSwagger() string {
-	// remove old cache busting files
-	filepath.Walk("./", func(path string, f os.FileInfo, _ error) error {
-		if !f.IsDir() {
-			if strings.Contains(f.Name(), "swaggerbust.yaml") {
-				os.Remove(f.Name())
-			}
-		}
-		return nil
-	})
-
-	// Open swagger yaml file
-	original, err := os.Open("swagger.yaml")
-	if err != nil {
-		panic(err)
-	}
-	defer original.Close()
-	// Make new yammer file
-	name := fmt.Sprintf("%d.swaggerbust.yaml", time.Now().Nanosecond())
-	new, err := os.Create(name)
-	if err != nil {
-		panic(err)
-	}
-	defer new.Close()
-	_, err = io.Copy(new, original)
-	if err != nil {
-		panic(err)
-	}
-
-	return new.Name()
 }
