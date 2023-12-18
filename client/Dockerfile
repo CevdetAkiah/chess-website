@@ -18,7 +18,7 @@ COPY public ./public
 RUN npm run build
 
 # Stage 2: Create the production image
-FROM nginx:latest
+FROM nginxinc/nginx-unprivileged:alpine3.18-slim
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 8080

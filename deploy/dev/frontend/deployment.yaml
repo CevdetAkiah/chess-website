@@ -50,7 +50,6 @@ spec:
               mountPath: /var/log/nginx
             - name: cache
               mountPath: /var/cache/nginx
-
       volumes:
         - name: logs
           emptyDir: {}
