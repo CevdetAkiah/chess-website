@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
-  server:
+  build-server:
     runs-on: ubuntu-latest
     steps:
     - name: Check out the repo
@@ -33,7 +37,7 @@ jobs:
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-backend:${{ github.sha }}
 
-  client:
+  build-client:
     runs-on: ubuntu-latest
     steps:
     - name: Check out the repo
@@ -57,3 +61,30 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-frontend:${{ github.sha }}
+
+
+  deploy-to-dev:
+    if: github.ref == 'refs/heads/main'
+    needs:
+    - build-server
+    - build-client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2.0.0
+
+      - name: Deploy new tags
+        run: |
+          set -euxo pipefail
+          cd deploy/dev
+          kustomize edit set image 'frontend-placeholder=docker.io/nailien/chess-frontend:${{ github.sha }}'
+          kustomize edit set image 'backend-placeholder=docker.io/nailien/chess-backend:${{ github.sha }}'
+          
+          git config --global user.email "ci-bot@example.com"
+          git config --global user.name "ci-bot"
+          git add kustomization.yaml
+          git commit -m "bot: deploy image tags ${{ github.sha }}"
+          git push
