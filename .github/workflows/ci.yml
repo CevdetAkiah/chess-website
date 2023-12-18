@@ -36,6 +36,8 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-backend:${{ github.sha }}
+        cache-from: type=registry,ref=nailien/chess-backend:buildcache
+        cache-to: type=registry,ref=nailien/chess-backend:buildcache,mode=max
 
   build-client:
     runs-on: ubuntu-latest
@@ -61,7 +63,8 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: nailien/chess-frontend:${{ github.sha }}
-
+        cache-from: type=registry,ref=nailien/chess-frontend:buildcache
+        cache-to: type=registry,ref=nailien/chess-frontend:buildcache,mode=max
 
   deploy-to-dev:
     if: github.ref == 'refs/heads/main'
