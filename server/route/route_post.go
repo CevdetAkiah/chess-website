@@ -65,7 +65,7 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		userJSON := service.User{}
 		err := userJSON.DecodeJSON(r)
 		if err != nil {
-			util.RouteError(w, r, err, "UserByEmail", "Database")
+			logger.Error(err)
 		}
 		// If the user exists, get the user from the database
 		user, err := DBAccess.UserByEmail(userJSON.Email)
@@ -79,6 +79,7 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 			session, err := DBAccess.CreateSession(user)
 			if err != nil {
 				util.RouteError(w, r, err, "Authenticate handler", "Database")
+				logger.Error(err)
 			}
 			session.AssignCookie(w, r)
 
