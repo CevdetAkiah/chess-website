@@ -4,3 +4,4 @@ metadata:
   name: config-frontend
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
+  BACKEND_HOST: chess-backend
