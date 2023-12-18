@@ -29,7 +29,7 @@ spec:
           image: backend-placeholder
           imagePullPolicy: IfNotPresent
           env:
-            - name: PGPASS
+            - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pg-app
