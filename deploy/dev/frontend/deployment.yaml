@@ -21,7 +21,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false # TODO: change to true
             runAsNonRoot: true
             runAsUser: 1000
             allowPrivilegeEscalation: false
@@ -29,34 +29,19 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           envFrom:
             - configMapRef:
                 name: config-frontend
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
           resources:
             limits:
               cpu: 100m
               memory: 128Mi
             requests:
-              cpu: 100m
+              cpu: 10m
               memory: 128Mi
-          volumeMounts:
-            - name: logs
-              mountPath: /var/log/nginx
-            - name: cache
-              mountPath: /var/cache/nginx
-            - name: npm-cache
-              mountPath: /home/node/.npm   # Mount a writable directory for npm cache
-
-      volumes:
-        - name: logs
-          emptyDir: {}
-        - name: cache
-          emptyDir: {}
-        - name: npm-cache
-          emptyDir: {}
