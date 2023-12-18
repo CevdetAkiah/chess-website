@@ -3,13 +3,13 @@ kind: Kustomization
 namespace: chess-dev
 
 resources:
-  - frontend
-  - backend
+- frontend
+- backend
 
 images:
-  - name: frontend-placeholder
-    newName: docker.io/nailien/chess-frontend
-    newTag: 0c9d1d6ac8c787b8fba083a4619b5566d441c869
-  - name: backend-placeholder
-    newName: docker.io/nailien/chess-backend
-    newTag: 0c9d1d6ac8c787b8fba083a4619b5566d441c869
+- name: backend-placeholder
+  newName: docker.io/nailien/chess-backend
+  newTag: b81c5e46c73fe64d5444885acad70fc7c92b560a
+- name: frontend-placeholder
+  newName: docker.io/nailien/chess-frontend
+  newTag: b81c5e46c73fe64d5444885acad70fc7c92b560a
