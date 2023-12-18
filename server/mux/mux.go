@@ -16,9 +16,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"golang.org/x/net/websocket"
-
 	// "github.com/go-chi/chi/middleware"
-	"github.com/go-openapi/runtime/middleware"
 )
 
 func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
@@ -45,13 +43,6 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	fileServer := http.FileServer(http.Dir("../static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
-	// swagger file
-	swaggerFile := hashSwagger()
-	options := middleware.RedocOpts{SpecURL: "/" + swaggerFile}
-	sh := middleware.Redoc(options, nil)
-	mux.Handle("/docs", sh)
-	mux.Handle("/"+swaggerFile, http.FileServer(http.Dir("./")))
-
 	// create handlers
 	signupHandler, err := route.NewSignupAccount(CustomLogger, DBAccess)
 	if err != nil {
@@ -77,6 +68,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	if err != nil {
 		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
 	}
+
 	// Get
 	// TODO: user details for profile options
 	mux.HandleFunc("/authUser", authUserHandler)
