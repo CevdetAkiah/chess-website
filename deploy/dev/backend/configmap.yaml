@@ -4,3 +4,4 @@ metadata:
   name: config-backend
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
+  PORT: '8080'
