@@ -5,4 +5,4 @@ metadata:
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
   BACKEND_HOST: chess-backend
-  PORT: 8080
+  PORT: "8080"
