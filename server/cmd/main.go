@@ -52,7 +52,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	DBAccess.Print("Connected to port :8080")
+	DBAccess.Print("Connected to port: 8080")
 
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
