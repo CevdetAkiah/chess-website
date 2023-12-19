@@ -55,9 +55,13 @@ spec:
               subPath: default.conf  # Mount the specific file from ConfigMap
       volumes:
         - name: logs
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi
         - name: cache
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi
         - name: nginx-config
           configMap:
             name: config-nginx
