@@ -9,7 +9,7 @@ resources:
 images:
 - name: backend-placeholder
   newName: docker.io/nailien/chess-backend
-  newTag: 8444d7b706348a15c57f950eccda3349a66696ad
+  newTag: 1faed366406148b9a6250f41e260bce36c1acb58
 - name: frontend-placeholder
   newName: docker.io/nailien/chess-frontend
-  newTag: 8444d7b706348a15c57f950eccda3349a66696ad
+  newTag: 1faed366406148b9a6250f41e260bce36c1acb58
