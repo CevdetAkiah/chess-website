@@ -16,6 +16,7 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "https://chess.dev.adamland.xyz")
 		// check for session cookie
 		if cookie, err := r.Cookie("session"); err == nil {
 			// check if the session cookie is active in the db
