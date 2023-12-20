@@ -7,11 +7,16 @@ import (
 	"go-projects/chess/route"
 	"go-projects/chess/service"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"golang.org/x/net/websocket"
 	// "github.com/go-chi/chi/middleware"
+)
+
+var (
+	BACKEND_HOST = os.Getenv("BACKEND_HOST")
 )
 
 func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
@@ -23,7 +28,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
