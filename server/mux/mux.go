@@ -16,7 +16,8 @@ import (
 )
 
 var (
-	BACKEND_HOST = os.Getenv("BACKEND_HOST")
+	BACKEND_HOST  = os.Getenv("BACKEND_HOST")
+	FRONTEND_HOST = os.Getenv("FRONTEND_HOST")
 )
 
 func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
@@ -28,7 +29,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST},
+		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST, FRONTEND_HOST},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
