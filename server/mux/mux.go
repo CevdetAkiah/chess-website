@@ -29,7 +29,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST, FRONTEND_HOST},
+		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST, FRONTEND_HOST, "https://chess.dev.adamland.xyz"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
