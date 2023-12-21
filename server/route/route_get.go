@@ -16,7 +16,11 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "https://chess.dev.adamland.xyz")
+		for name, values := range r.Header {
+			for _, value := range values {
+				logger.Infof("Header: %s = %s", name, value)
+			}
+		}
 		// check for session cookie
 		if cookie, err := r.Cookie("session"); err == nil {
 			// check if the session cookie is active in the db
@@ -47,6 +51,7 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
+
 	}, nil
 }
 

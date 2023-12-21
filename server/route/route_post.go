@@ -24,8 +24,6 @@ func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAc
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-
 		// Decode JSON
 		userJSON := service.User{}
 		err := userJSON.DecodeJSON(r)
