@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const checkSession = () => {
-    const serverURL = "http://localhost:8080/authUser";
+    const serverURL = "http://chess-backend/authUser";
     const config = { withCredentials: true };
 
     return new Promise((resolve) => {
