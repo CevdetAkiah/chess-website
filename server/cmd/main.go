@@ -23,6 +23,7 @@ func main() {
 	pgDatabase := os.Getenv("PGDATABASE")
 	pgPassword := os.Getenv("PGPASSWORD")
 	pgSSLMode := os.Getenv("PGSSLMODE")
+	port := os.Getenv("PORT")
 	// test database connection
 	Db := postgres.NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode)
 
@@ -46,13 +47,13 @@ func main() {
 
 	// set up server
 	server := &http.Server{
-		Addr:         "0.0.0.0:8080",
+		Addr:         "0.0.0.0:" + port,
 		Handler:      mux,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	DBAccess.Print("Connected to port: 8080")
+	DBAccess.Print(fmt.Sprintf("Connected to port: %s", port))
 
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
