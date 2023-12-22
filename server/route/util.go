@@ -6,6 +6,12 @@ import (
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
+	"time"
+)
+
+const (
+	sessionTimeOut = 10 * time.Minute
+	cookieMaxAge   = 600
 )
 
 // decodeUserUpdates retreives JSON from the request and updates the user and session
@@ -22,8 +28,26 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 		return service.User{}, fmt.Errorf("can't get session in decodeUserUpdates error: %v", err)
 	}
 
+	// check if user timed out
+	if time.Since(session.CreatedAt) > sessionTimeOut {
+		err = DBAccess.DeleteByUUID(session)
+		if err != nil {
+			return service.User{}, err
+		}
+		err = session.DeleteCookie(w, r)
+		if err != nil {
+			return service.User{}, err
+		}
+		w.WriteHeader(http.StatusNoContent)
+		return service.User{}, fmt.Errorf("user timeout")
+	}
+
+	// reset cookie
+	cookie.MaxAge = cookieMaxAge
+	http.SetCookie(w, cookie)
 	// get the user from db using the email stored in the session
 	user, err = DBAccess.UserByEmail(session.Email)
+	DBAccess.UpdateSession(user)
 	if err != nil {
 		return service.User{}, fmt.Errorf("get user error in decodeUserUpdates: %v", err)
 	}

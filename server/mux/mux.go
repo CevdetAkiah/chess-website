@@ -6,7 +6,6 @@ import (
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
-	"net/http"
 	"os"
 
 	"github.com/go-chi/chi"
@@ -23,6 +22,7 @@ var (
 
 func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
 	mux := chi.NewRouter()
+	CustomLogger := custom_log.NewLogger()
 
 	// mux middleware
 	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
@@ -38,12 +38,10 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	CustomLogger := custom_log.NewLogger()
-
 	// fileServer serves all static files
-	// CSS and JS
-	fileServer := http.FileServer(http.Dir("../static/"))
-	mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+	// // CSS and JS
+	// fileServer := http.FileServer(http.Dir("../static/"))
+	// mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
 	// create handlers
 	signupHandler, err := route.NewSignupAccount(CustomLogger, DBAccess)

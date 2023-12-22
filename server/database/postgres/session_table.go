@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	service "go-projects/chess/service"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -20,7 +21,7 @@ func (db *DB) CreateSession(u service.User) (sess service.Session, err error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, u.CreatedAt).Scan(&sess.Id, &sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
+	err = stmt.QueryRow(u.Uuid, u.Email, u.Id, time.Now()).Scan(&sess.Id, &sess.Uuid, &sess.Email, &sess.UserId, &sess.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("\nError creating a session for user: %s, %w ", u.Email, err)
 		return
@@ -54,7 +55,7 @@ func (db *DB) CheckSession(uuid string) (active bool, err error) {
 
 // SessionByUuid gets session from sessions using given uuid
 func (db *DB) SessionByUuid(uuid string) (sess service.Session, err error) {
-	err = db.conn.QueryRow("SELECT uuid, email FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email)
+	err = db.conn.QueryRow("SELECT uuid, email, created_at FROM sessions WHERE uuid = $1", uuid).Scan(&sess.Uuid, &sess.Email, &sess.CreatedAt)
 	if err != nil {
 		err = fmt.Errorf("\nError getting session by uuid: %w", err)
 		return
@@ -63,7 +64,7 @@ func (db *DB) SessionByUuid(uuid string) (sess service.Session, err error) {
 }
 
 func (db *DB) UpdateSession(user service.User) (err error) {
-	_, err = db.conn.Exec("update sessions set email = $1 where uuid = $2", user.Email, user.Uuid)
+	_, err = db.conn.Exec("UPDATE sessions SET created_at = $1, email = $2 WHERE uuid = $3", time.Now(), user.Email, user.Uuid)
 	if err != nil {
 		err = fmt.Errorf("\nError updating session by uuid: %w", err)
 		return
