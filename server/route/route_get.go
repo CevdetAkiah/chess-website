@@ -5,6 +5,7 @@ import (
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
+	"time"
 )
 
 // this is used to check the session cookie for log in status each time the client is refreshed
@@ -16,11 +17,6 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		for name, values := range r.Header {
-			for _, value := range values {
-				logger.Infof("Header: %s = %s", name, value)
-			}
-		}
 		// check for session cookie
 		if cookie, err := r.Cookie("session"); err == nil {
 			// check if the session cookie is active in the db
@@ -28,19 +24,37 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 			if err != nil {
 				logger.Error(err)
 			}
+
 			// return user data to client if ok
 			if ok {
-				w.WriteHeader(http.StatusAccepted)
 				// processing
 				session, err := DBAccess.SessionByUuid(cookie.Value)
 				if err != nil {
 					logger.Error(err)
 				}
+				// if the session has timed out remove the session
+				if time.Since(session.CreatedAt) > sessionTimeOut {
+					err := DBAccess.DeleteByUUID(session)
+					if err != nil {
+						logger.Error(err)
+					}
+					err = session.DeleteCookie(w, r)
+					if err != nil {
+						logger.Error(err)
+					}
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+				w.WriteHeader(http.StatusAccepted)
 
 				user, err := DBAccess.UserByEmail(session.Email)
 				if err != nil {
 					logger.Error(err)
 				}
+				// renew session
+				DBAccess.UpdateSession(user)
+				cookie.MaxAge = session.MaxAge
+				http.SetCookie(w, cookie)
 				// sending info back
 				sendUserDetails(w, user.Name, logger)
 			} else {

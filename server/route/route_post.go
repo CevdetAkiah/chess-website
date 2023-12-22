@@ -6,6 +6,7 @@ import (
 	"go-projects/chess/service"
 	"go-projects/chess/util"
 	"net/http"
+	"time"
 )
 
 // swagger:route POST /NewSignupAccount user createUser
@@ -67,6 +68,7 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		}
 		// If the user exists, get the user from the database
 		user, err := DBAccess.UserByEmail(userJSON.Email)
+		user.CreatedAt = time.Now()
 		if err != nil {
 			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
 			http.Error(w, "User not found", http.StatusUnauthorized)
@@ -75,6 +77,7 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		// If password is correct then create session for the user
 		if ok := user.Authenticate(userJSON.Password); ok {
 			session, err := DBAccess.CreateSession(user)
+			session.MaxAge = cookieMaxAge
 			if err != nil {
 				util.RouteError(w, r, err, "Authenticate handler", "Database")
 				logger.Error(err)
