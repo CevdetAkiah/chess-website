@@ -11,7 +11,7 @@ import {
     setPlayer,
     setPlayerColour,
     types, } from '../../context/game/actions';
-import { getGameOverState } from '../../functions';
+import { checkSession, getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 import  { randGameID }  from '../../functions/game-ID';
 
@@ -34,6 +34,7 @@ const Game = ()=> {
     const ws = useRef(null); // useRef allows a persistent wesbsocket across re renders; ensuring the connection is only created once.
 
     useEffect(() => {
+        checkSession()
         ws.current = new WebSocket(serverURL)
             ws.current.onopen = (event) =>{
                 console.log("connection established: ", event)
