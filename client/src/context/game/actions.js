@@ -12,6 +12,9 @@ export const types = {
     SET_OPPONENT_MOVES: 'SET_OPPONENT_MOVES',
     CLEAR_OPPONENT_MOVES: 'CLEAR_OPPONENT_MOVES',
     SET_OPPONENT_COLOUR: 'SET_OPPONENT_COLOUR',
+    
+    SET_WEBSOCKET: 'SET_WEBSOCKET',
+    SET_GAMEID: 'SET_GAMEID',
 };
 
 export const setPlayer = (name) => ({
@@ -46,4 +49,14 @@ export const clearOpponentMoves = () => ({
 export const setOpponentColour = (colour) => ({
     type: types.SET_OPPONENT_COLOUR,
     colour,
+});
+
+export const setWebsocket = (websocket) => ({
+    type: types.SET_WEBSOCKET,
+    gameWebSocket: websocket,
+});
+
+export const setGameID = (id) => ({
+    type: types.SET_GAMEID,
+    gameID: id,
 });

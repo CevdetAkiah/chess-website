@@ -33,7 +33,6 @@ func (wsg *WsGame) HandleWS(wsc *websocket.Conn) {
 
 func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 	message := &receiveMessage{}
-
 	for {
 		err := websocket.JSON.Receive(wsc, &message)
 		if err != nil {
@@ -74,10 +73,17 @@ func (wsg *WsGame) handleMessage(msg *receiveMessage) {
 	fmt.Println(msg.Message)
 }
 
+// TODO: add colour on to the end of the gameID so client knows which colour it is playing as
 // handle the join event, join a game
 func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 	player := newPlayer(&msg.User, wsc)
+
+	// if game client is refreshed client has a gameID
 	gameID := msg.GameID
+	if gameID == "new-game" {
+		gameID = newGameID()
+	}
+
 	// join game or create new one
 	if len(wsg.gameSearch) == 0 { //if no available games, create a new one
 		game := &Game{
@@ -87,7 +93,7 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 		game.playerOne = player
 		wsg.gameSearch = append(wsg.gameSearch, game) // add game to the search list
 
-		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour}
+		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour, GameID: gameID}
 		player.PlayerID.Write(encodeMessage(playerInfo))
 
 		playerMessage := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
@@ -114,7 +120,7 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) {
 		message := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
 		player.PlayerID.Write(encodeMessage(message))
 
-		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour}
+		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour, GameID: game.ID}
 		player.PlayerID.Write(encodeMessage(playerInfo))
 
 		// let the player know their opponent info and set the opponent in their client

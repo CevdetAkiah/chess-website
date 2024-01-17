@@ -64,9 +64,14 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	if err != nil {
 		return nil, fmt.Errorf("NewUpdateUserHandler error: %b", err)
 	}
-	authUserHandler, err := route.NewUserAuthentication(CustomLogger, DBAccess)
+	authUserHandler, err := route.NewSessionAuthorizer(CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
+	}
+
+	gameIDHandler, err := route.NewGameIDAuthorizer(CustomLogger, DBAccess)
+	if err != nil {
+		return nil, fmt.Errorf("newGameIDHandler error: %b", err)
 	}
 
 	healthzHandler, err := route.NewHealthz(CustomLogger, DBAccess)
@@ -77,6 +82,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	// Get
 	// TODO: user details for profile options
 	mux.HandleFunc("/authUser", authUserHandler)
+	mux.HandleFunc("/gameID", gameIDHandler)
 	mux.HandleFunc("/healthz", healthzHandler)
 
 	// Post

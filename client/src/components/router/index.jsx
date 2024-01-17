@@ -13,7 +13,7 @@ const Router = () => {
     const [display, toggleDisplay] = useState(true)
     const [gameActive, toggleGameActive] = useState(false)
 
-    useEffect(() => {
+    useEffect(() => { // don't show play button if we're on the game screen
         toggleGameActive(window.location.pathname.startsWith('/game'))
         if (gameActive){
             toggleDisplay(!display)

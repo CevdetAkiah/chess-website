@@ -8,8 +8,25 @@ import (
 	"time"
 )
 
+func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger was nil")
+	} else if DBAccess == nil {
+		return nil, fmt.Errorf("DBA was nil")
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		// gameCookie is gameID. If no gameCookie, no game is in play.
+		if gameCookie, err := r.Cookie("gameID"); err == nil {
+			sendUserDetails(w, "", gameCookie.Value, logger)
+			return
+		}
+		fmt.Println("AM I GETTING HERE?")
+		w.WriteHeader(http.StatusNoContent)
+	}, nil
+}
+
 // this is used to check the session cookie for log in status each time the client is refreshed
-func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+func NewSessionAuthorizer(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
 	} else if DBAccess == nil {
@@ -56,7 +73,7 @@ func NewUserAuthentication(logger custom_log.MagicLogger, DBAccess service.Datab
 				cookie.MaxAge = session.MaxAge
 				http.SetCookie(w, cookie)
 				// sending info back
-				sendUserDetails(w, user.Name, logger)
+				sendUserDetails(w, user.Name, "", logger)
 			} else {
 				w.WriteHeader(http.StatusNoContent)
 				return

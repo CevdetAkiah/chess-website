@@ -4,7 +4,6 @@ import (
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
-	"go-projects/chess/util"
 	"net/http"
 	"time"
 )
@@ -79,13 +78,12 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 			session, err := DBAccess.CreateSession(user)
 			session.MaxAge = cookieMaxAge
 			if err != nil {
-				util.RouteError(w, r, err, "Authenticate handler", "Database")
 				logger.Error(err)
 			}
 			session.AssignCookie(w, r)
 
 			// send username back to the front end
-			sendUserDetails(w, user.Name, logger)
+			sendUserDetails(w, user.Name, "", logger)
 		} else if !ok {
 			// if pw isn't correct then inform the client
 			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)

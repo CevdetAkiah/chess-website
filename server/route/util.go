@@ -68,10 +68,11 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 	return user, nil
 }
 
-func sendUserDetails(w http.ResponseWriter, name string, logger custom_log.MagicLogger) {
+func sendUserDetails(w http.ResponseWriter, name string, gameID string, logger custom_log.MagicLogger) {
 	w.Header().Set("Content-Type", "application/json")
 	verifiedUser := &service.User{
-		Name: name,
+		Name:   name,
+		GameID: gameID,
 	}
 	userToSend, err := json.Marshal(verifiedUser)
 	if err != nil {

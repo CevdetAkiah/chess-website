@@ -63,6 +63,7 @@ type sendPlayerInfo struct {
 	*emitMessage
 	PlayerName   string `json:"pname"`
 	PlayerColour string `json:"playerColour"`
+	GameID       string `json:"gameID"`
 }
 
 // send opponent info to client
