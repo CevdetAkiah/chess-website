@@ -12,9 +12,6 @@ type DB struct {
 	conn *sql.DB
 }
 
-// const oldpw = "@ll@long@watchtower1974"
-
-// TODO: use environemnt variables to replace PW and have the NewDB func accept an env variable as
 func NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode string) *DB {
 	conn, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s password=%s sslmode=%s", pgUser, pgDatabase, pgPassword, pgSSLMode))
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/net/websocket"
 )
 
@@ -31,4 +32,9 @@ func encodeMessage(sm interface{}) []byte {
 		fmt.Println("encoding error: ", err)
 	}
 	return msg
+}
+
+func newGameID() string {
+	gameID := time.Now().String() + uuid.New().String()
+	return gameID
 }

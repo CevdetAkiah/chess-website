@@ -64,7 +64,7 @@ const GameReducer = (state, action) =>{
                     gameOver: true,
                     status: action.status,
                     turn: action.player,
-                }
+                };
 
             case types.SET_PLAYER:
                 return { ...state, playerName: action.name };
@@ -82,6 +82,16 @@ const GameReducer = (state, action) =>{
                  return { ...state, opponentMoves: [] };
             case types.SET_OPPONENT_COLOUR:
                 return { ...state, opponentColour: action.colour };
+            case types.SET_WEBSOCKET:
+                return {
+                    ...state,
+                    WebSocket: action.ws,
+                }
+            case types.SET_GAMEID:
+                return {
+                    ...state,
+                    gameID: action.id,
+                }
             default:
                 return state;
     }

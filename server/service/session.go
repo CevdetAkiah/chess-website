@@ -21,9 +21,10 @@ func (s Session) AssignCookie(w http.ResponseWriter, r *http.Request) {
 		Value:    s.Uuid,
 		HttpOnly: true,
 		MaxAge:   s.MaxAge,
-		SameSite: http.SameSiteDefaultMode, // allows cors use http.SameSiteNoneMode in production
+		SameSite: http.SameSiteNoneMode, // allows cors use http.SameSiteNoneMode in production
 	}
 	http.SetCookie(w, cookie)
+
 }
 
 // delete the cookie from the browser
