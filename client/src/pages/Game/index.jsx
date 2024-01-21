@@ -33,75 +33,93 @@ const Game = ()=> {
     const gameIDRef = useRef(gameID);
     const wsRef = useRef(null)
 
-    useEffect(() => {
-        checkSession()
+    // useEffect(() => {
+    //     checkSession()
 
-        checkGameID()
-        .then((gameID) => {
-            if (gameID !== null){
-                gameIDRef.current = gameID
-                dispatch(setGameID(gameID))
+    //     checkGameID()
+    //     .then((gameID) => {
+    //         if (gameID !== null){
+    //             gameIDRef.current = gameID
+    //             dispatch(setGameID(gameID))
+    //         }
+    //     })
+    // },[dispatch])
+
+
+    
+    useEffect(() => {
+        const initializeWebSocket = async () => {
+            await checkSession();
+
+            await checkGameID()
+            .then((gameID) => {
+                if (gameID !== null){
+                    gameIDRef.current = gameID
+                    dispatch(setGameID(gameID))
+                }
+            })
+            if (!wsRef.current) {
+                wsRef.current = new WebSocket(serverURL)
+                console.log("NEW WEBSOCKET")
             }
-        })
-    },[dispatch])
-
-
-    
-    //TODO: on initial startup the user joins, gets the "welcome user you are b", then the websocket closes immediately?
-    useEffect(() => {
-    
-        if (!wsRef.current) {
-            wsRef.current = new WebSocket(serverURL)
-            console.log("NEW WEBSOCKET")
-        }
+            
+            wsRef.current.onopen = (event) =>{
+                console.log("connection established: ", event)
+                
+                const joinName = loggedIn ? username : 'Anonymous';
+                
+                console.log("gameID: ",gameIDRef.current)
+                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
+                    wsRef.current.send(JSON.stringify(apiRequest)) 
+                }            
+                wsRef.current.onerror = (err) => {
+                    console.log("Websocket error: ",err)
+                }
         
-        wsRef.current.onopen = (event) =>{
-            console.log("connection established: ", event)
-            
-            const joinName = loggedIn ? username : 'Anonymous';
-            
-            console.log("gameID: ",gameIDRef.current)
-                const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
-                wsRef.current.send(JSON.stringify(apiRequest)) 
-            }            
-            wsRef.current.onerror = (err) => {
-                console.log("Websocket error: ",err)
-            }
-    
-            wsRef.current.onmessage = (event) => { 
-                const msgReceived = JSON.parse(event.data)
-                const emit = msgReceived.emit
-                switch (emit) {
-                    case 'message':
-                        console.log(msgReceived.message) 
-                        break;
-                    case 'playerJoined':
-                        dispatch(setPlayer(msgReceived.playerName))
-                        dispatch(setPlayerColour(msgReceived.playerColour))
-                        dispatch(setGameID(msgReceived.gameID))
-                        document.cookie = "gameID=" + msgReceived.gameID +"; SameSite=None";
-                        break;
-                    case 'opponentJoined':
-                        console.log("opponent: ", msgReceived.opponentName)  
-                        dispatch(setOpponent(msgReceived.opponentName))
-                        dispatch(setOpponentColour(msgReceived.opponentColour))
-                        break;
-                    case 'opponentMove':
-                        const from = msgReceived.from
-                        const to = msgReceived.to
-                        chess.move({ from, to })
-                        setFen(chess.fen()); // update the fen with the new move/piece positions
-                        dispatch(setOpponentMoves([from,to]))
-                        break;
-                    default:
-                    };
+                wsRef.current.onmessage = (event) => { 
+                    const msgReceived = JSON.parse(event.data)
+                    const emit = msgReceived.emit
+                    switch (emit) {
+                        case 'message':
+                            console.log(msgReceived.message) 
+                            break;
+                        case 'playerJoined':
+                            dispatch(setPlayer(msgReceived.playerName))
+                            dispatch(setPlayerColour(msgReceived.playerColour))
+                            dispatch(setGameID(msgReceived.gameID))
+                            document.cookie = "gameID=" + msgReceived.gameID +"; SameSite=None";
+                            break;
+                        case 'opponentJoined':
+                            console.log("opponent: ", msgReceived.opponentName)  
+                            dispatch(setOpponent(msgReceived.opponentName))
+                            dispatch(setOpponentColour(msgReceived.opponentColour))
+                            break;
+                        case 'opponentMove':
+                            const from = msgReceived.from
+                            const to = msgReceived.to
+                            chess.move({ from, to })
+                            setFen(chess.fen()); // update the fen with the new move/piece positions
+                            dispatch(setOpponentMoves([from,to]))
+                            break;
+                        default:
+                        };
+                    }
+        
+                wsRef.current.onclose = (event) => {
+                    console.log("connection closed: ", event)
+                    if (event.code !== 1000) {
+                        // Reconnect only if it's not a clean close (code 1000)
+                        setTimeout(() => {
+                            initializeWebSocket();
+                        }, 1000);
+                    } else{
+                        wsRef.current.close();
+                    }
                 }
     
-            wsRef.current.onclose = (event) => {
-                console.log("connection closed: ", event)
-                wsRef.current.close();
-            }
-
+        }
+        initializeWebSocket();
+        
             return () => {
                 if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN){
                     wsRef.current.close();
