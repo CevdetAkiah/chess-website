@@ -32,43 +32,32 @@ const Game = ()=> {
     
     const gameIDRef = useRef(gameID);
     const wsRef = useRef(null)
-
-    // useEffect(() => {
-    //     checkSession()
-
-    //     checkGameID()
-    //     .then((gameID) => {
-    //         if (gameID !== null){
-    //             gameIDRef.current = gameID
-    //             dispatch(setGameID(gameID))
-    //         }
-    //     })
-    // },[dispatch])
-
-
     
     useEffect(() => {
         const initializeWebSocket = async () => {
-            await checkSession();
-
-            await checkGameID()
-            .then((gameID) => {
-                if (gameID !== null){
-                    gameIDRef.current = gameID
-                    dispatch(setGameID(gameID))
-                }
-            })
+             checkSession();
+            
             if (!wsRef.current) {
                 wsRef.current = new WebSocket(serverURL)
                 console.log("NEW WEBSOCKET")
             }
             
+             checkGameID()
+            .then((gameID) => {
+                if (gameID !== null){
+                    console.log(gameID)
+                    gameIDRef.current = gameID
+                    dispatch(setGameID(gameID))
+                } 
+            });
+            
+
             wsRef.current.onopen = (event) =>{
                 console.log("connection established: ", event)
                 
                 const joinName = loggedIn ? username : 'Anonymous';
                 
-                console.log("gameID: ",gameIDRef.current)
+                console.log("gameID: ", gameIDRef.current)
                     const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest)) 
                 }            
@@ -84,10 +73,10 @@ const Game = ()=> {
                             console.log(msgReceived.message) 
                             break;
                         case 'playerJoined':
-                            dispatch(setPlayer(msgReceived.playerName))
-                            dispatch(setPlayerColour(msgReceived.playerColour))
-                            dispatch(setGameID(msgReceived.gameID))
-                            document.cookie = "gameID=" + msgReceived.gameID +"; SameSite=None";
+                                dispatch(setPlayer(msgReceived.playerName))
+                                dispatch(setPlayerColour(msgReceived.playerColour))
+                                dispatch(setGameID(msgReceived.gameID))
+                                document.cookie = "gameID=" + msgReceived.gameID +"; SameSite=None";
                             break;
                         case 'opponentJoined':
                             console.log("opponent: ", msgReceived.opponentName)  
