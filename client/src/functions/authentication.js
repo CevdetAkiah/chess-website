@@ -25,7 +25,7 @@ export const checkGameID = async () => {
     const config = { withCredentials: true };
 
     try {
-        return await new Promise((resolve) => {
+        return new Promise((resolve) => {
             axios.get(serverURL, config)
                 .then((response) => {
                     if (response.status === 202 || response.status === 200) {
@@ -36,5 +36,7 @@ export const checkGameID = async () => {
                     }
                 });
         });
-    } catch (error) { }
+    } catch (error) {
+        console.error("checkGameID error: ", error)
+     };
 }

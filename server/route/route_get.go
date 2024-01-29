@@ -20,8 +20,9 @@ func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databas
 			sendUserDetails(w, "", gameCookie.Value, logger)
 			return
 		}
-		fmt.Println("AM I GETTING HERE?")
-		w.WriteHeader(http.StatusNoContent)
+		w.Header().Set("Content-Type", "application/json")
+		jsonResponse := `{"gameID": "new-game"}`
+		w.Write([]byte(jsonResponse))
 	}, nil
 }
 
