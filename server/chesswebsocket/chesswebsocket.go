@@ -51,9 +51,37 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 				wsg.handleMessage(message)
 			case "move":
 				wsg.handleMove(message, wsc)
+			case "reconnect":
+				fmt.Println("emit: ", message.Emit)
+				err := wsg.handleReconnect(message, wsc)
+				if err != nil {
+					fmt.Println(err.Error())
+				}
 			}
 		}
 	}
+}
+
+func (wsg *WsGame) handleReconnect(msg *receiveMessage, wsc *websocket.Conn) error {
+	gameID := msg.GameID[:len(msg.GameID)-1] // remove the player colour
+	colour := msg.GameID[len(msg.GameID)-1:] // retrieve the player colour
+
+	if game, ok := wsg.gamesInPlay[gameID]; ok { // find game
+		// update the player websocket and send game info back to player (colour, fen string)
+		if game.playerOne.Colour == colour {
+			game.playerOne.PlayerID.Close()
+			game.playerOne.PlayerID = wsc
+
+		} else {
+			game.playerTwo.PlayerID.Close()
+			game.playerTwo.PlayerID = wsc
+
+		}
+
+	} else {
+		return fmt.Errorf("no game in play")
+	}
+	return nil
 }
 
 // send move to the player that is not the current websocket (THE OPPONENT RELATIVE TO THE WEBSOCKET)
@@ -76,7 +104,7 @@ func (wsg *WsGame) handleMessage(msg *receiveMessage) {
 	fmt.Println(msg.Message)
 }
 
-// TODO: add colour on to the end of the gameID so client knows which colour it is playing as
+// TODO: need concurrent safe functions to access shared data stores.
 // handle the join event, join a game
 func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) error {
 	player := newPlayer(&msg.User, wsc)

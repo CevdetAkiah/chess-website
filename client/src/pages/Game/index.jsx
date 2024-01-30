@@ -42,7 +42,7 @@ const Game = ()=> {
                 console.log("NEW WEBSOCKET")
             }
             
-             checkGameID()
+             await checkGameID()
             .then((gameID) => {
                 if (gameID !== null){
                     console.log(gameID)
@@ -56,11 +56,18 @@ const Game = ()=> {
                 console.log("connection established: ", event)
                 
                 const joinName = loggedIn ? username : 'Anonymous';
+                // document.cookie
                 
-                console.log("gameID: ", gameIDRef.current)
+                if (gameIDRef.current === "new-game"){
+                    console.log("NEWGAMEID: ", gameID)
                     const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest)) 
-                }            
+                }else{
+                    console.log("RECONNECT GAMEID: ", gameID)
+                    const apiRequest = {emit: "reconnect", user : {name : joinName}, uniqueID: gameIDRef.current}
+                    wsRef.current.send(JSON.stringify(apiRequest))
+                }               
+            }            
                 wsRef.current.onerror = (err) => {
                     console.log("Websocket error: ",err)
                 }
