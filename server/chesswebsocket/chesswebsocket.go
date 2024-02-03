@@ -3,6 +3,7 @@ package chesswebsocket
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"golang.org/x/net/websocket"
 )
@@ -33,7 +34,7 @@ func (wsg *WsGame) HandleWS(wsc *websocket.Conn) {
 }
 
 func (wsg *WsGame) readConn(wsc *websocket.Conn) {
-	message := &receiveMessage{}
+	message := receiveMessage{}
 	for {
 		err := websocket.JSON.Receive(wsc, &message)
 		if err != nil {
@@ -42,39 +43,41 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 			}
 			fmt.Println("msg read error: ", err)
 		}
-		if message != nil {
-			switch message.Emit {
-			case "join":
-				err := wsg.handleJoin(message, wsc)
-				fmt.Println(err)
-			case "message":
-				wsg.handleMessage(message)
-			case "move":
-				wsg.handleMove(message, wsc)
-			case "reconnect":
-				fmt.Println("emit: ", message.Emit)
-				err := wsg.handleReconnect(message, wsc)
-				if err != nil {
-					fmt.Println(err.Error())
-				}
+		switch message.Emit {
+		case "join":
+			err := wsg.handleJoin(message, wsc)
+			log.Println(err)
+		case "message":
+			wsg.handleMessage(message)
+		case "move":
+			err := wsg.handleMove(message, wsc)
+			if err != nil {
+				log.Println(err)
+			}
+		case "reconnect":
+			err := wsg.handleReconnect(message, wsc)
+			if err != nil {
+				log.Println(err)
 			}
 		}
 	}
 }
 
-func (wsg *WsGame) handleReconnect(msg *receiveMessage, wsc *websocket.Conn) error {
-	gameID := msg.GameID[:len(msg.GameID)-1] // remove the player colour
-	colour := msg.GameID[len(msg.GameID)-1:] // retrieve the player colour
-
+func (wsg *WsGame) handleReconnect(msg receiveMessage, wsc *websocket.Conn) error {
+	gameID := msg.GameID[:len(msg.GameID)-1]     // remove the player colour
+	colour := msg.GameID[len(msg.GameID)-1:]     // retrieve the player colour
 	if game, ok := wsg.gamesInPlay[gameID]; ok { // find game
+		playerOne := game.playerOne
+		playerTwo := game.playerTwo
 		// update the player websocket and send game info back to player (colour, fen string)
-		if game.playerOne.Colour == colour {
-			game.playerOne.PlayerID.Close()
-			game.playerOne.PlayerID = wsc
-
+		if playerOne.Colour == colour {
+			// playerOne.PlayerID.Close()
+			playerOne.PlayerID = wsc
+			playerOne.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerOne.Name, PlayerColour: colour, Fen: wsg.Fen, OpponentColour: playerTwo.Colour, OpponentName: playerTwo.Name}))
 		} else {
-			game.playerTwo.PlayerID.Close()
-			game.playerTwo.PlayerID = wsc
+			// playerTwo.PlayerID.Close()
+			playerTwo.PlayerID = wsc
+			playerTwo.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerTwo.Name, PlayerColour: colour, Fen: wsg.Fen, OpponentColour: playerOne.Colour, OpponentName: playerOne.Name}))
 
 		}
 
@@ -85,28 +88,46 @@ func (wsg *WsGame) handleReconnect(msg *receiveMessage, wsc *websocket.Conn) err
 }
 
 // send move to the player that is not the current websocket (THE OPPONENT RELATIVE TO THE WEBSOCKET)
-func (wsg *WsGame) handleMove(msg *receiveMessage, wsc *websocket.Conn) error {
+func (wsg *WsGame) handleMove(msg receiveMessage, wsc *websocket.Conn) error {
 	message := &sendMove{emitMessage: emitOpponentMove, FromMV: msg.FromMV, ToMV: msg.ToMV}
 	player := wsc
-
-	if wsg.gamesInPlay[msg.GameID].playerOne.PlayerID == player {
-		opponent := wsg.gamesInPlay[msg.GameID].playerTwo.PlayerID
-		opponent.Write(encodeMessage(message))
-	} else {
-		opponent := wsg.gamesInPlay[msg.GameID].playerOne.PlayerID
-		opponent.Write(encodeMessage(message))
+	gameID := ""
+	// gameID := msg.GameID[:len(msg.GameID)-1] // TODO: use this in live. Using dummy code to force the game detection
+	for _, game := range wsg.gamesInPlay { // TODO: delete this once the above is in use
+		gameID = game.ID
 	}
+	if game, ok := wsg.gamesInPlay[gameID]; ok {
+		playerOne := game.playerOne
+		wsg.Fen = msg.Fen
+		// match the received message against the correct player
+		if playerOne.PlayerID == player {
+			opponent := game.playerTwo.PlayerID
+			_, err := opponent.Write(encodeMessage(message))
+			if err != nil {
+				return fmt.Errorf("handleMove error: %b ", err)
+			}
+		} else {
+			opponent := game.playerOne.PlayerID
+			_, err := opponent.Write(encodeMessage(message))
+			if err != nil {
+				return fmt.Errorf("handleMove error: %b ", err)
+			}
+		}
+	} else {
+		return fmt.Errorf("game not found to handle move")
+	}
+
 	return nil
 }
 
 // print message from client to console
-func (wsg *WsGame) handleMessage(msg *receiveMessage) {
+func (wsg *WsGame) handleMessage(msg receiveMessage) {
 	fmt.Println(msg.Message)
 }
 
 // TODO: need concurrent safe functions to access shared data stores.
 // handle the join event, join a game
-func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) error {
+func (wsg *WsGame) handleJoin(msg receiveMessage, wsc *websocket.Conn) error {
 	player := newPlayer(&msg.User, wsc)
 
 	// join game or create new one
@@ -154,27 +175,27 @@ func (wsg *WsGame) handleJoin(msg *receiveMessage, wsc *websocket.Conn) error {
 		if len(wsg.gamesInPlay) == 0 {
 			wsg.gamesInPlay = make(map[string]*Game)
 		}
-
+		game.Fen = ""
 		wsg.gamesInPlay[game.ID] = game // add game to started games map
 		wsg.gameSearch = nil            // game is now in play
 
 		// let the player know they have joined a game and their colour
-		message := &sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
+		message := sendMessage{emitMessage: emitMsg, Message: "welcome " + player.Name + " you are playing as " + player.Colour}
 		player.PlayerID.Write(encodeMessage(message))
 
-		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour, GameID: player.GameID}
+		playerInfo := sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour, GameID: player.GameID}
 		player.PlayerID.Write(encodeMessage(playerInfo))
 
 		// let the player know their opponent info and set the opponent in their client
-		opponentInfo := &sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
+		opponentInfo := sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
 		player.PlayerID.Write(encodeMessage(opponentInfo))
-		message = &sendMessage{emitMessage: emitMsg, Message: "you are playing against " + opponent.Name + " who is playing as " + opponent.Colour + "\nStart the game"}
+		message = sendMessage{emitMessage: emitMsg, Message: "you are playing against " + opponent.Name + " who is playing as " + opponent.Colour + "\nStart the game"}
 		player.PlayerID.Write(encodeMessage(message))
 
 		// let the opponent know a player has joined and set the opponent's opponent as the player
-		message = &sendMessage{emitMessage: emitMsg, Message: opponent.Name + " has joined and is playing " + opponent.Colour + "\nStart the game"}
+		message = sendMessage{emitMessage: emitMsg, Message: opponent.Name + " has joined and is playing " + opponent.Colour + "\nStart the game"}
 		opponent.PlayerID.Write(encodeMessage(message))
-		opponentInfo = &sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
+		opponentInfo = sendOpponentInfo{emitMessage: emitOpponentJoined, OpponentName: opponent.Name, OpponentColour: opponent.Colour}
 		opponent.PlayerID.Write(encodeMessage(opponentInfo))
 	}
 

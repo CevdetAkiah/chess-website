@@ -56,11 +56,10 @@ const Game = ()=> {
                 console.log("connection established: ", event)
                 
                 const joinName = loggedIn ? username : 'Anonymous';
-                // document.cookie
                 
                 if (gameIDRef.current === "new-game"){
                     console.log("NEWGAMEID: ", gameID)
-                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
+                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current, fen: chess.fen()}
                     wsRef.current.send(JSON.stringify(apiRequest)) 
                 }else{
                     console.log("RECONNECT GAMEID: ", gameID)
@@ -96,6 +95,19 @@ const Game = ()=> {
                             chess.move({ from, to })
                             setFen(chess.fen()); // update the fen with the new move/piece positions
                             dispatch(setOpponentMoves([from,to]))
+                            break;
+                        case 'reconnectInfo':
+                            console.log("playername: ",msgReceived.playerName)
+                            dispatch(setPlayer(msgReceived.playerName))
+                            dispatch(setPlayerColour(msgReceived.playerColour))
+                            dispatch(setOpponent(msgReceived.opponentName))
+                            dispatch(setOpponentColour(msgReceived.opponentColour))
+                            console.log(msgReceived.fen)
+                            if (msgReceived.fen !== ""){
+                                console.log("loading fen")
+                                chess.load(msgReceived.fen)
+                                setFen(chess.fen())
+                            }
                             break;
                         default:
                         };
@@ -162,9 +174,8 @@ const Game = ()=> {
         var validMove = possibleMoves.includes(to)
          if (validMove){
             chess.move({ from, to });
-            const moveRequest = {emit: "move", gameID: gameID, from: from, to: to }
-            
-            wsRef.current.send(moveRequest)
+            const moveRequest = {emit: "move", gameID: gameIDRef.current, from: from, to: to, fen: chess.fen()}
+            wsRef.current.send(JSON.stringify(moveRequest))
             dispatch({ type: types.CLEAR_POSSIBLE_MOVES}) // unhighlight possible moves
             setFen(chess.fen()); // update the fen with the new move/piece positions
         }
@@ -178,10 +189,6 @@ const Game = ()=> {
             moves: chess.moves({ square: pos }) // send the possible moves from the currently selected position to highlight
         })
     };
-
-    // if (gameOver) {
-    //     return <GameOver />
-    // };
 
     return (
             <div className="game">
