@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	emitMsg            = &emitMessage{Emit: "message"}
-	emitPlayerJoined   = &emitMessage{Emit: "playerJoined"}
-	emitOpponentJoined = &emitMessage{Emit: "opponentJoined"}
-	emitOpponentMove   = &emitMessage{Emit: "opponentMove"}
+	emitMsg            = emitMessage{Emit: "message"}
+	emitPlayerJoined   = emitMessage{Emit: "playerJoined"}
+	emitOpponentJoined = emitMessage{Emit: "opponentJoined"}
+	emitOpponentMove   = emitMessage{Emit: "opponentMove"}
+	emitReconnect      = emitMessage{Emit: "reconnectInfo"}
 )
 
 const (
@@ -26,6 +27,7 @@ type WsGame struct {
 	gameSearch  []*Game
 	gamesInPlay map[string]*Game
 	DBAccess    service.DatabaseAccess
+	Fen         string
 }
 
 type Player struct {
@@ -39,6 +41,7 @@ type Game struct {
 	ID        string
 	playerOne *Player
 	playerTwo *Player
+	Fen       string
 }
 
 type emitMessage struct {
@@ -47,28 +50,37 @@ type emitMessage struct {
 
 // send message to client
 type sendMessage struct {
-	*emitMessage
+	emitMessage
 	Message string `json:"message"`
 }
 
 // send chess move to client
 type sendMove struct {
-	*emitMessage
+	emitMessage
 	FromMV string `json:"from"`
 	ToMV   string `json:"to"`
 }
 
 // send player info to client
 type sendPlayerInfo struct {
-	*emitMessage
+	emitMessage
 	PlayerName   string `json:"pname"`
 	PlayerColour string `json:"playerColour"`
 	GameID       string `json:"gameID"`
 }
 
+type sendReconnectInfo struct {
+	emitMessage
+	PlayerName     string `json:"playerName"`
+	PlayerColour   string `json:"playerColour"`
+	OpponentColour string `json:"opponentColour"`
+	OpponentName   string `json:"opponentName"`
+	Fen            string `json:"fen"`
+}
+
 // send opponent info to client
 type sendOpponentInfo struct {
-	*emitMessage
+	emitMessage
 	OpponentName   string `json:"opponentName"`
 	OpponentColour string `json:"opponentColour"`
 }
@@ -81,4 +93,5 @@ type receiveMessage struct {
 	GameID  string `json:"uniqueID"`
 	FromMV  string `json:"from"`
 	ToMV    string `json:"to"`
+	Fen     string `json:"fen"`
 }
