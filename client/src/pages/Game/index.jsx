@@ -59,10 +59,9 @@ const Game = ()=> {
                 
                 if (gameIDRef.current === "new-game"){
                     console.log("NEWGAMEID: ", gameID)
-                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current, fen: chess.fen()}
+                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest)) 
                 }else{
-                    console.log("RECONNECT GAMEID: ", gameID)
                     const apiRequest = {emit: "reconnect", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest))
                 }               
@@ -107,6 +106,9 @@ const Game = ()=> {
                                 console.log("loading fen")
                                 chess.load(msgReceived.fen)
                                 setFen(chess.fen())
+                                console.log("reloading board")
+                                setBoard(createBoard(chess.fen()))
+                                chess.turn()
                             }
                             break;
                         default:
@@ -169,6 +171,7 @@ const Game = ()=> {
         const from = fromPos.current;
         const to = pos;
         if (opponentName === ''){
+            console.log("here?")
             return
         };
         var validMove = possibleMoves.includes(to)
@@ -178,6 +181,8 @@ const Game = ()=> {
             wsRef.current.send(JSON.stringify(moveRequest))
             dispatch({ type: types.CLEAR_POSSIBLE_MOVES}) // unhighlight possible moves
             setFen(chess.fen()); // update the fen with the new move/piece positions
+        } else{
+            console.log("not valid move")
         }
     };
 
