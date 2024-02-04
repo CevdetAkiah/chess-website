@@ -46,7 +46,9 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 		switch message.Emit {
 		case "join":
 			err := wsg.handleJoin(message, wsc)
-			log.Println(err)
+			if err != nil {
+				log.Println(err)
+			}
 		case "message":
 			wsg.handleMessage(message)
 		case "move":
@@ -74,10 +76,13 @@ func (wsg *WsGame) handleReconnect(msg receiveMessage, wsc *websocket.Conn) erro
 			// playerOne.PlayerID.Close()
 			playerOne.PlayerID = wsc
 			playerOne.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerOne.Name, PlayerColour: colour, Fen: wsg.Fen, OpponentColour: playerTwo.Colour, OpponentName: playerTwo.Name}))
+			playerTwo.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerTwo.Name, PlayerColour: playerTwo.Colour, Fen: wsg.Fen, OpponentColour: playerOne.Colour, OpponentName: playerOne.Name}))
+
 		} else {
 			// playerTwo.PlayerID.Close()
 			playerTwo.PlayerID = wsc
 			playerTwo.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerTwo.Name, PlayerColour: colour, Fen: wsg.Fen, OpponentColour: playerOne.Colour, OpponentName: playerOne.Name}))
+			playerOne.PlayerID.Write(encodeMessage(sendReconnectInfo{emitMessage: emitReconnect, PlayerName: playerOne.Name, PlayerColour: playerOne.Colour, Fen: wsg.Fen, OpponentColour: playerTwo.Colour, OpponentName: playerTwo.Name}))
 
 		}
 
