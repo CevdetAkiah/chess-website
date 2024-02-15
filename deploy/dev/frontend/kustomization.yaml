@@ -5,4 +5,5 @@ resources:
 - configmap-nginx.yaml
 - deployment.yaml
 - ingress.yaml
+- pod-disruption-budget.yaml
 - service.yaml
