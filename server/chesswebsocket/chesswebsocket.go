@@ -65,10 +65,22 @@ func (wsg *WsGame) readConn(wsc *websocket.Conn) {
 	}
 }
 
+func (wsg *WsGame) returnGame(gameID string) (*Game, bool) {
+	wsg.lock.Lock()
+	game, ok := wsg.gamesInPlay[gameID]
+	wsg.lock.Unlock()
+	if !ok {
+		return nil, ok
+	} else {
+		return game, ok
+	}
+}
+
 func (wsg *WsGame) handleReconnect(msg receiveMessage, wsc *websocket.Conn) error {
-	gameID := msg.GameID[:len(msg.GameID)-1]     // remove the player colour
-	colour := msg.GameID[len(msg.GameID)-1:]     // retrieve the player colour
-	if game, ok := wsg.gamesInPlay[gameID]; ok { // find game
+	gameID := msg.GameID[:len(msg.GameID)-1] // remove the player colour
+	colour := msg.GameID[len(msg.GameID)-1:] // retrieve the player colour
+	game, ok := wsg.returnGame(gameID)
+	if ok { // find game
 		playerOne := game.playerOne
 		playerTwo := game.playerTwo
 		// update the player websocket and send game info back to player (colour, fen string)
@@ -98,10 +110,14 @@ func (wsg *WsGame) handleMove(msg receiveMessage, wsc *websocket.Conn) error {
 	player := wsc
 	gameID := ""
 	// gameID := msg.GameID[:len(msg.GameID)-1] // TODO: use this in live. Using dummy code to force the game detection
+	wsg.lock.Lock()
 	for _, game := range wsg.gamesInPlay { // TODO: delete this once the above is in use
 		gameID = game.ID
 	}
-	if game, ok := wsg.gamesInPlay[gameID]; ok {
+	wsg.lock.Unlock()
+	game, ok := wsg.returnGame(gameID)
+
+	if ok {
 		playerOne := game.playerOne
 		wsg.Fen = msg.Fen
 		// match the received message against the correct player
@@ -130,14 +146,15 @@ func (wsg *WsGame) handleMessage(msg receiveMessage) {
 	fmt.Println(msg.Message)
 }
 
-// TODO: need concurrent safe functions to access shared data stores.
 // handle the join event, join a game
 func (wsg *WsGame) handleJoin(msg receiveMessage, wsc *websocket.Conn) error {
 	player := newPlayer(&msg.User, wsc)
 
 	// join game or create new one
-
-	if len(wsg.gameSearch) == 0 { //if no available games, create a new one
+	wsg.lock.Lock()
+	gamesSearching := len(wsg.gameSearch)
+	wsg.lock.Unlock()
+	if gamesSearching == 0 { //if no available games, create a new onec
 		// if game client is refreshed client has a gameID
 		gameID := msg.GameID
 		if gameID == "new-game" {
@@ -149,8 +166,9 @@ func (wsg *WsGame) handleJoin(msg receiveMessage, wsc *websocket.Conn) error {
 		player.Colour = randColour()
 		player.GameID = gameID + player.Colour
 		game.playerOne = player
+		wsg.lock.Lock()
 		wsg.gameSearch = append(wsg.gameSearch, game) // add game to the search list
-
+		wsg.lock.Unlock()
 		playerInfo := &sendPlayerInfo{emitMessage: emitPlayerJoined, PlayerName: player.Name, PlayerColour: player.Colour, GameID: player.GameID}
 		_, err := player.PlayerID.Write(encodeMessage(playerInfo))
 		if err != nil {
@@ -166,7 +184,9 @@ func (wsg *WsGame) handleJoin(msg receiveMessage, wsc *websocket.Conn) error {
 		return nil
 
 	} else { // join someone's game if there is a game in the gameSearch list
+		wsg.lock.Lock()
 		game := wsg.gameSearch[0]
+		wsg.lock.Unlock()
 		opponent := game.playerOne
 		if opponent.Colour == white {
 			player.Colour = black
