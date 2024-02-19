@@ -5,7 +5,6 @@ import (
 	service "go-projects/chess/service"
 
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 )
 
 // type UserAccess service.UserDB
