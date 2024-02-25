@@ -11,15 +11,27 @@ import (
 func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
-	} else if DBAccess == nil {
+	}
+
+	if DBAccess == nil {
 		return nil, fmt.Errorf("DBA was nil")
 	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		// gameCookie is gameID. If no gameCookie, no game is in play.
-		if gameCookie, err := r.Cookie("gameID"); err == nil {
-			sendUserDetails(w, "", gameCookie.Value, logger)
+		gameCookie, err := r.Cookie("gameID")
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		err = sendUserDetails(w, "", gameCookie.Value)
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		jsonResponse := `{"gameID": "new-game"}`
 		w.Write([]byte(jsonResponse))
@@ -30,70 +42,82 @@ func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databas
 func NewSessionAuthorizer(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
-	} else if DBAccess == nil {
+	}
+
+	if DBAccess == nil {
 		return nil, fmt.Errorf("DBA was nil")
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// check for session cookie
-		if cookie, err := r.Cookie("session"); err == nil {
-			// check if the session cookie is active in the db
-			ok, err := DBAccess.CheckSession(cookie.Value)
-			if err != nil {
-				logger.Error(err)
-			}
-
-			// return user data to client if ok
-			if ok {
-				// processing
-				session, err := DBAccess.SessionByUuid(cookie.Value)
-				if err != nil {
-					logger.Error(err)
-				}
-				// if the session has timed out remove the session
-				if time.Since(session.CreatedAt) > sessionTimeOut {
-					err := DBAccess.DeleteByUUID(session)
-					if err != nil {
-						logger.Error(err)
-					}
-					err = session.DeleteCookie(w, r)
-					if err != nil {
-						logger.Error(err)
-					}
-					w.WriteHeader(http.StatusNoContent)
-					return
-				}
-				w.WriteHeader(http.StatusAccepted)
-
-				user, err := DBAccess.UserByEmail(session.Email)
-				if err != nil {
-					logger.Error(err)
-				}
-				// renew session
-				DBAccess.UpdateSession(user)
-				cookie.MaxAge = session.MaxAge
-				http.SetCookie(w, cookie)
-				// sending info back
-				sendUserDetails(w, user.Name, "", logger)
-			} else {
-				w.WriteHeader(http.StatusNoContent)
-				return
-			}
-		} else {
+		cookie, err := r.Cookie("session")
+		if err != nil {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
+		// check if the session cookie is active in the db
+		ok, err := DBAccess.CheckSession(cookie.Value)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		if !ok {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		session, err := DBAccess.SessionByUuid(cookie.Value)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		// if the session has timed out remove the session
+		if time.Since(session.CreatedAt) > sessionTimeOut {
+			err := DBAccess.DeleteByUUID(session)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			err = session.DeleteCookie(w, r)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		user, err := DBAccess.UserByEmail(session.Email)
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// renew session
+		err = DBAccess.UpdateSession(user)
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// sending info back
+		err = sendUserDetails(w, user.Name, "")
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		cookie.MaxAge = session.MaxAge
+		http.SetCookie(w, cookie)
+		w.WriteHeader(http.StatusAccepted)
 	}, nil
 }
 
-func NewHealthz(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
-	if logger == nil {
-		return nil, fmt.Errorf("logger was nil")
-	} else if DBAccess == nil {
-		return nil, fmt.Errorf("DBA was nil")
-	}
-
+func NewHealthz() (func(w http.ResponseWriter, r *http.Request), error) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}, nil

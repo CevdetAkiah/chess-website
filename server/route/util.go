@@ -3,7 +3,6 @@ package route
 import (
 	"encoding/json"
 	"fmt"
-	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
 	"time"
@@ -68,7 +67,7 @@ func decodeUserUpdates(w http.ResponseWriter, r *http.Request, DBAccess service.
 	return user, nil
 }
 
-func sendUserDetails(w http.ResponseWriter, name string, gameID string, logger custom_log.MagicLogger) {
+func sendUserDetails(w http.ResponseWriter, name string, gameID string) error {
 	w.Header().Set("Content-Type", "application/json")
 	verifiedUser := &service.User{
 		Name:   name,
@@ -76,7 +75,8 @@ func sendUserDetails(w http.ResponseWriter, name string, gameID string, logger c
 	}
 	userToSend, err := json.Marshal(verifiedUser)
 	if err != nil {
-		logger.Error(err)
+		return fmt.Errorf("sendUserDetails error: %b", err)
 	}
 	w.Write(userToSend)
+	return nil
 }

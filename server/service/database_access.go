@@ -18,57 +18,57 @@ type DatabaseAccess interface {
 	SessionByUuid(uuid string) (Session, error)
 }
 
-type DBService struct {
+type Postgres struct {
 	conn DatabaseAccess
 	l    custom_log.MagicLogger
 }
 
 // NewDBService creates a new DBService instance with the provided DatabaseAccess implementation
-func NewDBService(dba DatabaseAccess, l custom_log.MagicLogger) (*DBService, error) {
+func NewDBService(dba DatabaseAccess, l custom_log.MagicLogger) (*Postgres, error) {
 	if l == nil {
-		return &DBService{}, fmt.Errorf("NewDBSerice was passed an empty logger interface")
+		return &Postgres{}, fmt.Errorf("NewDBSerice was passed an empty logger interface")
 	}
 
 	if dba == nil {
-		return &DBService{}, fmt.Errorf("NewDBService was passed an empty database interface")
+		return &Postgres{}, fmt.Errorf("NewDBService was passed an empty database interface")
 	}
-	return &DBService{conn: dba, l: l}, nil
+	return &Postgres{conn: dba, l: l}, nil
 }
 
 // NewUser stores a new user inside a database
-func (db *DBService) CreateUser(user *User) (err error) {
+func (db *Postgres) CreateUser(user *User) (err error) {
 	db.l.Info(fmt.Sprintf("Creating user : %v", user))
 	err = db.conn.CreateUser(user)
 	return
 }
 
 // Update updates a user details in the database
-func (db *DBService) Update(user *User) (err error) {
+func (db *Postgres) Update(user *User) (err error) {
 	db.l.Info(fmt.Sprintf("Update user : %v", user))
 	err = db.conn.Update(user)
 	return
 }
 
 // DeleteUser deletes a user from a database
-func (db *DBService) DeleteUser(user User) (err error) {
+func (db *Postgres) DeleteUser(user User) (err error) {
 	db.l.Info(fmt.Sprintf("Deleting user : %v", user))
 	err = db.conn.DeleteUser(user)
 	return
 }
 
-func (db *DBService) UserByEmail(email string) (u User, err error) {
+func (db *Postgres) UserByEmail(email string) (u User, err error) {
 	u, err = db.conn.UserByEmail(email)
 	return
 }
 
 // DeleteByUUID deletes a session from the database using the cookie uuid. Mostly used logging out.
-func (db *DBService) DeleteByUUID(sess Session) (err error) {
+func (db *Postgres) DeleteByUUID(sess Session) (err error) {
 	err = db.conn.DeleteByUUID(sess)
 	return
 }
 
 // CreateSession stores a new session in the database on logging in.
-func (db *DBService) CreateSession(u User) (sess Session, err error) {
+func (db *Postgres) CreateSession(u User) (sess Session, err error) {
 	if u.Name == "" {
 		return Session{}, nil // return empty session
 	}
@@ -76,25 +76,25 @@ func (db *DBService) CreateSession(u User) (sess Session, err error) {
 	return
 }
 
-func (db *DBService) CheckSession(uuid string) (ok bool, err error) {
+func (db *Postgres) CheckSession(uuid string) (ok bool, err error) {
 	ok, err = db.conn.CheckSession(uuid)
 	return
 }
 
-func (db *DBService) SessionByUuid(uuid string) (Session, error) {
+func (db *Postgres) SessionByUuid(uuid string) (Session, error) {
 	session, err := db.conn.SessionByUuid(uuid)
 	return session, err
 }
 
-func (db *DBService) UpdateSession(user User) (err error) {
+func (db *Postgres) UpdateSession(user User) (err error) {
 	err = db.conn.UpdateSession(user)
 	return
 }
 
-func (db *DBService) Print(v string) {
+func (db *Postgres) Print(v string) {
 	db.l.Info(v)
 }
 
-func (db *DBService) Printf(format string, a ...any) {
+func (db *Postgres) Printf(format string, a ...any) {
 	db.l.Infof(format, a)
 }

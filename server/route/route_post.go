@@ -19,7 +19,9 @@ import (
 func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
-	} else if DBAccess == nil {
+	}
+
+	if DBAccess == nil {
 		return nil, fmt.Errorf("DBA was nil")
 	}
 
@@ -54,7 +56,8 @@ func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAc
 func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
-	} else if DBAccess == nil {
+	}
+	if DBAccess == nil {
 		return nil, fmt.Errorf("DBA was nil")
 	}
 
@@ -64,32 +67,34 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		err := userJSON.DecodeJSON(r)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 		// If the user exists, get the user from the database
 		user, err := DBAccess.UserByEmail(userJSON.Email)
-		user.CreatedAt = time.Now()
 		if err != nil {
 			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
 			http.Error(w, "User not found", http.StatusUnauthorized)
 			return
 		}
+		user.CreatedAt = time.Now()
 		// If password is correct then create session for the user
-		if ok := user.Authenticate(userJSON.Password); ok {
-			session, err := DBAccess.CreateSession(user)
-			session.MaxAge = cookieMaxAge
-			if err != nil {
-				logger.Error(err)
-			}
-			session.AssignCookie(w, r)
-
-			// send username back to the front end
-			sendUserDetails(w, user.Name, "", logger)
-		} else if !ok {
+		ok := user.Authenticate(userJSON.Password)
+		if !ok {
 			// if pw isn't correct then inform the client
 			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
 			http.Error(w, "Incorrect password", http.StatusUnauthorized)
+			return
 		}
+		session, err := DBAccess.CreateSession(user)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		session.MaxAge = cookieMaxAge
+		session.AssignCookie(w, r)
 
+		// send username back to the front end
+		sendUserDetails(w, user.Name, "")
 	}, nil
 }
 
@@ -111,16 +116,28 @@ func NewLogoutUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := service.Session{}
-		if cookie, err := r.Cookie("session"); err == nil {
-			session.Uuid = cookie.Value
-			// remove the session from the database and delete the cookie from the browser
-			session.DeleteCookie(w, r)
-			DBAccess.DeleteByUUID(session)
-			// report that the request was successful but also no data to be sent back to the client
-			w.WriteHeader(http.StatusNoContent)
-		} else {
+		cookie, err := r.Cookie("session")
+		if err != nil {
 			logger.Error(err)
 			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
+		session.Uuid = cookie.Value
+		// remove the session from the database and delete the cookie from the browser
+		err = session.DeleteCookie(w, r)
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		// delete the session from the database session table
+		err = DBAccess.DeleteByUUID(session)
+		if err != nil {
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		// report that the request was successful but also no data to be sent back to the client
+		w.WriteHeader(http.StatusNoContent)
 	}, nil
 }

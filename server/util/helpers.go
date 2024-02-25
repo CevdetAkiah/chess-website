@@ -8,7 +8,7 @@ import (
 
 // GetUserName returns the username for the message giver.
 // TODO: refactor this into a general function. Doesn't need to be limited to websocket server
-func GetUserName(r *http.Request, DBAccess *service.DBService) []byte {
+func GetUserName(r *http.Request, DBAccess *service.Postgres) []byte {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		fmt.Println(err) // TODO: handle this error better
@@ -25,7 +25,7 @@ func GetUserName(r *http.Request, DBAccess *service.DBService) []byte {
 	return []byte(username)
 }
 
-func CheckLogin(r *http.Request, DBAccess *service.DBService) (ok bool) {
+func CheckLogin(r *http.Request, DBAccess *service.Postgres) (ok bool) {
 	cookie, err := r.Cookie("session")
 	if err == nil {
 		ok, err = DBAccess.CheckSession(cookie.Value)
