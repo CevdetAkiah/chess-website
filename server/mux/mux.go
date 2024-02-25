@@ -69,35 +69,33 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
 	}
 
-	gameIDHandler, err := route.NewGameIDAuthorizer(CustomLogger, DBAccess)
+	// gameIDHandler, err := route.NewGameIDAuthorizer(CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("newGameIDHandler error: %b", err)
 	}
 
-	healthzHandler, err := route.NewHealthz(CustomLogger, DBAccess)
+	healthzHandler, err := route.NewHealthz()
 	if err != nil {
 		return nil, fmt.Errorf("NewHealthz error: %b", err)
 	}
 
-	// Get
-	// TODO: user details for profile options
-	mux.HandleFunc("/authUser", authUserHandler)
-	mux.HandleFunc("/gameID", gameIDHandler)
-	mux.HandleFunc("/healthz", healthzHandler)
+	mux.Route("/user", func(r chi.Router) {
+		mux.Post("/", signupHandler)
+		mux.Get("/", loginHandler)
+		mux.Put("/", updateUserHandler)
+		mux.Delete("/", deleteUserHandler)
+	})
 
-	// Post
-	mux.HandleFunc("/signupAccount", signupHandler)
-	mux.HandleFunc("/authenticate", loginHandler)
-	mux.HandleFunc("/logout", logoutHandler)
+	mux.Route("/game", func(r chi.Router) {
+		// mux.Post("/", )
+		mux.Get("/", authUserHandler)
+		// mux.Put("/", )
+		// mux.Delete("/", )
+	})
 
-	// // Put
-	mux.HandleFunc("/updateUser", updateUserHandler)
-
-	// Delete
-	mux.HandleFunc("/deleteUser", deleteUserHandler)
-
-	// Websocket
 	mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
+	mux.Get("/healthz", healthzHandler)
+	mux.HandleFunc("/logout", logoutHandler)
 
 	return mux, nil
 }

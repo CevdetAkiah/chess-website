@@ -6,6 +6,6 @@ import "testing"
 
 // TODO: write a test for the Authenticate handler
 
-func TestSignupAccount(t *testing.T){
-	
+func TestSignupAccount(t *testing.T) {
+
 }

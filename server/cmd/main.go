@@ -7,7 +7,6 @@ import (
 	postgres "go-projects/chess/database/postgres"
 	custom_log "go-projects/chess/logger"
 	chess_mux "go-projects/chess/mux"
-	"go-projects/chess/service"
 	"log"
 	"net/http"
 	"os"
@@ -29,18 +28,9 @@ func main() {
 
 	fmt.Println("connected to database chess")
 
-	// set up the database service/access to database
-	DBAccess, err := service.NewDBService(
-		Db,
-		l,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	chessWebsocket := chesswebsocket.NewWebsocket()
 
-	mux, err := chess_mux.New(DBAccess, chessWebsocket)
+	mux, err := chess_mux.New(Db, chessWebsocket)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,7 +43,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	DBAccess.Print(fmt.Sprintf("Connected to port: %s", port))
+	l.Infof("Connected to port: %s", port)
 
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
@@ -68,7 +58,7 @@ func main() {
 	signal.Notify(sigChan, os.Kill)
 
 	sig := <-sigChan
-	DBAccess.Printf("Received terminate message %v", sig)
+	l.Infof("Received terminate message %v", sig)
 
 	// Graceful shutdown. Users are given 2 minutes to finish their game if the server needs to restart for any reason
 	t := time.Now().Add(time.Second * 120)

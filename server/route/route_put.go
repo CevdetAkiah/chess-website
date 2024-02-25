@@ -4,7 +4,6 @@ import (
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
-	"log"
 	"net/http"
 )
 
@@ -28,7 +27,9 @@ func NewUpdateUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := decodeUserUpdates(w, r, DBAccess)
 		if err != nil {
-			log.Fatalf("update user error: %b", err)
+			logger.Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		DBAccess.Update(&user)
 		w.WriteHeader(http.StatusOK)
