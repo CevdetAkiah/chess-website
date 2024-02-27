@@ -29,7 +29,7 @@ func TestNewGameIDAuthorizer(t *testing.T) {
 	reqOK.AddCookie(&http.Cookie{Name: "gameID", Value: "123"})
 	recorderOK := httptest.NewRecorder()
 
-	handlerOK, err := NewGameIDAuthorizer(l, &mockDbAccess)
+	handlerOK, err := NewGameIDRetriever(l, &mockDbAccess)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestNewGameIDAuthorizer(t *testing.T) {
 	}
 	recorderNoID := httptest.NewRecorder()
 
-	handlerNoID, err := NewGameIDAuthorizer(l, &mockDbAccess)
+	handlerNoID, err := NewGameIDRetriever(l, &mockDbAccess)
 	if err != nil {
 		t.Fatal(err)
 	}

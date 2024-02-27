@@ -8,7 +8,9 @@ import (
 	"time"
 )
 
-func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+// GETs the game id if present or tells the client a new game is being requested
+// used to persist the game across re renders
+func NewGameIDRetriever(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
 	}
@@ -22,7 +24,9 @@ func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databas
 		gameCookie, err := r.Cookie("gameID")
 		if err != nil {
 			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			jsonResponse := `{"gameID": "new-game"}`
+			w.Write([]byte(jsonResponse))
 			return
 		}
 		err = sendUserDetails(w, "", gameCookie.Value)
@@ -31,10 +35,6 @@ func NewGameIDAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databas
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		jsonResponse := `{"gameID": "new-game"}`
-		w.Write([]byte(jsonResponse))
 	}, nil
 }
 
@@ -113,7 +113,7 @@ func NewSessionAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databa
 
 		cookie.MaxAge = session.MaxAge
 		http.SetCookie(w, cookie)
-		w.WriteHeader(http.StatusAccepted)
+		// w.WriteHeader(http.StatusAccepted)
 	}, nil
 }
 

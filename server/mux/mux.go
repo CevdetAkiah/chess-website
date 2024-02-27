@@ -38,11 +38,6 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	// fileServer serves all static files
-	// // CSS and JS
-	// fileServer := http.FileServer(http.Dir("../static/"))
-	// mux.Handle("/static/*", http.StripPrefix("/static/", fileServer))
-
 	// create handlers
 	signupHandler, err := route.NewSignupAccount(CustomLogger, DBAccess)
 	if err != nil {
@@ -64,12 +59,12 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	if err != nil {
 		return nil, fmt.Errorf("NewUpdateUserHandler error: %b", err)
 	}
-	authUserHandler, err := route.NewSessionAuthorizer(CustomLogger, DBAccess)
+	authSessionHandler, err := route.NewSessionAuthorizer(CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("NewAuthUserHandler error: %b", err)
 	}
 
-	// gameIDHandler, err := route.NewGameIDAuthorizer(CustomLogger, DBAccess)
+	gameIDHandler, err := route.NewGameIDRetriever(CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("newGameIDHandler error: %b", err)
 	}
@@ -80,22 +75,24 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 	}
 
 	mux.Route("/user", func(r chi.Router) {
-		mux.Post("/", signupHandler)
-		mux.Get("/", loginHandler)
-		mux.Put("/", updateUserHandler)
-		mux.Delete("/", deleteUserHandler)
+		// TODO: get will gather a users details for the profile page
+		r.Post("/", signupHandler)       // create a new user
+		r.Put("/", updateUserHandler)    // update a user
+		r.Delete("/", deleteUserHandler) // delete a user
+	})
+
+	mux.Route("/session", func(r chi.Router) {
+		r.Get("/", authSessionHandler) // check a session's status
+		r.Post("/", loginHandler)      // create a session
+		r.Delete("/", logoutHandler)   // delete a session
 	})
 
 	mux.Route("/game", func(r chi.Router) {
-		// mux.Post("/", )
-		mux.Get("/", authUserHandler)
-		// mux.Put("/", )
-		// mux.Delete("/", )
+		r.Get("/", gameIDHandler) // get a game ID. This tells the client if a game is in play
 	})
 
 	mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
 	mux.Get("/healthz", healthzHandler)
-	mux.HandleFunc("/logout", logoutHandler)
 
 	return mux, nil
 }
