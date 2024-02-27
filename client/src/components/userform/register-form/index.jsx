@@ -5,9 +5,9 @@ import './register-form.css'
 import { EMAIL_DUPLICATE, USERNAME_DUPLICATE } from '../error-types';
 
 
-
+// POST user registration
 const RegisterForm = () => {
-    const serverURL = "http://localhost:8080"
+    const serverURL = "http://localhost:8080/user"
 
     const form = useForm();
     const { register, handleSubmit, formState, reset, setError } = form;
@@ -26,7 +26,7 @@ const RegisterForm = () => {
             headers: { 'Content-Type': 'multipart/form-data' }
         }
         if (data) {
-            axios.post(serverURL + "/signupAccount", JSON.stringify(data), config).then((response) => {
+            axios.post(serverURL, JSON.stringify(data), config).then((response) => {
                 if (response.status === 201) {
                     // TODO: register confirmation
                     // turn off register form

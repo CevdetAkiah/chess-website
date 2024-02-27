@@ -7,10 +7,10 @@ import { SiteContext } from '../../../context/website/ClientContext';
 import { setClientUsername, setLoggedIn } from '../../../context/website/actions';
 import { INCORRECT_PASSWORD, USERNAME_NOT_FOUND } from '../error-types';
 
-
+// POST user logs in
 const LoginForm = () =>{
     
-    const serverURL = "http://localhost:8080/authenticate"
+    const serverURL = "http://localhost:8080/session"
 
     const form = useForm();
     const { register, handleSubmit,setError, formState: { errors }, reset } = form;

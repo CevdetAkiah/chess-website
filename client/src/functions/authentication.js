@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// GET checkSession checks if a session is active
 export const checkSession = () => {
-    const serverURL = "http://localhost:8080/authUser";
+    const serverURL = "http://localhost:8080/session"; 
     const config = { withCredentials: true };
 
     return new Promise((resolve) => {
@@ -20,8 +21,9 @@ export const checkSession = () => {
     });
 };
 
+// GET checkGameID checks if a game is occurring for this client
 export const checkGameID = async () => {
-    const serverURL = "http://localhost:8080/gameID";
+    const serverURL = "http://localhost:8080/game";
     const config = { withCredentials: true };
 
     try {

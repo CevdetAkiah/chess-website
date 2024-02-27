@@ -4,16 +4,16 @@ import axios from 'axios';
 import { setLoggedIn } from '../../../context/website/actions';
 import './logout.css'
 
-// logout
+// DELETE a session to log a user out
 const SignOut = () => {
     const { dispatch } = useContext(SiteContext)
-    const serverURL = "http://localhost:8080/logout"
+    const serverURL = "http://localhost:8080/session" 
 
     const logOut = () => {
         const config = {
             withCredentials: true,
         }   
-        axios.post(serverURL,{},config).then((response) => {
+        axios.delete(serverURL,config).then((response) => {
             if (response.status === 204){
                 dispatch(setLoggedIn(false))
             }else{
