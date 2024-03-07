@@ -16,7 +16,7 @@ import { checkGameID, checkSession, getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 
 
-const serverURL = 'ws://localhost:8080/ws'
+const serverURL = 'ws://localhost:4000/ws'
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // checkmate for testing game over screen
@@ -50,7 +50,7 @@ const Game = ()=> {
                     dispatch(setGameID(gameID))
                 } 
             });
-            
+                // TODO: create constructor for websocket type message object
 
             wsRef.current.onopen = (event) =>{
                 console.log("connection established: ", event)

@@ -2,7 +2,6 @@ package mux
 
 import (
 	"fmt"
-	chesswebsocket "go-projects/chess/chesswebsocket"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	"golang.org/x/net/websocket"
 	// "github.com/go-chi/chi/middleware"
 )
 
@@ -20,7 +18,7 @@ var (
 	FRONT_DOMAIN  = os.Getenv("FRONT_DOMAIN")
 )
 
-func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux, error) {
+func New(DBAccess service.DatabaseAccess) (*chi.Mux, error) {
 	mux := chi.NewRouter()
 	CustomLogger := custom_log.NewLogger()
 
@@ -30,7 +28,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN},
+		AllowedOrigins:   []string{"http://localhost:4000", "http://localhost:3000", BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -91,7 +89,7 @@ func New(DBAccess service.DatabaseAccess, wsS *chesswebsocket.WsGame) (*chi.Mux,
 		r.Get("/", gameIDHandler) // get a game ID. This tells the client if a game is in play
 	})
 
-	mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
+	// mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
 	mux.Get("/healthz", healthzHandler)
 
 	return mux, nil
