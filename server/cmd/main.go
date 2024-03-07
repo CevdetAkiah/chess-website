@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	chesswebsocket "go-projects/chess/chesswebsocket"
 	postgres "go-projects/chess/database/postgres"
+	gameserver "go-projects/chess/gameserver"
 	custom_log "go-projects/chess/logger"
 	chess_mux "go-projects/chess/mux"
 	"log"
@@ -12,25 +12,29 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/anthdm/hollywood/actor"
 )
 
 func main() {
 	l := custom_log.NewLogger()
 
-	// load env variables
-	pgUser := os.Getenv("PGUSER")
-	pgDatabase := os.Getenv("PGDATABASE")
-	pgPassword := os.Getenv("PGPASSWORD")
-	pgSSLMode := os.Getenv("PGSSLMODE")
-	port := os.Getenv("PORT")
 	// test database connection
 	Db := postgres.NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode)
 
 	fmt.Println("connected to database chess")
 
-	chessWebsocket := chesswebsocket.NewWebsocket()
+	// handle the chess game server
+	e, err := actor.NewEngine(actor.NewEngineConfig())
+	if err != nil {
+		l.Error(err)
+	}
 
-	mux, err := chess_mux.New(Db, chessWebsocket)
+	// spawn a new concurrent process for every new ws connection.
+	e.Spawn(gameserver.NewGameServer, "server")
+
+	// mux deals with REST api
+	mux, err := chess_mux.New(Db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,7 +47,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	l.Infof("Connected to port: %s", port)
+	l.Infof("REST api connected to port: %s", port)
 
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()
