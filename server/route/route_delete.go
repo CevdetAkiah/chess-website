@@ -63,7 +63,7 @@ func NewDeleteUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 		}
 
 		// remove session from browser cookies
-		session.DeleteCookie(w, r)
+		err = session.DeleteCookie(w, r)
 		if err != nil {
 			logger.Error(err)
 			w.WriteHeader(http.StatusInternalServerError)

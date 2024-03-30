@@ -11,6 +11,7 @@ const initialState = {
     playerColour: '',
     opponentName: '',
     opponentColour: '',
+    gameStart: false,
     message: '',
     opponentMoves: [],
     webSocket: null,

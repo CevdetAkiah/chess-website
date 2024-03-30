@@ -5,6 +5,7 @@ import (
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/route"
 	"go-projects/chess/service"
+	"net/http"
 	"os"
 
 	"github.com/go-chi/chi"
@@ -18,7 +19,11 @@ var (
 	FRONT_DOMAIN  = os.Getenv("FRONT_DOMAIN")
 )
 
-func New(DBAccess service.DatabaseAccess) (*chi.Mux, error) {
+type Multiplexer interface {
+	ServeHTTP(w http.ResponseWriter, r *http.Request)
+}
+
+func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	mux := chi.NewRouter()
 	CustomLogger := custom_log.NewLogger()
 
