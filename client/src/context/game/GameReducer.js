@@ -92,6 +92,11 @@ const GameReducer = (state, action) =>{
                     ...state,
                     gameID: action.id,
                 }
+            case types.SET_GAME_START:
+            return {
+                ...state,
+                gameStart: action.gameStart
+            }
             default:
                 return state;
     }

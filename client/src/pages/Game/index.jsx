@@ -11,12 +11,13 @@ import {
     setPlayer,
     setPlayerColour,
     setGameID,
+    setGameStart,
     types, } from '../../context/game/actions';
 import { checkGameID, checkSession, getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 
 
-const serverURL = 'ws://localhost:8080/ws'
+const serverURL = 'ws://localhost:4000/ws'
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // checkmate for testing game over screen
@@ -27,7 +28,7 @@ const Game = ()=> {
     const {current: chess} = useRef(new Chess(fen));
     const [board,setBoard] = useState(createBoard(fen));
     const { state } = useContext(SiteContext);
-    const { possibleMoves, dispatch, opponentName, gameID } = useContext(GameContext);
+    const { possibleMoves, dispatch, gameStart, gameID } = useContext(GameContext);
     const { username, loggedIn } = state; // get username from log in details
     
     const gameIDRef = useRef(gameID);
@@ -50,7 +51,7 @@ const Game = ()=> {
                     dispatch(setGameID(gameID))
                 } 
             });
-            
+                // TODO: create constructor for websocket type message object
 
             wsRef.current.onopen = (event) =>{
                 console.log("connection established: ", event)
@@ -58,11 +59,27 @@ const Game = ()=> {
                 const joinName = loggedIn ? username : 'Anonymous';
                 
                 if (gameIDRef.current === "new-game"){
-                    console.log("NEWGAMEID: ", gameID)
-                    const apiRequest = {emit: "join", user : {name : joinName}, uniqueID: gameIDRef.current}
-                    wsRef.current.send(JSON.stringify(apiRequest)) 
+                    const apiRequest = {
+                        type: "join",
+                        data: {
+                            name: joinName,
+                            uniqueID: gameIDRef.current
+                        }
+                    };
+                    wsRef.current.send(JSON.stringify(apiRequest))
+
+                    // // TODO: remove this below, it's test
+                    // const apiRequest = {
+                    //     type: "playerState",
+                    //     data: {
+                    //         uniqueID: gameIDRef.current
+                    //     }
+                    // };
+                    // wsRef.current.send(JSON.stringify(apiRequest))
+
+                    // test end
                 }else{
-                    const apiRequest = {emit: "reconnect", user : {name : joinName}, uniqueID: gameIDRef.current}
+                    const apiRequest = {type: "reconnect", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest))
                 }               
             }            
@@ -72,25 +89,31 @@ const Game = ()=> {
         
                 wsRef.current.onmessage = (event) => { 
                     const msgReceived = JSON.parse(event.data)
-                    const emit = msgReceived.emit
-                    switch (emit) {
+                    const type = msgReceived.type
+                    switch (type) {
                         case 'message':
-                            console.log(msgReceived.message) 
+                            console.log("Message received: ",msgReceived.data) 
                             break;
                         case 'playerJoined':
                                 dispatch(setPlayer(msgReceived.playerName))
+                            console.log("Message received: ",msgReceived.playerName) 
+
                                 dispatch(setPlayerColour(msgReceived.playerColour))
+                            console.log("Message received: ",msgReceived.playerColour) 
+
                                 dispatch(setGameID(msgReceived.gameID))
+                            console.log("Message received: ",msgReceived.gameID) 
+
                                 document.cookie = "gameID=" + msgReceived.gameID +"; SameSite=None";
                             break;
-                        case 'opponentJoined':
-                            console.log("opponent: ", msgReceived.opponentName)  
-                            dispatch(setOpponent(msgReceived.opponentName))
-                            dispatch(setOpponentColour(msgReceived.opponentColour))
+                        case 'startGame':
+                            console.log("Start the game: ")  
+                            dispatch(setGameStart(true))
                             break;
-                        case 'opponentMove':
+                        case 'playerState':
                             const from = msgReceived.from
                             const to = msgReceived.to
+                            console.log("receiving state: ", msgReceived)
                             chess.move({ from, to })
                             setFen(chess.fen()); // update the fen with the new move/piece positions
                             dispatch(setOpponentMoves([from,to]))
@@ -170,15 +193,15 @@ const Game = ()=> {
     const makeMove = (pos) =>{
         const from = fromPos.current;
         const to = pos;
-        if (opponentName === ''){
-            console.log("here?")
+        if (!gameStart){
             return
         };
         var validMove = possibleMoves.includes(to)
          if (validMove){
             chess.move({ from, to });
-            const moveRequest = {emit: "move", gameID: gameIDRef.current, from: from, to: to, fen: chess.fen()}
-            wsRef.current.send(JSON.stringify(moveRequest))
+            const apiRequest = {type: "playerState", data: {gameID: gameIDRef.current, from: from, to: to, fen: chess.fen()}}
+            console.log("sending state: ", apiRequest)
+            wsRef.current.send(JSON.stringify(apiRequest))
             dispatch({ type: types.CLEAR_POSSIBLE_MOVES}) // unhighlight possible moves
             setFen(chess.fen()); // update the fen with the new move/piece positions
         } else{

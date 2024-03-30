@@ -12,7 +12,7 @@ export const types = {
     SET_OPPONENT_MOVES: 'SET_OPPONENT_MOVES',
     CLEAR_OPPONENT_MOVES: 'CLEAR_OPPONENT_MOVES',
     SET_OPPONENT_COLOUR: 'SET_OPPONENT_COLOUR',
-    
+    SET_GAME_START: `SET_GAME_START`,    
     SET_WEBSOCKET: 'SET_WEBSOCKET',
     SET_GAMEID: 'SET_GAMEID',
 };
@@ -20,6 +20,11 @@ export const types = {
 export const setPlayer = (name) => ({
     type: types.SET_PLAYER,
     name,
+});
+
+export const setGameStart = (gameStart) => ({
+    type: types.SET_GAME_START,
+    gameStart,
 });
 
 export const setOpponent = (opponent) => ({

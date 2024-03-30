@@ -23,7 +23,6 @@ func NewGameIDRetriever(logger custom_log.MagicLogger, DBAccess service.Database
 		// gameCookie is gameID. If no gameCookie, no game is in play.
 		gameCookie, err := r.Cookie("gameID")
 		if err != nil {
-			logger.Error(err)
 			w.Header().Set("Content-Type", "application/json")
 			jsonResponse := `{"gameID": "new-game"}`
 			w.Write([]byte(jsonResponse))
