@@ -64,7 +64,7 @@ func (db *DB) SessionByUuid(uuid string) (sess service.Session, err error) {
 }
 
 func (db *DB) UpdateSession(user service.User) (err error) {
-	_, err = db.conn.Exec("UPDATE sessions SET created_at = $1, email = $2 WHERE uuid = $3", time.Now(), user.Email, user.Uuid)
+	_, err = db.conn.Exec("UPDATE sessions SET created_at = $1, email = $2 WHERE uuid = $3", user.CreatedAt, user.Email, user.Uuid)
 	if err != nil {
 		err = fmt.Errorf("\nError updating session by uuid: %w", err)
 		return

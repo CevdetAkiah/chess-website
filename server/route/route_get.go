@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// GETs the game id if present or tells the client a new game is being requested
+// GET the game id if present or tells the client a new game is being requested
 // used to persist the game across re renders
 func NewGameIDRetriever(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
@@ -95,6 +95,7 @@ func NewSessionAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databa
 		}
 
 		// renew session
+		user.CreatedAt = time.Now()
 		err = DBAccess.UpdateSession(user)
 		if err != nil {
 			logger.Error(err)
@@ -112,7 +113,6 @@ func NewSessionAuthorizer(logger custom_log.MagicLogger, DBAccess service.Databa
 
 		cookie.MaxAge = session.MaxAge
 		http.SetCookie(w, cookie)
-		// w.WriteHeader(http.StatusAccepted)
 	}, nil
 }
 
