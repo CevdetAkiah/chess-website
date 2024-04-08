@@ -1,12 +1,12 @@
 package route
 
 import (
+	"go-projects/chess/config"
 	"go-projects/chess/database/postgres"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -14,17 +14,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setUp() (db *postgres.DB, log *custom_log.Logger) {
-	pgUser := os.Getenv("PGUSER")
-	pgDatabase := os.Getenv("PGDATABASE")
-	pgPassword := os.Getenv("PGPASSWORD")
-	pgSSLMode := os.Getenv("PGSSLMODE")
-	db = postgres.NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode)
-	log = custom_log.NewLogger()
-
-	return
+// set up database connection and logger
+func setUp() (*postgres.DB, *custom_log.Logger) {
+	config := config.NewDBConfig()
+	return postgres.NewDB(config), custom_log.NewLogger()
 }
 
+// // *
+// // GET tests
 func TestNewGameIDRetriever(t *testing.T) {
 	db, l := setUp()
 	mockDbAccess := mockDbAccess{l, db}
@@ -143,4 +140,34 @@ func TestNewSessionAuthorizer(t *testing.T) {
 
 	handlerNoSession(recorderNoSession, reqNoSession)
 	assert.Equal(t, http.StatusNoContent, recorderNoSession.Result().StatusCode)
+}
+
+// *
+// POST tests
+
+// test signup a user
+func TestNewSignupAccount(t *testing.T) {
+	db, l := setUp()
+	store := mockDbAccess{l, db}
+	recorder := httptest.NewRecorder()
+
+	// set up form values and request
+	payload := `{"username": "test", "email": "test@test", "password": "123"}`
+
+	request := httptest.NewRequest("POST", "/test", strings.NewReader(payload))
+
+	testSignupAccount, err := NewSignupAccount(l, &store)
+	if err != nil {
+		t.Error("SignupAccount set up:", err)
+	}
+	testSignupAccount(recorder, request)
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+
+	// cleanup
+	deleteUser, err := store.UserByEmail("test@test")
+	if err != nil {
+		t.Error("returning user to clean up: ", err)
+	}
+	store.DeleteUser(deleteUser)
+
 }
