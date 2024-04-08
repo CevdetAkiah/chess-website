@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"go-projects/chess/config"
 	postgres "go-projects/chess/database/postgres"
 	gameserver "go-projects/chess/gameserver"
 	custom_log "go-projects/chess/logger"
@@ -17,10 +18,12 @@ import (
 )
 
 func main() {
-	l := custom_log.NewLogger()
-
+	// config files
+	dbConfig := config.NewDBConfig()
+	serverConfig := config.NewServerConfig()
 	// test database connection
-	Db := postgres.NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode)
+	Db := postgres.NewDB(dbConfig)
+	l := custom_log.NewLogger()
 
 	fmt.Println("connected to database chess")
 
@@ -41,13 +44,13 @@ func main() {
 
 	// set up server
 	server := &http.Server{
-		Addr:         "0.0.0.0:" + port,
+		Addr:         "0.0.0.0:" + serverConfig.Port,
 		Handler:      mux,
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		WriteTimeout: serverConfig.WriteTimeout,
+		ReadTimeout:  serverConfig.ReadTimeout,
 	}
 
-	l.Infof("REST api connected to port: %s", port)
+	l.Infof("REST api connected to port: %s", serverConfig.Port)
 
 	go func() { // go routine so the enclosed doesn't block
 		err := server.ListenAndServe()

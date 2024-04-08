@@ -5,6 +5,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"go-projects/chess/config"
 	"log"
 )
 
@@ -12,8 +13,8 @@ type DB struct {
 	conn *sql.DB
 }
 
-func NewDB(pgUser, pgDatabase, pgPassword, pgSSLMode string) *DB {
-	conn, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s password=%s sslmode=%s", pgUser, pgDatabase, pgPassword, pgSSLMode))
+func NewDB(config *config.DBConfig) *DB {
+	conn, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s password=%s sslmode=%s", config.PGUser, config.PGDatabase, config.PGPassword, config.PGSSLMode))
 	if err != nil {
 		err = fmt.Errorf("cannot open database with error: %w", err)
 		log.Fatal(err)
