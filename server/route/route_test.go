@@ -223,6 +223,7 @@ func TestNewDeleteUser(t *testing.T) {
 		t.Error("creating session in TestNewDeleteUser: ", err)
 	}
 	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
+
 	testNewDeleteUser, err := NewDeleteUser(l, &store)
 	if err != nil {
 		t.Error("creating NewDeleteUser instance in TestNewDeleteUser: ", err)
@@ -232,6 +233,7 @@ func TestNewDeleteUser(t *testing.T) {
 	assert.Equal(t, http.StatusOK, recorder.Code)
 
 	// check if session is deleted from the db
+	assert.Equal(t, http.StatusOK, recorder.Code)
 	ok, _ := store.CheckSession(session.Uuid)
 	if ok {
 		t.Error("finding session in DB when should be deleted")
