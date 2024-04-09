@@ -67,6 +67,7 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 		err := userJSON.DecodeJSON(r)
 		if err != nil {
 			logger.Error(err)
+			http.Error(w, "unmarshall error", http.StatusInternalServerError)
 			return
 		}
 		// If the user exists, get the user from the database

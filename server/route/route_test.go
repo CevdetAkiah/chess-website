@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"go-projects/chess/config"
 	"go-projects/chess/database/postgres"
 	custom_log "go-projects/chess/logger"
@@ -152,7 +153,8 @@ func TestNewSignupAccount(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	// set up form values and request
-	payload := `{"username": "test", "email": "test@test", "password": "123"}`
+	testUser := service.User{Name: "test", Email: "test@test", Password: "123"}
+	payload := fmt.Sprintf(`{"username" : "%s", "email" : "%s", "password" : "%s"}`, testUser.Name, testUser.Email, testUser.Password)
 
 	request := httptest.NewRequest("POST", "/test", strings.NewReader(payload))
 
@@ -170,4 +172,37 @@ func TestNewSignupAccount(t *testing.T) {
 	}
 	store.DeleteUser(deleteUser)
 
+}
+
+// create a user and test if user can log in
+func TestNewLoginHandler(t *testing.T) {
+	db, l := setUp()
+	store := mockDbAccess{l, db}
+	recorder := httptest.NewRecorder()
+
+	testUser := service.User{Name: "test", Email: "test@test", Password: "123"}
+	payload := fmt.Sprintf(`{"username" : "%s", "email" : "%s", "password" : "%s"}`, testUser.Name, testUser.Email, testUser.Password)
+
+	request := httptest.NewRequest("GET", "/test", strings.NewReader(payload))
+	// create a user and add to DB
+	store.CreateUser(service.NewUser(testUser.Name, testUser.Email, testUser.Password))
+
+	testNewLoginHandler, err := NewLoginHandler(l, &store)
+	if err != nil {
+		t.Error("setting up testNewLoginHandler: ", err)
+	}
+	testNewLoginHandler(recorder, request)
+	assert.Equal(t, http.StatusOK, recorder.Code)
+	user, err := store.UserByEmail(testUser.Email)
+	if err != nil {
+		t.Error("user was not stored in db: ", err)
+	}
+	session, err := store.SessionByUuid(user.Uuid)
+	if err != nil {
+		t.Error("session was not created: ", err)
+	}
+
+	// cleanup
+	store.DeleteByUUID(session)
+	store.DeleteUser(user)
 }
