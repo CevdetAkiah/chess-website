@@ -211,6 +211,7 @@ func TestNewLoginHandler(t *testing.T) {
 // DELETE tests
 
 func TestNewDeleteUser(t *testing.T) {
+	// set up
 	db, l := setUp()
 	request := httptest.NewRequest("GET", "/test", nil)
 	recorder := httptest.NewRecorder()
@@ -228,14 +229,50 @@ func TestNewDeleteUser(t *testing.T) {
 		t.Error("creating NewDeleteUser instance in TestNewDeleteUser: ", err)
 	}
 	testNewDeleteUser(recorder, request)
+	// check status code
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	// check if session is deleted from the db
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	ok, _ := store.CheckSession(session.Uuid)
 	if ok {
 		t.Error("finding session in DB when should be deleted")
 	}
+
+	// check if user is deleted from the db
 	_, err = store.UserByEmail(testUser.Email)
 	if err == nil {
 		t.Error("finding user in DB when should be deleted")
 	}
+
+}
+
+func TestNewLogoutUser(t *testing.T) {
+	// set up
+	db, l := setUp()
+	request := httptest.NewRequest("GET", "/test", nil)
+	recorder := httptest.NewRecorder()
+	store := mockDbAccess{l, db}
+	testUser := service.User{Name: "test", Email: "test@test", Password: "123"}
+	store.CreateUser(&testUser)
+	session, err := store.CreateSession(testUser)
+	if err != nil {
+		t.Error("creating session in TestNewLogoutUser: ", err)
+	}
+	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
+
+	testNewLogoutUser, err := NewLogoutUser(l, &store)
+	if err != nil {
+		t.Error("creating NewLogoutUser Instance in TestNewLogoutUser", err)
+	}
+	testNewLogoutUser(recorder, request)
+	assert.Equal(t, http.StatusNoContent, recorder.Code)
+	ok, _ := store.CheckSession(session.Uuid)
+	if ok {
+		t.Error("TestNewLogoutUser session should be removed from db but not")
+	}
+
+	// cleanup
+	store.DeleteUser(testUser)
 
 }
