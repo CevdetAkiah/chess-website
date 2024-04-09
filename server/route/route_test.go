@@ -276,3 +276,39 @@ func TestNewLogoutUser(t *testing.T) {
 	store.DeleteUser(testUser)
 
 }
+
+func TestNewUpdateUser(t *testing.T) {
+	// set up
+	db, l := setUp()
+	recorder := httptest.NewRecorder()
+	store := mockDbAccess{l, db}
+	testUser := service.User{Name: "test", Email: "test@test", Password: "123"}
+	store.CreateUser(&testUser)
+	session, err := store.CreateSession(testUser)
+	if err != nil {
+		t.Error("creating session in  TestNewUpdateUser: ", err)
+	}
+	testNewUpdateUser, err := NewUpdateUser(l, db)
+	if err != nil {
+		t.Error("instantiating NewUpdateUser: ", err)
+	}
+
+	// update use email and send details to update the DB
+	testUser.Email = "updated@test"
+	payload := fmt.Sprintf(`{"username" : "%s", "email" : "%s", "password" : "%s"}`, testUser.Name, testUser.Email, testUser.Password)
+
+	request := httptest.NewRequest("GET", "/test", strings.NewReader(payload))
+	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
+
+	testNewUpdateUser(recorder, request)
+	// check behaviour is as expected
+	assert.Equal(t, http.StatusOK, recorder.Code)
+	updatedUser, err := store.UserByEmail("updated@test")
+	if err != nil {
+		t.Error("user not updated in TestNewUpdateUser: ", err)
+	}
+
+	// cleanup
+	store.DeleteByUUID(session)
+	store.DeleteUser(updatedUser)
+}
