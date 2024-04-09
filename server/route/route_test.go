@@ -206,3 +206,36 @@ func TestNewLoginHandler(t *testing.T) {
 	store.DeleteByUUID(session)
 	store.DeleteUser(user)
 }
+
+// *
+// DELETE tests
+
+func TestNewDeleteUser(t *testing.T) {
+	db, l := setUp()
+	request := httptest.NewRequest("GET", "/test", nil)
+	recorder := httptest.NewRecorder()
+	store := mockDbAccess{l, db}
+	testUser := service.User{Name: "test", Email: "test@test", Password: "123"}
+	store.CreateUser(&testUser)
+	session, err := store.CreateSession(testUser)
+	if err != nil {
+		t.Error("creating session in TestNewDeleteUser: ", err)
+	}
+	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
+
+	testNewDeleteUser, err := NewDeleteUser(l, &store)
+	if err != nil {
+		t.Error("creating NewDeleteUser instance in TestNewDeleteUser: ", err)
+	}
+	testNewDeleteUser(recorder, request)
+	assert.Equal(t, http.StatusOK, recorder.Code)
+	ok, _ := store.CheckSession(session.Uuid)
+	if ok {
+		t.Error("finding session in DB when should be deleted")
+	}
+	_, err = store.UserByEmail(testUser.Email)
+	if err == nil {
+		t.Error("finding user in DB when should be deleted")
+	}
+
+}
