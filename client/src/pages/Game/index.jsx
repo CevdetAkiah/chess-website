@@ -17,7 +17,6 @@ import { checkGameID, checkSession, getGameOverState } from '../../functions';
 import { SiteContext } from '../../context/website/ClientContext';
 
 
-const serverURL = 'ws://localhost:4000/ws'
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 // checkmate for testing game over screen
@@ -29,8 +28,8 @@ const Game = ()=> {
     const [board,setBoard] = useState(createBoard(fen));
     const { state } = useContext(SiteContext);
     const { possibleMoves, dispatch, gameStart, gameID } = useContext(GameContext);
-    const { username, loggedIn } = state; // get username from log in details
-    
+    const { username, loggedIn, endpoint, gameport } = state; // get username from log in details
+    const serverURL = 'ws://' + endpoint + gameport +  '/ws'
     const gameIDRef = useRef(gameID);
     const wsRef = useRef(null)
     
@@ -67,17 +66,6 @@ const Game = ()=> {
                         }
                     };
                     wsRef.current.send(JSON.stringify(apiRequest))
-
-                    // // TODO: remove this below, it's test
-                    // const apiRequest = {
-                    //     type: "playerState",
-                    //     data: {
-                    //         uniqueID: gameIDRef.current
-                    //     }
-                    // };
-                    // wsRef.current.send(JSON.stringify(apiRequest))
-
-                    // test end
                 }else{
                     const apiRequest = {type: "reconnect", user : {name : joinName}, uniqueID: gameIDRef.current}
                     wsRef.current.send(JSON.stringify(apiRequest))
@@ -159,7 +147,7 @@ const Game = ()=> {
                 }
             };
 
-        },[dispatch, chess, username, loggedIn,gameID]);
+        },[dispatch, chess, username, loggedIn,gameID,serverURL]);
     
 
 

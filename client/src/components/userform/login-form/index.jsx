@@ -10,15 +10,16 @@ import { INCORRECT_PASSWORD, USERNAME_NOT_FOUND } from '../error-types';
 // POST user logs in
 const LoginForm = () =>{
     
-    const serverURL = "http://localhost:8080/session"
-
+    
     const form = useForm();
     const { register, handleSubmit,setError, formState: { errors }, reset } = form;
     // const { errors, setError } = formState;
     const [pop, setPop] = useState(false)
     const [close, setClose] = useState(false)
-    const { dispatch } = useContext(SiteContext)
+    const { dispatch ,state } = useContext(SiteContext)
+    const {endpoint, serverport} = state
     
+    const serverURL = "http://" + endpoint + serverport + "/session"
         // send user data to the server
         const sendFormData = (data) => {
             const config = {

@@ -4,6 +4,9 @@ import ClientReducer from './ClientReducer';
 const initialState = {
     username: "",
     loggedIn: false,
+    endpoint: "chess-backend",
+    gameport: ":4000",
+    serverport: ":8080",
 }
 
 export const SiteContext = createContext();

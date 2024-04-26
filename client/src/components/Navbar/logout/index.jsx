@@ -6,8 +6,9 @@ import './logout.css'
 
 // DELETE a session to log a user out
 const SignOut = () => {
-    const { dispatch } = useContext(SiteContext)
-    const serverURL = "http://localhost:8080/session" 
+    const { dispatch, state } = useContext(SiteContext)
+    const {endpoint, serverport } = state
+    const serverURL = "http://" + endpoint + serverport + "/session" 
 
     const logOut = () => {
         const config = {

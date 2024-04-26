@@ -3,12 +3,13 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import './register-form.css'
 import { EMAIL_DUPLICATE, USERNAME_DUPLICATE } from '../error-types';
+import { SiteContext } from '../../../context/website/ClientContext';
 
 
 // POST user registration
 const RegisterForm = () => {
-    const serverURL = "http://localhost:8080/user"
-
+    const {endpoint, serverport} = SiteContext
+    const serverURL = "http://" + endpoint +serverport+"/user"
     const form = useForm();
     const { register, handleSubmit, formState, reset, setError } = form;
     const { errors } = formState;
