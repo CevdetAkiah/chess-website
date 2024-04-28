@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+// TODO: incorporate these functions into the structure of the app so context can be used
+
 // GET checkSession checks if a session is active
 export const checkSession = () => {
-    const serverURL = "http://localhost:8080/session"; 
+    const serverURL = "http://chess-backend:8080/session"; 
     const config = { withCredentials: true };
 
     return new Promise((resolve) => {
@@ -23,7 +25,8 @@ export const checkSession = () => {
 
 // GET checkGameID checks if a game is occurring for this client
 export const checkGameID = async () => {
-    const serverURL = "http://localhost:8080/game";
+
+    const serverURL = "http://chess-backend:8080/game";
     const config = { withCredentials: true };
 
     try {

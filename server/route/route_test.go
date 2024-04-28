@@ -210,6 +210,7 @@ func TestNewLoginHandler(t *testing.T) {
 // *
 // DELETE tests
 
+// delete a user from the db
 func TestNewDeleteUser(t *testing.T) {
 	// set up
 	db, l := setUp()
@@ -247,6 +248,7 @@ func TestNewDeleteUser(t *testing.T) {
 
 }
 
+// log a user out by deleting the session from the db
 func TestNewLogoutUser(t *testing.T) {
 	// set up
 	db, l := setUp()
@@ -277,6 +279,10 @@ func TestNewLogoutUser(t *testing.T) {
 
 }
 
+// *
+// PUT tests
+// *
+// update a user in the db
 func TestNewUpdateUser(t *testing.T) {
 	// set up
 	db, l := setUp()

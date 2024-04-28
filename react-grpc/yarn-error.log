@@ -1,0 +1,41 @@
+Arguments: 
+  /home/cevdet/.nvm/versions/node/v19.7.0/bin/node /home/cevdet/.nvm/versions/node/v19.7.0/bin/yarn add --dev @grpc/grpc-js @ grpc/proto-loader typescript ts-node
+
+PATH: 
+  /home/cevdet/.nvm/versions/node/v19.7.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/usr/local/go/bin:/usr/local/go/bin:/usr/local/go/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  19.7.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@: Request "https://registry.yarnpkg.com/@" returned a 405
+      at params.callback [as _callback] (/home/cevdet/.nvm/versions/node/v19.7.0/lib/node_modules/yarn/lib/cli.js:66154:18)
+      at self.callback (/home/cevdet/.nvm/versions/node/v19.7.0/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:512:28)
+      at Request.<anonymous> (/home/cevdet/.nvm/versions/node/v19.7.0/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:512:28)
+      at IncomingMessage.<anonymous> (/home/cevdet/.nvm/versions/node/v19.7.0/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:626:28)
+      at IncomingMessage.emit (node:events:524:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+npm manifest: 
+  {
+      "name": "node-grpc",
+      "version": "1.0.0",
+      "main": "index.js",
+      "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
