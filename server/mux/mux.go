@@ -95,7 +95,7 @@ func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	})
 
 	// mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
-	mux.HandleFunc("/healthz", healthzHandler)
+	mux.Get("/healthz", healthzHandler)
 
 	return mux, nil
 }
