@@ -14,9 +14,10 @@ type DBConfig struct {
 }
 
 type ServerConfig struct {
-	Port         string
-	WriteTimeout time.Duration
-	ReadTimeout  time.Duration
+	Port           string
+	HandlerTimeout time.Duration
+	WriteTimeout   time.Duration
+	ReadTimeout    time.Duration
 }
 
 func NewDBConfig() *DBConfig {
@@ -31,8 +32,9 @@ func NewDBConfig() *DBConfig {
 
 func NewServerConfig() *ServerConfig {
 	return &ServerConfig{
-		Port:         os.Getenv("PORT"),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Port:           os.Getenv("PORT"),
+		HandlerTimeout: 200 * time.Millisecond,
+		WriteTimeout:   500 * time.Millisecond,
+		ReadTimeout:    500 * time.Millisecond,
 	}
 }

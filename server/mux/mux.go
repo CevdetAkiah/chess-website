@@ -7,10 +7,10 @@ import (
 	"go-projects/chess/service"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	// "github.com/go-chi/chi/middleware"
 )
 
 var (
@@ -23,13 +23,11 @@ type Multiplexer interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
-func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
+func New(handlerTimeout time.Duration, DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	mux := chi.NewRouter()
 	CustomLogger := custom_log.NewLogger()
 
 	// mux middleware
-	// Nosurf provides each handler with a csrftoken. This provides security against CSRF attacks
-	// mux.Use(NoSurf)
 
 	// TODO: look up CSRF protection for chi router
 	mux.Use(cors.Handler(cors.Options{
@@ -42,7 +40,7 @@ func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	}))
 
 	// create handlers
-	signupHandler, err := route.NewSignupAccount(CustomLogger, DBAccess)
+	signupHandler, err := route.NewSignupAccount(handlerTimeout, CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("NewSignupAccount error: %b", err)
 	}
@@ -50,6 +48,7 @@ func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("NewLoginHandler error: %b", err)
 	}
+
 	deleteUserHandler, err := route.NewDeleteUser(CustomLogger, DBAccess)
 	if err != nil {
 		return nil, fmt.Errorf("NewDeleteUserHandler error: %b", err)
@@ -94,8 +93,7 @@ func New(DBAccess service.DatabaseAccess) (Multiplexer, error) {
 		r.Get("/", gameIDHandler) // get a game ID. This tells the client if a game is in play
 	})
 
-	// mux.Handle("/ws", websocket.Handler(wsS.HandleWS))
-	mux.HandleFunc("/healthz", healthzHandler)
+	mux.Get("/healthz", healthzHandler)
 
 	return mux, nil
 }
