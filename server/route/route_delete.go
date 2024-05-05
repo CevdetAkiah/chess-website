@@ -1,10 +1,12 @@
 package route
 
 import (
+	"context"
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
 	"net/http"
+	"time"
 )
 
 // swagger:route DELETE /deleteUser user deleteUser
@@ -14,7 +16,7 @@ import (
 //		description: "successfully delete user"
 // 		content: application/json
 
-func NewDeleteUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+func NewDeleteUser(handlerTimeout time.Duration, logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger interface is empty")
 	} else if DBAccess == nil {
@@ -22,58 +24,69 @@ func NewDeleteUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// get cookie for uuid
-		cookie, err := r.Cookie("session")
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
+		ctx, cancel := context.WithTimeout(context.Background(), handlerTimeout)
+		defer cancel()
+
+		select {
+		case <-ctx.Done():
+			logger.Infof("request timedout: %v ", ctx.Err())
+			w.WriteHeader(http.StatusRequestTimeout)
 			return
+		default:
+			// get cookie for uuid
+			cookie, err := r.Cookie("session")
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// get the session from db using uuid stored in cookie
+			session, err := DBAccess.SessionByUuid(cookie.Value)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// get the user from db using the email stored in the session
+			user, err := DBAccess.UserByEmail(session.Email)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// delete session from db
+			err = DBAccess.DeleteByUUID(session)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// delete user from db
+			err = DBAccess.DeleteUser(user)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// remove session from browser cookies
+			err = session.DeleteCookie(w, r)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 		}
 
-		// get the session from db using uuid stored in cookie
-		session, err := DBAccess.SessionByUuid(cookie.Value)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// get the user from db using the email stored in the session
-		user, err := DBAccess.UserByEmail(session.Email)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// delete session from db
-		err = DBAccess.DeleteByUUID(session)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// delete user from db
-		err = DBAccess.DeleteUser(user)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// remove session from browser cookies
-		err = session.DeleteCookie(w, r)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 	}, nil
 }
 
 // logout deletes the session from the browser and database
-func NewLogoutUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+func NewLogoutUser(handlerTimeout time.Duration, logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger interface is nil")
 	} else if DBAccess == nil {
@@ -81,30 +94,41 @@ func NewLogoutUser(logger custom_log.MagicLogger, DBAccess service.DatabaseAcces
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		session := service.Session{}
-		cookie, err := r.Cookie("session")
+		ctx, cancel := context.WithTimeout(context.Background(), handlerTimeout)
+		defer cancel()
 
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
+		select {
+		case <-ctx.Done():
+			logger.Infof("request timedout: %v ", ctx.Err())
+			w.WriteHeader(http.StatusRequestTimeout)
 			return
+		default:
+			session := service.Session{}
+			cookie, err := r.Cookie("session")
+
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			session.Uuid = cookie.Value
+			// remove the session from the database and delete the cookie from the browser
+			err = session.DeleteCookie(w, r)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			// delete the session from the database session table
+			err = DBAccess.DeleteByUUID(session)
+			if err != nil {
+				logger.Error(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			// report that the request was successful but also no data to be sent back to the client
+			w.WriteHeader(http.StatusNoContent)
 		}
-		session.Uuid = cookie.Value
-		// remove the session from the database and delete the cookie from the browser
-		err = session.DeleteCookie(w, r)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		// delete the session from the database session table
-		err = DBAccess.DeleteByUUID(session)
-		if err != nil {
-			logger.Error(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		// report that the request was successful but also no data to be sent back to the client
-		w.WriteHeader(http.StatusNoContent)
+
 	}, nil
 }
