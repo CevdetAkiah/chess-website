@@ -1,6 +1,7 @@
 package route
 
 import (
+	"context"
 	"fmt"
 	custom_log "go-projects/chess/logger"
 	"go-projects/chess/service"
@@ -16,38 +17,46 @@ import (
 // 		content: application/json
 
 // return a handler to add a new user to the database for game state tracking
-func NewSignupAccount(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+func NewSignupAccount(handlerTimeout time.Duration, logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
 	}
-
 	if DBAccess == nil {
 		return nil, fmt.Errorf("DBA was nil")
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Decode JSON
-		userJSON := service.User{}
-		err := userJSON.DecodeJSON(r)
-		if err != nil {
-			logger.Infof("Error while decoding JSON in signupAccount %v", err)
-		}
-		user := service.NewUser(userJSON.Name, userJSON.Email, userJSON.Password)
+		ctx, cancel := context.WithTimeout(context.Background(), handlerTimeout)
+		defer cancel()
 
-		// Insert user into database
-		err = DBAccess.CreateUser(user)
-		if err != nil {
-			if err.Error() == EMAIL_DUPLICATE {
-				logger.Error(err)
-				http.Error(w, EMAIL_DUPLICATE, http.StatusConflict)
-				return
-			} else if err.Error() == USERNAME_DUPLICATE {
-				logger.Error(err)
-				http.Error(w, USERNAME_DUPLICATE, http.StatusConflict)
-				return
+		select {
+		case <-ctx.Done():
+			logger.Infof("request timeout: %v", ctx.Err())
+			w.WriteHeader(http.StatusRequestTimeout)
+		default:
+			// Decode JSON
+			userJSON := service.User{}
+			err := userJSON.DecodeJSON(r)
+			if err != nil {
+				logger.Infof("Error while decoding JSON in signupAccount %v", err)
 			}
+			user := service.NewUser(userJSON.Name, userJSON.Email, userJSON.Password)
+
+			// Insert user into database
+			err = DBAccess.CreateUser(user)
+			if err != nil {
+				if err.Error() == EMAIL_DUPLICATE {
+					logger.Error(err)
+					http.Error(w, EMAIL_DUPLICATE, http.StatusConflict)
+					return
+				} else if err.Error() == USERNAME_DUPLICATE {
+					logger.Error(err)
+					http.Error(w, USERNAME_DUPLICATE, http.StatusConflict)
+					return
+				}
+			}
+			w.WriteHeader(http.StatusCreated)
 		}
-		w.WriteHeader(http.StatusCreated)
 
 	}, nil
 }
