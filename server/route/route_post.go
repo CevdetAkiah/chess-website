@@ -33,6 +33,7 @@ func NewSignupAccount(handlerTimeout time.Duration, logger custom_log.MagicLogge
 		case <-ctx.Done():
 			logger.Infof("request timeout: %v", ctx.Err())
 			w.WriteHeader(http.StatusRequestTimeout)
+			return
 		default:
 			// Decode JSON
 			userJSON := service.User{}
@@ -62,7 +63,7 @@ func NewSignupAccount(handlerTimeout time.Duration, logger custom_log.MagicLogge
 }
 
 // NewLoginHandler checks a user exists and creates a session for the user so the server can check for state
-func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
+func NewLoginHandler(handlerTimeout time.Duration, logger custom_log.MagicLogger, DBAccess service.DatabaseAccess) (func(w http.ResponseWriter, r *http.Request), error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger was nil")
 	}
@@ -71,40 +72,51 @@ func NewLoginHandler(logger custom_log.MagicLogger, DBAccess service.DatabaseAcc
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Decode JSON
-		userJSON := service.User{}
-		err := userJSON.DecodeJSON(r)
-		if err != nil {
-			logger.Error(err)
-			http.Error(w, "unmarshall error", http.StatusInternalServerError)
-			return
-		}
-		// If the user exists, get the user from the database
-		user, err := DBAccess.UserByEmail(userJSON.Email)
-		if err != nil {
-			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
-			http.Error(w, "User not found", http.StatusUnauthorized)
-			return
-		}
-		user.CreatedAt = time.Now()
-		// If password is correct then create session for the user
-		ok := user.Authenticate(userJSON.Password)
-		if !ok {
-			// if pw isn't correct then inform the client
-			w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
-			http.Error(w, "Incorrect password", http.StatusUnauthorized)
-			return
-		}
-		session, err := DBAccess.CreateSession(user)
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-		session.MaxAge = cookieMaxAge
-		session.AssignCookie(w, r)
+		ctx, cancel := context.WithTimeout(context.Background(), handlerTimeout)
+		defer cancel()
 
-		// send username back to the front end
-		sendUserDetails(w, user.Name, "")
+		select {
+		case <-ctx.Done():
+			logger.Infof("request timedout: %v", ctx.Err())
+			w.WriteHeader(http.StatusRequestTimeout)
+			return
+		default:
+			// Decode JSON
+			userJSON := service.User{}
+			err := userJSON.DecodeJSON(r)
+			if err != nil {
+				logger.Error(err)
+				http.Error(w, "unmarshall error", http.StatusInternalServerError)
+				return
+			}
+			// If the user exists, get the user from the database
+			user, err := DBAccess.UserByEmail(userJSON.Email)
+			if err != nil {
+				w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
+				http.Error(w, "User not found", http.StatusUnauthorized)
+				return
+			}
+			user.CreatedAt = time.Now()
+			// If password is correct then create session for the user
+			ok := user.Authenticate(userJSON.Password)
+			if !ok {
+				// if pw isn't correct then inform the client
+				w.Header().Set("WWW-Authenticate", `Basic-realm="Restricted"`)
+				http.Error(w, "Incorrect password", http.StatusUnauthorized)
+				return
+			}
+			session, err := DBAccess.CreateSession(user)
+			if err != nil {
+				logger.Error(err)
+				return
+			}
+			session.MaxAge = cookieMaxAge
+			session.AssignCookie(w, r)
+
+			// send username back to the front end
+			sendUserDetails(w, user.Name, "")
+		}
+
 	}, nil
 }
 

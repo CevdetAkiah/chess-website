@@ -37,7 +37,7 @@ func main() {
 	e.Spawn(gameserver.NewGameServer, "server")
 
 	// mux deals with REST api
-	mux, err := chess_mux.New(serverConfig.HandlerTimeout, Db)
+	mux, err := chess_mux.New(serverConfig, Db)
 	if err != nil {
 		log.Fatal(err)
 	}

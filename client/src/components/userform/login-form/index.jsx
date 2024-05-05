@@ -19,7 +19,7 @@ const LoginForm = () =>{
     const { dispatch ,state } = useContext(SiteContext)
     const {endpoint, serverport} = state
     
-    const serverURL = "http://" + endpoint + serverport + "/session"
+    const serverURL = "http://localhost:8080/session"
         // send user data to the server
         const sendFormData = (data) => {
             const config = {

@@ -14,10 +14,16 @@ type DBConfig struct {
 }
 
 type ServerConfig struct {
-	Port           string
-	HandlerTimeout time.Duration
-	WriteTimeout   time.Duration
-	ReadTimeout    time.Duration
+	Port               string
+	AllowedOrigins     []string
+	AllowedMethods     []string
+	AllowedHeaders     []string
+	ExposedHeaders     []string
+	AllowedCredentials bool
+	HandlerTimeout     time.Duration
+	WriteTimeout       time.Duration
+	ReadTimeout        time.Duration
+	MaxAge             int
 }
 
 func NewDBConfig() *DBConfig {
@@ -30,11 +36,30 @@ func NewDBConfig() *DBConfig {
 	}
 }
 
-func NewServerConfig() *ServerConfig {
-	return &ServerConfig{
-		Port:           os.Getenv("PORT"),
-		HandlerTimeout: 200 * time.Millisecond,
-		WriteTimeout:   500 * time.Millisecond,
-		ReadTimeout:    500 * time.Millisecond,
+func NewServerConfig() ServerConfig {
+	// declare origins
+	localClient := "http://localhost:3000"
+	BACKEND_HOST := os.Getenv("BACKEND_HOST")
+	FRONTEND_HOST := os.Getenv("FRONTEND_HOST")
+	FRONT_DOMAIN := os.Getenv("FRONT_DOMAIN")
+
+	// declare methods
+	GET := "GET"
+	POST := "POST"
+	PUT := "PUT"
+	DELETE := "DELETE"
+	OPTIONS := "OPTIONS"
+
+	return ServerConfig{
+		Port:               os.Getenv("PORT"),
+		AllowedOrigins:     []string{localClient, BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN},
+		AllowedMethods:     []string{GET, POST, PUT, DELETE, OPTIONS},
+		AllowedHeaders:     []string{"Access-Control-Allow-Origin", "Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:     []string{"Link"},
+		AllowedCredentials: true,
+		HandlerTimeout:     200 * time.Millisecond,
+		WriteTimeout:       500 * time.Millisecond,
+		ReadTimeout:        500 * time.Millisecond,
+		MaxAge:             300,
 	}
 }
