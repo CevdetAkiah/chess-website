@@ -43,8 +43,8 @@ const LoginForm = () =>{
                 })
                 .catch(function (error) {
                     reset()
+                    let errorName = "";
                     if (error.response.status === 401){
-                        let errorName = "";
                         switch (error.response.data.trim()){
                             case INCORRECT_PASSWORD:
                                 errorName = "password"
@@ -60,6 +60,10 @@ const LoginForm = () =>{
                             message: error.response.data
                         });
                     }else{
+                        setError(errorName,{
+                            type: "server",
+                            message: error.response.data
+                        });
                         console.log("Authorization error: ", error.response)
                     }
                 });
