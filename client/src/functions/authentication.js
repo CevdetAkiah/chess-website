@@ -18,7 +18,9 @@ export const checkSession = () => {
                 }
             })
             .catch((error) => {
-                
+                if (error.status == 408){
+                    console.log("request timed out")
+                }
             });
     });
 };
@@ -42,6 +44,10 @@ export const checkGameID = async () => {
                 });
         });
     } catch (error) {
-        console.error("checkGameID error: ", error)
+        if (error.status == 408){
+            console.log("request timed out")
+        } else{
+            console.error("checkGameID error: ", error)
+        }
      };
 }

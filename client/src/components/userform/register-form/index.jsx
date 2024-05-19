@@ -35,9 +35,9 @@ const RegisterForm = () => {
                 }
             })
             .catch(function (error) {
+                let errorName ="";
                 reset()
                 if (error.response.status === 409){
-                    let errorName ="";
                     switch (error.response.data.trim()){
                         case EMAIL_DUPLICATE:
                             errorName = "email"
@@ -48,6 +48,11 @@ const RegisterForm = () => {
                         default:
                             console.log("unexpected signup error")
                     }
+                    setError(errorName,{
+                        type: "server",
+                        message: error.response.data
+                    });
+                } else{
                     setError(errorName,{
                         type: "server",
                         message: error.response.data
