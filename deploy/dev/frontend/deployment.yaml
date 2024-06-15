@@ -25,7 +25,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 1000
             allowPrivilegeEscalation: false
-          image: frontend-placeholder
+          image: frontend-plabceholder
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
