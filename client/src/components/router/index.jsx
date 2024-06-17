@@ -3,7 +3,6 @@ import Game from '../../pages/Game';
 import { GameProvider } from '../../context/game/GameContext';
 import React, {  useState, useEffect } from 'react';
 import './router.css'
-import Healthz from '../healthcheck';
 
 
 
@@ -30,7 +29,6 @@ const Router = () => {
 
                 <main>
                         <Routes>
-                                <Route path="healthz" element={<Healthz />}/>
                                 <Route path="game/*" element={<GameProvider><Game /></GameProvider>}/>
                         </Routes>
                 </main>
