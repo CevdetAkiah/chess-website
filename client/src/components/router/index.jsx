@@ -17,7 +17,7 @@ const Router = () => {
         if (gameActive){
             toggleDisplay(!display)
         }
-    }, [gameActive]);
+    }, [gameActive, display]);
     const handleSubmit = () => {
         toggleGameActive(true)
     };
