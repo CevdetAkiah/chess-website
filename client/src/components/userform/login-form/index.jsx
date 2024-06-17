@@ -17,9 +17,8 @@ const LoginForm = () =>{
     const [pop, setPop] = useState(false)
     const [close, setClose] = useState(false)
     const { dispatch ,state } = useContext(SiteContext)
-    const {endpoint, serverport} = state
     
-    const serverURL = "http://localhost:8080/session"
+    const serverURL = "http://chess-backend:8080/session"
         // send user data to the server
         const sendFormData = (data) => {
             const config = {

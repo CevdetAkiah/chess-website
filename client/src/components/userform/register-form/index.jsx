@@ -9,7 +9,7 @@ import { SiteContext } from '../../../context/website/ClientContext';
 // POST user registration
 const RegisterForm = () => {
     const {endpoint, serverport} = SiteContext
-    const serverURL = "http://localhost:8080/user"
+    const serverURL = "http://chess-backend:8080/user"
     const form = useForm();
     const { register, handleSubmit, formState, reset, setError } = form;
     const { errors } = formState;

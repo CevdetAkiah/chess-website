@@ -5,4 +5,6 @@ metadata:
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
   FRONTEND_HOST: chess-frontend
+  FRONT_DOMAIN: https://chess.dev.adamland.xyz
+  BACKEND_HOST: chess-backend
   PORT: '8080'
