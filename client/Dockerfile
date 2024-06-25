@@ -9,11 +9,12 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json      ./
 COPY package-lock.json ./
+COPY .env .env
 RUN npm install
 
 COPY src ./src
 COPY public ./public
-COPY .env .env
+
 
 
 RUN npm run build
