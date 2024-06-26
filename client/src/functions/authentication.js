@@ -4,7 +4,9 @@ import axios from 'axios';
 
 // GET checkSession checks if a session is active
 export const checkSession = () => {
-    const serverURL = "http://chess-backend:8080/session"; 
+    const apiURL = process.env.REACT_APP_BACKEND_URL;
+    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
+    const serverURL = `${apiURL}:${apiPORT}/session`; 
     const config = { withCredentials: true };
 
     return new Promise((resolve) => {
@@ -18,7 +20,7 @@ export const checkSession = () => {
                 }
             })
             .catch((error) => {
-                if (error.status == 408){
+                if (error.status === 408){
                     console.log("request timed out")
                 }
             });
@@ -27,8 +29,9 @@ export const checkSession = () => {
 
 // GET checkGameID checks if a game is occurring for this client
 export const checkGameID = async () => {
-
-    const serverURL = "http://chess-backend:8080/game";
+    const apiURL = process.env.REACT_APP_BACKEND_URL;
+    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
+    const serverURL = `${apiURL}:${apiPORT}/game`;
     const config = { withCredentials: true };
 
     try {
@@ -44,7 +47,7 @@ export const checkGameID = async () => {
                 });
         });
     } catch (error) {
-        if (error.status == 408){
+        if (error.status === 408){
             console.log("request timed out")
         } else{
             console.error("checkGameID error: ", error)

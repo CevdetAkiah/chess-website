@@ -15,6 +15,7 @@ COPY src ./src
 COPY public ./public
 
 
+
 RUN npm run build
 
 # Stage 2: Create the production image
