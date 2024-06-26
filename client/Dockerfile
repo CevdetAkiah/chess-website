@@ -15,6 +15,13 @@ COPY src ./src
 COPY public ./public
 
 
+# Define build arguments
+ARG REACT_APP_BACKEND_URL
+ARG REACT_APP_BACKEND_PORT
+
+# Set environment variables based on build arguments for the build process
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+ENV REACT_APP_BACKEND_PORT=$REACT_APP_BACKEND_PORT
 
 RUN npm run build
 
