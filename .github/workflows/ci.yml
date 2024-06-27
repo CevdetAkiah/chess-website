@@ -54,11 +54,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Load environment variables from .env file
-      run: |
-        export $(grep -v `^#` client/.env | xargs)
-      shell: bash
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -69,9 +64,6 @@ jobs:
         tags: nailien/chess-frontend:${{ github.sha }}
         cache-from: type=registry,ref=nailien/chess-frontend:buildcache
         cache-to: type=registry,ref=nailien/chess-frontend:buildcache,mode=max
-        build-args: |
-          REACT_APP_BACKEND_URL=http://chess-backend
-          REACT_APP_BACKEND_PORT=8080
 
   deploy-to-dev:
     if: github.ref == 'refs/heads/main'
