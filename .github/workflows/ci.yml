@@ -77,12 +77,19 @@ jobs:
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2.0.0
       
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      
 
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
-      - name: Create pg-app Secr-et
+      - name: Create pg-app Secret
         run: |
           kubectl create secret generic pg-app \
             --from-literal=password=$(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode) \
