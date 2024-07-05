@@ -89,6 +89,12 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
+      - name: Test kubectl access
+        run: |
+            kubectl config view
+            kubectl config current-context
+            kubectl cluster-info
+
       - name: Create pg-app Secret
         run: |
           kubectl create secret generic pg-app \
