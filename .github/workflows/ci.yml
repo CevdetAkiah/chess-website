@@ -90,16 +90,19 @@ jobs:
 
       - uses: actions-hub/kubectl@master
         env:
-          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
-
-
+          KUBE_CONFIG: "${{ secrets.PG_APP_PASSWORD }}" 
+     
 
       - name: Test kubectl access
         run: |
-            kubectl config use-context default
-            kubectl config view
-            kubectl config current-context
-            kubectl cluster-info
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
+          kubectl config view --kubeconfig=kubeconfig.yaml
+          kubectl get pods
+          kubectl config use-context default
+          kubectl config view
+          kubectl config current-context
+          kubectl cluster-info
+
       - name: Create pg-app Secret
         run: |
           kubectl create secret generic pg-app \
@@ -107,6 +110,7 @@ jobs:
             --from-literal=user=$(echo "${{ secrets.PG_APP_USER }}" | base64 --decode) \
             --from-literal=dbname=$(echo "${{ secrets.PG_APP_DATABASE }}" | base64 --decode) \
             --from-literal=host=$(echo "${{ secrets.PG_APP_HOST }}" | base64 --decode)
+
       - name: Deploy new tags
         run: |
           set -euxo pipefail
