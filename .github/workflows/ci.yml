@@ -74,22 +74,39 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      
+
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2.0.0
+      
 
-      - name: Configure kubectl
+
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+
+
+
+      - name: Test kubectl access
         run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
-
-      - name: Create pg-app Secr-et
+            kubectl config use-context default
+            kubectl config view
+            kubectl config current-context
+            kubectl cluster-info
+      - name: Create pg-app Secret
         run: |
           kubectl create secret generic pg-app \
             --from-literal=password=$(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode) \
             --from-literal=user=$(echo "${{ secrets.PG_APP_USER }}" | base64 --decode) \
             --from-literal=dbname=$(echo "${{ secrets.PG_APP_DATABASE }}" | base64 --decode) \
             --from-literal=host=$(echo "${{ secrets.PG_APP_HOST }}" | base64 --decode)
-
-
       - name: Deploy new tags
         run: |
           set -euxo pipefail
@@ -102,7 +119,6 @@ jobs:
           git add kustomization.yaml
           git commit -m "bot: deploy image tags ${{ github.sha }}"
           git push
-
       
       - name: Build and apply Kustomize manifests
         run: |
