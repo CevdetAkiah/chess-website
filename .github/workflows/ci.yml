@@ -92,6 +92,7 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
+
       - name: Test kubectl access
         run: |
             kubectl config use-context default
