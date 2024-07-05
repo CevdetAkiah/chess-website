@@ -74,9 +74,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v2.0.0
-      
+
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -85,12 +83,18 @@ jobs:
           tags: tag:ci
       
 
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2.0.0
+      
+
+
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Test kubectl access
         run: |
+            kubectl config use-context default
             kubectl config view
             kubectl config current-context
             kubectl cluster-info
