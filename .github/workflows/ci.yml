@@ -78,6 +78,9 @@ jobs:
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2.0.0
 
+      - name: Create .kube directory
+        run: mkdir -p $HOME/.kube
+
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
