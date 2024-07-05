@@ -90,9 +90,8 @@ jobs:
 
       - uses: actions-hub/kubectl@master
         env:
-          KUBE_CONFIG: "${{ secrets.PG_APP_PASSWORD }}" 
-     
-
+          KUBE_CONFIG: "${{ secrets.KUBECONFIG }}" 
+          
       - name: Test kubectl access
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
