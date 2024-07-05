@@ -76,10 +76,11 @@ jobs:
 
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2.0.0
+      
 
-      - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Create pg-app Secr-et
         run: |
