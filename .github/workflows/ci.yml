@@ -106,7 +106,7 @@ jobs:
             kind: Secret
             metadata:
               name: pg-app
-              namespace: default
+              namespace: chess-dev
             type: Opaque
             data:
               password: $(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode | base64)
@@ -126,7 +126,7 @@ jobs:
           git config --global user.name "ci-bot"
           git add kustomization.yaml
           git commit -m "bot: deploy image tags ${{ github.sha }}"
-          git push
+          git push origin HEAD ${{ github.ref }}
       
       - name: Build and apply Kustomize manifests
         run: |
