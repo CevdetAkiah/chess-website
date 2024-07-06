@@ -86,16 +86,16 @@ jobs:
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2.0.0
       
-
+      - name: Setup kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
+    
 
       - uses: actions-hub/kubectl@master
         env:
-          KUBE_CONFIG: "${{ secrets.KUBECONFIG }}" 
-          
+          KUBE_CONFIG: kubeconfig.yaml
+
       - name: Test kubectl access
         run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
-          kubectl config view --kubeconfig=kubeconfig.yaml
           kubectl get pods
           kubectl config use-context default
           kubectl config view
