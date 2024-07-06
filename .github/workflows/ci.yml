@@ -89,7 +89,6 @@ jobs:
       - name: Setup kubeconfig
         run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
     
-
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: kubeconfig.yaml
