@@ -99,13 +99,21 @@ jobs:
           kubectl config current-context
           kubectl cluster-info
 
-      - name: Create pg-app Secret
+      - name: Create or Update pg-app Secret
         run: |
-          kubectl create secret generic pg-app \
-            --from-literal=password=$(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode) \
-            --from-literal=user=$(echo "${{ secrets.PG_APP_USER }}" | base64 --decode) \
-            --from-literal=dbname=$(echo "${{ secrets.PG_APP_DATABASE }}" | base64 --decode) \
-            --from-literal=host=$(echo "${{ secrets.PG_APP_HOST }}" | base64 --decode)
+            kubectl apply -f - <<EOF
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: pg-app
+              namespace: default
+            type: Opaque
+            data:
+              password: $(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode | base64)
+              user: $(echo "${{ secrets.PG_APP_USER }}" | base64 --decode | base64)
+              dbname: $(echo "${{ secrets.PG_APP_DATABASE }}" | base64 --decode | base64)
+              host: $(echo "${{ secrets.PG_APP_HOST }}" | base64 --decode | base64)
+            EOF
 
       - name: Deploy new tags
         run: |
