@@ -89,7 +89,7 @@ jobs:
       - name: Create kubeconfig
         run: | 
           mkdir -p ${HOME}/.kube
-          echo ${{ secrets.KUBE_CONFIG }} | base64 --decode  > ${HOME}/.kube/config
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode  > ${HOME}/.kube/config
 
       - name: Test kubectl access
         run: |
