@@ -129,4 +129,5 @@ jobs:
       
       - name: Build and apply Kustomize manifests
         run: |
+          cd deploy/dev
           kustomize build --enable-helm . | kubectl apply -f -
