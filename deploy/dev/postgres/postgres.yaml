@@ -8,6 +8,6 @@ spec:
   bootstrap:
     initdb:
       database: chess
-      owner: chess
+      owner: admin
   storage:
     size: 1Gi
