@@ -73,6 +73,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+        with:
+          ref: main
 
 
       - name: Tailscale
@@ -95,9 +97,6 @@ jobs:
         run: |
           kubectl get pods
           kubectl config use-context default
-          kubectl config view
-          kubectl config current-context
-          kubectl cluster-info
 
       - name: Create or Update pg-app Secret
         run: |
