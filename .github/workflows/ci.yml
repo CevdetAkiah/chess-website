@@ -126,7 +126,7 @@ jobs:
           git config --global user.name "ci-bot"
           git add kustomization.yaml
           git commit -m "bot: deploy image tags ${{ github.sha }}"
-          git push origin HEAD ${{ github.head_ref || github.ref_name }}
+          git push
       
       - name: Build and apply Kustomize manifests
         run: |
