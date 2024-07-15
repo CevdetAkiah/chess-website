@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env: 
+  GIT_SHA: ${{ github.sha }}
+
 jobs:
   build-server:
     runs-on: ubuntu-latest
@@ -34,7 +37,7 @@ jobs:
         file: ./server/Dockerfile
         platforms: linux/amd64,linux/arm64
         push: ${{ github.ref == 'refs/heads/main' }}
-        tags: nailien/chess-backend:${{ github.sha }}
+        tags: nailien/chess-backend:${{ env.GIT_SHA }}
         cache-from: type=registry,ref=nailien/chess-backend:buildcache
         cache-to: type=registry,ref=nailien/chess-backend:buildcache,mode=max
 
@@ -61,7 +64,7 @@ jobs:
         file: ./client/Dockerfile
         platforms: linux/amd64,linux/arm64
         push: ${{ github.ref == 'refs/heads/main' }}
-        tags: nailien/chess-frontend:${{ github.sha }}
+        tags: nailien/chess-frontend:${{ env.GIT_SHA }}
         cache-from: type=registry,ref=nailien/chess-frontend:buildcache
         cache-to: type=registry,ref=nailien/chess-frontend:buildcache,mode=max
 
@@ -118,13 +121,13 @@ jobs:
         run: |
           set -euxo pipefail
           cd deploy/dev
-          kustomize edit set image 'frontend-placeholder=docker.io/nailien/chess-frontend:${{ github.sha }}'
-          kustomize edit set image 'backend-placeholder=docker.io/nailien/chess-backend:${{ github.sha }}'
+          kustomize edit set image 'frontend-placeholder=docker.io/nailien/chess-frontend:${{ env.GIT_SHA }}'
+          kustomize edit set image 'backend-placeholder=docker.io/nailien/chess-backend:${{ env.GIT_SHA }}'
           
           git config --global user.email "ci-bot@example.com"
           git config --global user.name "ci-bot"
           git add kustomization.yaml
-          git commit -m "bot: deploy image tags ${{ github.sha }}"
+          git commit -m "bot: deploy image tags ${{ env.GIT_SHA }}"
           git push origin HEAD:main
       
       - name: Build and apply Kustomize manifests
