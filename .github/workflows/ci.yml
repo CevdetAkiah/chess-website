@@ -101,22 +101,6 @@ jobs:
           kubectl get pods
           kubectl config use-context default
 
-      - name: Create or Update pg-app Secret
-        run: |
-            kubectl apply -f - <<EOF
-            apiVersion: v1
-            kind: Secret
-            metadata:
-              name: pg-app
-              namespace: chess-dev
-            type: Opaque
-            data:
-              password: $(echo "${{ secrets.PG_APP_PASSWORD }}" | base64 --decode | base64)
-              user: $(echo "${{ secrets.PG_APP_USER }}" | base64 --decode | base64)
-              dbname: $(echo "${{ secrets.PG_APP_DATABASE }}" | base64 --decode | base64)
-              host: $(echo "${{ secrets.PG_APP_HOST }}" | base64 --decode | base64)
-            EOF
-
       - name: Deploy new tags
         run: |
           set -euxo pipefail
