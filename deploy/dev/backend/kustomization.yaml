@@ -7,4 +7,4 @@ resources:
 - deployment.yaml
 - pod-disruption-budget.yaml
 - service.yaml
-- secret.yaml
+#- secret.yaml // need to add back in when locally applying yamls
