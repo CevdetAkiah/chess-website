@@ -28,3 +28,6 @@
 
 #environnment variables
 .env
+
+#sectrets kubernetes
+secret.yaml
