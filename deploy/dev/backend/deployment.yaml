@@ -32,22 +32,22 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pg-app
+                  name: chess-dev-app
                   key: password
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: pg-app
+                  name: chess-dev-app
                   key: user
             - name: PGDATABASE
               valueFrom:
                 secretKeyRef:
-                  name: pg-app
+                  name: chess-dev-app
                   key: dbname
             - name: PGHOST
               valueFrom:
                 secretKeyRef:
-                  name: pg-app
+                  name: chess-dev-app
                   key: host
           envFrom:
             - configMapRef:

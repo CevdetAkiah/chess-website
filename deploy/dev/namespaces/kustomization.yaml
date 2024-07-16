@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
 - chess-dev.yaml
 - cnpg-dev.yaml
-- postgres-dev.yaml
