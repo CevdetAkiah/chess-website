@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type DBConfig struct {
+type DB struct {
 	PGUser     string
 	PGDatabase string
 	PGPassword string
@@ -13,7 +13,7 @@ type DBConfig struct {
 	Port       string
 }
 
-type ServerConfig struct {
+type Server struct {
 	Port               string
 	AllowedOrigins     []string
 	AllowedMethods     []string
@@ -26,8 +26,8 @@ type ServerConfig struct {
 	MaxAge             int
 }
 
-func NewDBConfig() *DBConfig {
-	return &DBConfig{
+func NewDB() *DB {
+	return &DB{
 		PGUser:     os.Getenv("PGUSER"),
 		PGDatabase: os.Getenv("PGDATABASE"),
 		PGPassword: os.Getenv("PGPASSWORD"),
@@ -36,7 +36,7 @@ func NewDBConfig() *DBConfig {
 	}
 }
 
-func NewServerConfig() ServerConfig {
+func NewServer() Server {
 	// declare origins
 	localClient := "http://localhost:3000"
 	BACKEND_HOST := os.Getenv("BACKEND_HOST")
@@ -50,7 +50,7 @@ func NewServerConfig() ServerConfig {
 	DELETE := "DELETE"
 	OPTIONS := "OPTIONS"
 
-	return ServerConfig{
+	return Server{
 		Port:               os.Getenv("PORT"),
 		AllowedOrigins:     []string{localClient, BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN},
 		AllowedMethods:     []string{GET, POST, PUT, DELETE, OPTIONS},
