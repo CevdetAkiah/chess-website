@@ -16,7 +16,7 @@ type Multiplexer interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
-func New(config config.ServerConfig, DBAccess service.DatabaseAccess) (Multiplexer, error) {
+func New(config config.Server, DBAccess service.DatabaseAccess) (Multiplexer, error) {
 	mux := chi.NewRouter()
 	CustomLogger := custom_log.NewLogger()
 

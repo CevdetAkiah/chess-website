@@ -13,7 +13,7 @@ type DB struct {
 	conn *sql.DB
 }
 
-func NewDB(config *config.DBConfig) *DB {
+func NewDB(config *config.DB) *DB {
 	conn, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s password=%s sslmode=%s", config.PGUser, config.PGDatabase, config.PGPassword, config.PGSSLMode))
 	if err != nil {
 		err = fmt.Errorf("cannot open database with error: %w", err)

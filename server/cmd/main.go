@@ -19,13 +19,18 @@ import (
 
 func main() {
 	// config files
-	dbConfig := config.NewDBConfig()
-	serverConfig := config.NewServerConfig()
+	dbConfig := config.NewDB()
+	serverConfig := config.NewServer()
 	// test database connection
 	Db := postgres.NewDB(dbConfig)
 	l := custom_log.NewLogger()
-
-	fmt.Println("connected to database chess")
+	err := Db.InitializeTables()
+	if err != nil {
+		l.Infof("Failed to migrate postgres tables: %v ", err)
+	}
+	if err == nil {
+		fmt.Println("connected to database chess")
+	}
 
 	// handle the chess game server
 	e, err := actor.NewEngine(actor.NewEngineConfig())

@@ -17,7 +17,7 @@ import (
 
 // set up database connection and logger
 func setUp() (*postgres.DB, *custom_log.Logger) {
-	config := config.NewDBConfig()
+	config := config.NewDB()
 	return postgres.NewDB(config), custom_log.NewLogger()
 }
 
