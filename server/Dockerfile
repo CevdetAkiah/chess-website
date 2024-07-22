@@ -7,6 +7,7 @@ RUN go mod download
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app cmd/main.go
 
+
 EXPOSE 8080
 
 # TODO: Learn about multi-stage builds :)
