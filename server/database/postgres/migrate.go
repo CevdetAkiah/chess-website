@@ -3,7 +3,6 @@ package postgres
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -19,11 +18,10 @@ func (db *DB) InitializeTables() error {
 	}
 
 	// Get the absolute path to the migrations folder
-	absPath, err := filepath.Abs("../database/postgres/migrations")
-	if err != nil {
-		return fmt.Errorf("failed to get absolute path: %v", err)
-	}
-	migrationsPath := fmt.Sprintf("file://%s", absPath)
+	path := "/database/postgres/migrations"
+
+	migrationsPath := fmt.Sprintf("file://%s", path)
+
 	databaseName := os.Getenv("PGDATABASE")
 	if databaseName == "" {
 		return fmt.Errorf("database name environment variable not set")
