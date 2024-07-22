@@ -10,8 +10,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app cmd/main.go
 
 EXPOSE 8080
 
-
-
 # TODO: Learn about multi-stage builds :)
-COPY --from=builder-go /workdir/database/postgres/migrations /database/postgres/migrations
 CMD ["/app"]
