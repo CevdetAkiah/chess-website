@@ -16,12 +16,6 @@ github.com/go-chi/chi
 # github.com/go-chi/cors v1.2.1
 ## explicit; go 1.14
 github.com/go-chi/cors
-# github.com/golang-infrastructure/go-how-run v0.0.0-20230107060855-56163adc7748
-## explicit; go 1.18
-github.com/golang-infrastructure/go-how-run
-# github.com/golang-infrastructure/go-project-root-directory v0.0.1
-## explicit; go 1.19
-github.com/golang-infrastructure/go-project-root-directory
 # github.com/golang-migrate/migrate/v4 v4.17.1
 ## explicit; go 1.18
 github.com/golang-migrate/migrate/v4

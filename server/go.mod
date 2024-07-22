@@ -8,7 +8,6 @@ require (
 	github.com/anthdm/hollywood v0.0.0-20240115210651-dd34702ee21f
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/cors v1.2.1
-	github.com/golang-infrastructure/go-project-root-directory v0.0.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/websocket v1.5.1
@@ -23,7 +22,6 @@ require (
 require (
 	github.com/DataDog/gostackparse v0.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/golang-infrastructure/go-how-run v0.0.0-20230107060855-56163adc7748 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-github/v39 v39.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
