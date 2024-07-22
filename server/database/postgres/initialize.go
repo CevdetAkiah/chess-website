@@ -8,6 +8,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+
 	_ "github.com/golang-migrate/migrate/v4/source/github"
 )
 
@@ -17,17 +18,19 @@ func (db *DB) InitializeTables() error {
 		return err
 	}
 
-	// // Get the absolute path to the migrations folder
+	// Get the absolute path to the migrations folder
 	absPath, err := filepath.Abs("../database/postgres/migrations")
 	if err != nil {
 		return fmt.Errorf("failed to get absolute path: %v", err)
 	}
 	migrationsPath := fmt.Sprintf("file://%s", absPath)
-	fmt.Println("migrations path: ", migrationsPath)
 	databaseName := os.Getenv("PGDATABASE")
+	if databaseName == "" {
+		return fmt.Errorf("database name environment variable not set")
+	}
 	m, err := migrate.NewWithDatabaseInstance(migrationsPath, databaseName, driver)
 	if err != nil {
-		return fmt.Errorf("NewDatabasaeInstance: %v", err)
+		return fmt.Errorf("NewDatabaseInstance: %v", err)
 	}
 
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
