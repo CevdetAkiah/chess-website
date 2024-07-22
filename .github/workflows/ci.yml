@@ -79,28 +79,6 @@ jobs:
         with:
           ref: main
 
-
-      - name: Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-      
-
-      - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v2.0.0
-      
-      - name: Create kubeconfig
-        run: | 
-          mkdir -p ${HOME}/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode  > ${HOME}/.kube/config
-
-      - name: Test kubectl access
-        run: |
-          kubectl get pods
-          kubectl config use-context default
-
       - name: Deploy new tags
         run: |
           set -euxo pipefail
@@ -114,7 +92,3 @@ jobs:
           git commit -m "bot: deploy image tags ${{ env.GIT_SHA }}"
           git push origin HEAD:main
       
-      - name: Build and apply Kustomize manifests
-        run: |
-          cd deploy/dev
-          kustomize build --enable-helm . | kubectl apply -f -
