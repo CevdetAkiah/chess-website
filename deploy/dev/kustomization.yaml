@@ -8,12 +8,11 @@ resources:
 - backend
 - postgres
 
+
 images:
 - name: backend-placeholder
   newName: docker.io/nailien/chess-backend
-
-  newTag: 12014e737b72f963b10b2dff7b4db1e6b51a506c
+  newTag: 286281ac5335d677a4f3a8609bed1c1f9a65a2c7
 - name: frontend-placeholder
   newName: docker.io/nailien/chess-frontend
-  newTag: 12014e737b72f963b10b2dff7b4db1e6b51a506c
-
+  newTag: 286281ac5335d677a4f3a8609bed1c1f9a65a2c7
