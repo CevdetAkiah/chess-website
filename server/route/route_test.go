@@ -36,7 +36,7 @@ func TestNewGameIDRetriever(t *testing.T) {
 	reqOK.AddCookie(&http.Cookie{Name: "gameID", Value: "123"})
 	recorderOK := httptest.NewRecorder()
 
-	handlerOK, err := NewGameIDRetriever(l, &mockDbAccess)
+	handlerOK, err := NewGameIDRetriever(200*time.Millisecond, l, &mockDbAccess)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestNewGameIDRetriever(t *testing.T) {
 	}
 	recorderNoID := httptest.NewRecorder()
 
-	handlerNoID, err := NewGameIDRetriever(l, &mockDbAccess)
+	handlerNoID, err := NewGameIDRetriever(200*time.Millisecond, l, &mockDbAccess)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestNewSessionAuthorizer(t *testing.T) {
 
 	req.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
 	recorder := httptest.NewRecorder()
-	handlerRenewSession, err := NewSessionAuthorizer(l, db)
+	handlerRenewSession, err := NewSessionAuthorizer(200*time.Millisecond, l, db)
 	if err != nil {
 		t.Fatalf("creating handler session: %b", err)
 	}
@@ -117,7 +117,7 @@ func TestNewSessionAuthorizer(t *testing.T) {
 	reqRemoveSession.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
 	recorderRemoveSession := httptest.NewRecorder()
 	var handlerRemoveSession func(w http.ResponseWriter, r *http.Request)
-	handlerRemoveSession, err = NewSessionAuthorizer(l, db)
+	handlerRemoveSession, err = NewSessionAuthorizer(200*time.Millisecond, l, db)
 	if err != nil {
 		t.Fatalf("creating handler remove session: %b", err)
 	}
@@ -134,7 +134,7 @@ func TestNewSessionAuthorizer(t *testing.T) {
 	recorderNoSession := httptest.NewRecorder()
 	reqNoSession := httptest.NewRequest("GET", "/test", nil)
 
-	handlerNoSession, err := NewSessionAuthorizer(l, db)
+	handlerNoSession, err := NewSessionAuthorizer(200*time.Millisecond, l, db)
 	if err != nil {
 		t.Error("handlerNoSession: ", err)
 	}
@@ -158,7 +158,7 @@ func TestNewSignupAccount(t *testing.T) {
 
 	request := httptest.NewRequest("POST", "/test", strings.NewReader(payload))
 
-	testSignupAccount, err := NewSignupAccount(l, &store)
+	testSignupAccount, err := NewSignupAccount(200*time.Millisecond, l, &store)
 	if err != nil {
 		t.Error("SignupAccount set up:", err)
 	}
@@ -187,7 +187,7 @@ func TestNewLoginHandler(t *testing.T) {
 	// create a user and add to DB
 	store.CreateUser(service.NewUser(testUser.Name, testUser.Email, testUser.Password))
 
-	testNewLoginHandler, err := NewLoginHandler(l, &store)
+	testNewLoginHandler, err := NewLoginHandler(200*time.Millisecond, l, &store)
 	if err != nil {
 		t.Error("setting up testNewLoginHandler: ", err)
 	}
@@ -225,7 +225,7 @@ func TestNewDeleteUser(t *testing.T) {
 	}
 	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
 
-	testNewDeleteUser, err := NewDeleteUser(l, &store)
+	testNewDeleteUser, err := NewDeleteUser(200*time.Millisecond, l, &store)
 	if err != nil {
 		t.Error("creating NewDeleteUser instance in TestNewDeleteUser: ", err)
 	}
@@ -263,7 +263,7 @@ func TestNewLogoutUser(t *testing.T) {
 	}
 	request.AddCookie(&http.Cookie{Name: "session", Value: session.Uuid})
 
-	testNewLogoutUser, err := NewLogoutUser(l, &store)
+	testNewLogoutUser, err := NewLogoutUser(200*time.Millisecond, l, &store)
 	if err != nil {
 		t.Error("creating NewLogoutUser Instance in TestNewLogoutUser", err)
 	}
@@ -294,7 +294,7 @@ func TestNewUpdateUser(t *testing.T) {
 	if err != nil {
 		t.Error("creating session in  TestNewUpdateUser: ", err)
 	}
-	testNewUpdateUser, err := NewUpdateUser(l, db)
+	testNewUpdateUser, err := NewUpdateUser(200*time.Millisecond, l, db)
 	if err != nil {
 		t.Error("instantiating NewUpdateUser: ", err)
 	}

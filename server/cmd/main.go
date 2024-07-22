@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"go-projects/chess/config"
 	postgres "go-projects/chess/database/postgres"
 	gameserver "go-projects/chess/gameserver"
@@ -18,18 +17,19 @@ import (
 )
 
 func main() {
+	l := custom_log.NewLogger()
 	// config files
 	dbConfig := config.NewDB()
 	serverConfig := config.NewServer()
 	// test database connection
 	Db := postgres.NewDB(dbConfig)
-	l := custom_log.NewLogger()
-	err := Db.InitializeTables()
-	if err != nil {
-		l.Infof("Failed to migrate postgres tables: %v ", err)
+
+	if err := Db.SetPermissions(dbConfig); err != nil {
+		l.Infof("failed to grant permissions to database migration user: %v", err)
 	}
-	if err == nil {
-		fmt.Println("connected to database chess")
+
+	if err := Db.InitializeTables(); err != nil {
+		l.Infof("Failed to migrate postgres tables: %v ", err)
 	}
 
 	// handle the chess game server
@@ -75,5 +75,6 @@ func main() {
 	// Graceful shutdown. Users are given 2 minutes to finish their game if the server needs to restart for any reason
 	t := time.Now().Add(time.Second * 120)
 	tc, _ := context.WithDeadline(context.Background(), t)
+
 	server.Shutdown(tc)
 }
