@@ -5,8 +5,7 @@ import axios from 'axios';
 // GET checkSession checks if a session is active
 export const checkSession = () => {
     const apiURL = process.env.REACT_APP_BACKEND_URL;
-    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
-    const serverURL = `${apiURL}:${apiPORT}/session`; 
+    const serverURL = `${apiURL}/session`; 
     const config = { withCredentials: true };
 
     return new Promise((resolve) => {
@@ -30,8 +29,7 @@ export const checkSession = () => {
 // GET checkGameID checks if a game is occurring for this client
 export const checkGameID = async () => {
     const apiURL = process.env.REACT_APP_BACKEND_URL;
-    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
-    const serverURL = `${apiURL}:${apiPORT}/game`;
+    const serverURL = `${apiURL}/game`;
     const config = { withCredentials: true };
 
     try {

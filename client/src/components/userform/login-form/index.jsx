@@ -16,8 +16,7 @@ const LoginForm = () =>{
     const [close, setClose] = useState(false)
     const { dispatch  } = useContext(SiteContext)
     const apiURL = process.env.REACT_APP_BACKEND_URL;
-    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
-    const serverURL = `${apiURL}:${apiPORT}/session`
+    const serverURL = `${apiURL}/session`
         // send user data to the server
         const sendFormData = (data) => {
             const config = {

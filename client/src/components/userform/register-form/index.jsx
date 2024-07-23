@@ -8,8 +8,7 @@ import { EMAIL_DUPLICATE, USERNAME_DUPLICATE } from '../error-types';
 // POST user registration
 const RegisterForm = () => {
     const apiURL = process.env.REACT_APP_BACKEND_URL;
-    const apiPORT = process.env.REACT_APP_BACKEND_PORT;
-    const serverURL = `${apiURL}:${apiPORT}/user`
+    const serverURL = `${apiURL}/user`
     const form = useForm();
     const { register, handleSubmit, formState, reset, setError } = form;
     const { errors } = formState;

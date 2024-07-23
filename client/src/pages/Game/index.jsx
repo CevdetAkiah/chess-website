@@ -19,8 +19,6 @@ import { SiteContext } from '../../context/website/ClientContext';
 
 
 const FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-// checkmate for testing game over screen
-// const FEN = 'rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3';
 
 const Game = ()=> {
     const[fen, setFen] = useState(FEN);
@@ -28,8 +26,9 @@ const Game = ()=> {
     const [board,setBoard] = useState(createBoard(fen));
     const { state } = useContext(SiteContext);
     const { possibleMoves, dispatch, gameStart, gameID } = useContext(GameContext);
-    const { username, loggedIn, endpoint, gameport } = state; // get username from log in details
-    const serverURL = 'ws://' + endpoint + gameport +  '/ws'
+    const { username, loggedIn } = state; // get username from log in details
+    const apiURL = process.env.REACT_APP_BACKEND_URL;
+    const serverURL = 'ws://' + apiURL+'/ws'
     const gameIDRef = useRef(gameID);
     const wsRef = useRef(null)
     
