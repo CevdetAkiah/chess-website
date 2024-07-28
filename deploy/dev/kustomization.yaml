@@ -15,5 +15,3 @@ images:
   newTag: 15d09ffb506c4b13d9df8ad3255c7f801c2729c8
 - name: frontend-placeholder
   newName: docker.io/nailien/chess-frontend
-  newTag: test1
-
