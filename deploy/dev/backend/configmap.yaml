@@ -3,8 +3,7 @@ kind: ConfigMap
 metadata:
   name: config-backend
 data:
-  EXAMPLE_ENV_VAR: EXAMPLE_VALUE
   FRONTEND_HOST: http://chess.dev.adamland.xyz
   FRONTEND_DEPLOYMENT: http://chess-frontend
-  BACKEND_HOST: http://chess-backend
+  BACKEND_HOST: http://api.chess.dev.adamland.xyz
   PORT: '8080'

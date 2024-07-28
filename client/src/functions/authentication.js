@@ -10,6 +10,7 @@ export const checkSession = () => {
 
     return new Promise((resolve) => {
         axios.get(serverURL, config)
+            console.log("checkSession: ",serverURL)
             .then((response) => {
                 if (response.status === 202 || response.status === 200) {
                     const userName = response.data.username;
