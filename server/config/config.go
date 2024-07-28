@@ -38,9 +38,9 @@ func NewDB() *DB {
 
 func NewServer() Server {
 	// declare origins
-	localClient := "http://localhost:3000"
 	BACKEND_HOST := os.Getenv("BACKEND_HOST")
 	FRONTEND_HOST := os.Getenv("FRONTEND_HOST")
+	FRONTEND_DEPLOYMENT := os.Getenv("FRONTEND_DEPLOYMENT")
 	FRONT_DOMAIN := os.Getenv("FRONT_DOMAIN")
 
 	// declare methods
@@ -52,7 +52,7 @@ func NewServer() Server {
 
 	return Server{
 		Port:               os.Getenv("PORT"),
-		AllowedOrigins:     []string{localClient, BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN},
+		AllowedOrigins:     []string{BACKEND_HOST, FRONTEND_HOST, FRONT_DOMAIN, FRONTEND_DEPLOYMENT},
 		AllowedMethods:     []string{GET, POST, PUT, DELETE, OPTIONS},
 		AllowedHeaders:     []string{"Access-Control-Allow-Origin", "Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:     []string{"Link"},

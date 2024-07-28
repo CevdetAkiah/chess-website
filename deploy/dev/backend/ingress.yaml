@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chess-backend
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: api.chess.dev.adamland.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chess-backend
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - api.chess.dev.adamland.xyz
+      secretName: chess-backend-tls

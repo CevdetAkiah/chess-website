@@ -4,5 +4,7 @@ metadata:
   name: config-backend
 data:
   EXAMPLE_ENV_VAR: EXAMPLE_VALUE
-  FRONTEND_HOST: chess-frontend
+  FRONTEND_HOST: http://chess.dev.adamland.xyz
+  FRONTEND_DEPLOYMENT: http://chess-frontend
+  BACKEND_HOST: http://chess-backend
   PORT: '8080'
