@@ -31,7 +31,7 @@ func New(config config.Server, DBAccess service.DatabaseAccess) (Multiplexer, er
 		AllowCredentials: config.AllowedCredentials,
 		MaxAge:           config.MaxAge, // Maximum value not ignored by any of major browsers
 	}))
-	fmt.Println(config.AllowedOrigins)
+	fmt.Println("Allowed origins: ", config.AllowedOrigins)
 
 	// create handlers
 	signupHandler, err := route.NewSignupAccount(config.HandlerTimeout, CustomLogger, DBAccess)
