@@ -3,7 +3,6 @@ kind: ConfigMap
 metadata:
   name: config-frontend
 data:
-  EXAMPLE_ENV_VAR: EXAMPLE_VALUE
   REACT_APP_BACKEND_URL: http://api.chess.dev.adamland.xyz
   REACT_APP_BACKEND_PORT: "8080"
   
